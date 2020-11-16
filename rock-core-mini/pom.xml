@@ -9,7 +9,8 @@
 
 	<name>rock-core-mini</name>
 	<description>rock框架核心迷你核心类库</description>
-
+	<url>https://github.com/quincy2000/rock</url>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.7</java.version>
