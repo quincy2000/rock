@@ -36,6 +36,7 @@ import org.quincy.rock.core.function.EachFunction;
 import org.quincy.rock.core.function.ValueConsumer;
 import org.quincy.rock.core.os.ProcessServiceInfo;
 import org.quincy.rock.core.util.CoreUtil;
+import org.quincy.rock.core.util.DateUtil;
 import org.quincy.rock.core.util.RockUtil;
 import org.quincy.rock.core.util.StringUtil;
 import org.quincy.rock.core.vo.PageSet;
@@ -847,6 +848,9 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 			try {
 				logger.info("检测到报文服务器异常终止，尝试重新启动...");
 				this.stop();
+				this.busy(true);
+				DateUtil.sleep(1000*10);  //10秒后再重连
+				this.busy(false);
 				runningFlag = true;//修正运行状态
 				this.start();
 				logger.info("经过我的努力尝试，异常终止的报文服务器终于重新启动成功了。");
