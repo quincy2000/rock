@@ -99,6 +99,10 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 */
 	private boolean runningFlag;
 	/**
+	 * 重连等待秒数。
+	 */
+	private int reconnectSecs = 1;
+	/**
 	 * 告警管理器。
 	 */
 	private AlarmManager alarmManager;
@@ -327,6 +331,28 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 */
 	public void setDeviceProvider(DeviceProvider<?> deviceProvider) {
 		this.deviceProvider = deviceProvider;
+	}
+
+	/**
+	 * <b>获得重连等待秒数。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 重连等待秒数
+	 */
+	public int getReconnectSecs() {
+		return reconnectSecs;
+	}
+
+	/**
+	 * <b>设置重连等待秒数。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param reconnectSecs 重连等待秒数
+	 */
+	public void setReconnectSecs(int reconnectSecs) {
+		this.reconnectSecs = reconnectSecs;
 	}
 
 	/**
@@ -848,9 +874,11 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 			try {
 				logger.info("检测到报文服务器异常终止，尝试重新启动...");
 				this.stop();
-				this.busy(true);
-				DateUtil.sleep(1000*10);  //10秒后再重连
-				this.busy(false);
+				if (this.reconnectSecs > 0) {
+					this.busy(true);
+					DateUtil.sleep(1000 * this.reconnectSecs); //10秒后再重连
+					this.busy(false);
+				}
 				runningFlag = true;//修正运行状态
 				this.start();
 				logger.info("经过我的努力尝试，异常终止的报文服务器终于重新启动成功了。");
