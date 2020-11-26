@@ -87,6 +87,40 @@ public abstract class Message extends QueueMessage<Integer> {
 	}
 
 	/**
+	 * <b>初始化。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param ctx 上下文对象
+	 */
+	protected void initialize(Map<String, Object> ctx) {
+		if (this.cmdCode == null)
+			this.cmdCode = (Integer) ctx.get(CommUtils.COMM_FUNCTION_CODE_KEY);
+		if (this.messageTime == null)
+			this.messageTime = (Long) ctx.get(CommUtils.COMM_MSG_TIMESTAMP_KEY);
+		if (this.msgId == null)
+			this.msgId = ctx.get(CommUtils.COMM_MSG_ID_KEY);
+		if (this.terminalId == null)
+			this.terminalId = ctx.get(CommUtils.COMM_TERMINAL_ID_KEY);
+	}
+	
+	/**
+	 * <b>初始化一次。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 仅初始化一次，第二次调用将忽略。
+	 * @param ctx 上下文对象
+	 */
+	protected final void initializeOnce(Map<String, Object> ctx) {
+		if (!initialized) {
+			this.initialize(ctx);
+			initialized=true;
+		}
+	}
+
+	private boolean initialized = false;
+
+	/**
 	 * <b>将报文对象pack成二进制报文。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -96,14 +130,7 @@ public abstract class Message extends QueueMessage<Integer> {
 	 * @return ByteBuf
 	 */
 	public ByteBuf toBinary(ByteBuf buf, Map<String, Object> ctx) {
-		if (this.cmdCode == null)
-			this.cmdCode = (Integer) ctx.get(CommUtils.COMM_FUNCTION_CODE_KEY);
-		if (this.messageTime == null)
-			this.messageTime = (Long) ctx.get(CommUtils.COMM_MSG_TIMESTAMP_KEY);
-		if (this.msgId == null)
-			this.msgId = ctx.get(CommUtils.COMM_MSG_ID_KEY);
-		if (this.terminalId == null)
-			this.terminalId = ctx.get(CommUtils.COMM_TERMINAL_ID_KEY);
+		this.initializeOnce(ctx);
 		return buf;
 	}
 
@@ -117,14 +144,7 @@ public abstract class Message extends QueueMessage<Integer> {
 	 * @return this
 	 */
 	public Message fromBinary(ByteBuf buf, Map<String, Object> ctx) {
-		if (this.cmdCode == null)
-			this.cmdCode = (Integer) ctx.get(CommUtils.COMM_FUNCTION_CODE_KEY);
-		if (this.messageTime == null)
-			this.messageTime = (Long) ctx.get(CommUtils.COMM_MSG_TIMESTAMP_KEY);
-		if (this.msgId == null)
-			this.msgId = ctx.get(CommUtils.COMM_MSG_ID_KEY);
-		if (this.terminalId == null)
-			this.terminalId = ctx.get(CommUtils.COMM_TERMINAL_ID_KEY);
+		this.initializeOnce(ctx);
 		return this;
 	}
 }
