@@ -9,7 +9,8 @@
 
 	<name>rock-comm-netty</name>
 	<description>rock框架之通讯子框架Netty4实现库</description>
-
+	<url>https://github.com/quincy2000/rock</url>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.7</java.version>
