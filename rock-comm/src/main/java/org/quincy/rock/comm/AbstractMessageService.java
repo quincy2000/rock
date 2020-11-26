@@ -261,30 +261,6 @@ public abstract class AbstractMessageService<K, UChannel> implements MessageServ
 	}
 
 	/** 
-	 * offlineTerminal。
-	 * @see org.quincy.rock.comm.MessageSender#offlineTerminal(java.lang.Object)
-	 */
-	@Override
-	public final void offlineTerminal(Object terminalId) {
-		TerminalChannelMapping<UChannel> mapping = getTerminalChannelMapping();
-		UChannel channel = mapping.getChannel(terminalId);
-		offlineTerminal(terminalId, channel);
-		terminalId = mapping.destroyMapping(channel);
-		if (terminalId != null)
-			fireTerminalOfflineEvent(terminalId);
-	}
-
-	/**
-	 * <b>用户主动切断终端连接使其下线时调用该方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 子类需要继承该方法真正切断连接。
-	 * @param terminalId 终端id
-	 * @param channel 通道
-	 */
-	protected abstract void offlineTerminal(Object terminalId, UChannel channel);
-
-	/** 
 	 * sendMessage。
 	 * @see org.quincy.rock.comm.MessageSender#sendMessage(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.util.Map, boolean, java.util.function.Consumer)
 	 */

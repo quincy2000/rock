@@ -271,12 +271,17 @@ public class DefaultMessageService<K, UChannel> extends AbstractMessageService<K
 
 	/** 
 	 * offlineTerminal。
-	 * @see org.quincy.rock.comm.AbstractMessageService#offlineTerminal(java.lang.Object, java.lang.Object)
+	 * @see org.quincy.rock.comm.MessageSender#offlineTerminal(java.lang.Object)
 	 */
 	@Override
-	protected void offlineTerminal(Object terminalId, UChannel channel) {
+	public void offlineTerminal(Object terminalId) {
+		TerminalChannelMapping<UChannel> mapping = getTerminalChannelMapping();
+		UChannel channel = mapping.getChannel(terminalId);
 		if (isCloseChannelWhileOffline())
 			this.getCommunicator().close(channel);
+		else {
+			this.channelClosed(channel, null);
+		}
 	}
 
 	/**
