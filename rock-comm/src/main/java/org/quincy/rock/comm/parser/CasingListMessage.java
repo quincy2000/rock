@@ -1,35 +1,36 @@
 package org.quincy.rock.comm.parser;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
- * <b>响应报文。</b>
+ * <b>嵌套数组数据的报文。</b>
  * <p><b>详细说明：</b></p>
  * <!-- 在此添加详细说明 -->
- * 仅仅用于处理响应代码为字节的情况。
+ * 无。
  * <p><b>修改列表：</b></p>
  * <table width="100%" cellSpacing=1 cellPadding=3 border=1>
  * <tr bgcolor="#CCCCFF"><td>序号</td><td>作者</td><td>修改日期</td><td>修改内容</td></tr>
  * <!-- 在此添加修改列表，参考第一行内容 -->
- * <tr><td>1</td><td>wks</td><td>2018年6月21日 下午1:44:53</td><td>建立类型</td></tr>
+ * <tr><td>1</td><td>wks</td><td>2018年6月21日 下午1:55:58</td><td>建立类型</td></tr>
  * 
  * </table>
  * @version 1.0
  * @author wks
  * @since 1.0
  */
-public class ResultMessage extends Message {
-
+public final class CasingListMessage<T extends Message> extends Message {
 	/**
 	 * serialVersionUID。
 	 */
-	private static final long serialVersionUID = 2773075669198507543L;
+	private static final long serialVersionUID = 3149374594542222402L;
 
 	/**
-	 * 返回的结果代码。
+	 * 返回的结果数据。
 	 */
-	private byte result;
+	private List<T> data;
 
 	/**
 	 * <b>构造方法。</b>
@@ -37,7 +38,7 @@ public class ResultMessage extends Message {
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 */
-	public ResultMessage() {
+	public CasingListMessage() {
 		super();
 	}
 
@@ -46,33 +47,47 @@ public class ResultMessage extends Message {
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param result 返回的结果代码
+	 * @param data 返回的结果数据
 	 */
-	public ResultMessage(byte result) {
+	public CasingListMessage(List<T> data) {
 		super();
-		this.result = result;
+		this.data = data;
 	}
 
 	/**
-	 * <b>获得结果代码。</b>
+	 * <b>返回的结果数据。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return 结果代码
+	 * @return 返回的结果数据
 	 */
-	public byte getResult() {
-		return result;
+	public List<T> getData() {
+		if (data == null) {
+			data = new ArrayList<>();
+		}
+		return data;
 	}
 
 	/**
-	 * <b>设置结果代码。</b>
+	 * <b>设置返回的结果数据。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param result 结果代码
+	 * @param data 返回的结果数据
 	 */
-	public void setResult(byte result) {
-		this.result = result;
+	public void setData(List<T> data) {
+		this.data = data;
+	}
+
+	/**
+	 * <b>添加结果数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param data 结果数据
+	 */
+	public void addData(T data) {
+		this.getData().add(data);
 	}
 
 	/** 
@@ -82,7 +97,6 @@ public class ResultMessage extends Message {
 	@Override
 	public ByteBuffer toBinary(ByteBuffer buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
-		buf.put(getResult());
 		return buf;
 	}
 
@@ -93,22 +107,6 @@ public class ResultMessage extends Message {
 	@Override
 	public Message fromBinary(ByteBuffer buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
-		this.setResult(buf.get());
 		return this;
-	}
-
-	/** 
-	 * toString。
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(this.getClass().getSimpleName());
-		sb.append("{");
-		sb.append("result:");
-		sb.append(getResult());
-		sb.append("}");
-		return sb.toString();
 	}
 }
