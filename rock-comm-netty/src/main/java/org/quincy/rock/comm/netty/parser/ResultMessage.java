@@ -72,7 +72,6 @@ public class ResultMessage extends Message {
 	 * @param result 结果代码
 	 */
 	public void setResult(int result) {
-		checkValue(result, 0, 255, "result");
 		this.result = result;
 	}
 
@@ -82,7 +81,6 @@ public class ResultMessage extends Message {
 	 */
 	@Override
 	public ByteBuf toBinary(ByteBuf buf, Map<String, Object> ctx) {
-		super.toBinary(buf, ctx);
 		buf.writeByte(getResult());
 		return buf;
 	}
@@ -93,7 +91,6 @@ public class ResultMessage extends Message {
 	 */
 	@Override
 	public Message fromBinary(ByteBuf buf, Map<String, Object> ctx) {
-		super.fromBinary(buf, ctx);
 		this.setResult(buf.readUnsignedByte());
 		return this;
 	}

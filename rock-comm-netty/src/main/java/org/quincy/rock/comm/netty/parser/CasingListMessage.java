@@ -2,6 +2,9 @@ package org.quincy.rock.comm.netty.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * <b>嵌套数组数据的报文。</b>
@@ -86,5 +89,23 @@ public final class CasingListMessage<T extends Message> extends Message {
 	 */
 	public void addData(T data) {
 		this.getData().add(data);
+	}
+
+	/** 
+	 * toBinary。
+	 * @see org.quincy.rock.comm.netty.parser.Message#toBinary(io.netty.buffer.ByteBuf, java.util.Map)
+	 */
+	@Override
+	public ByteBuf toBinary(ByteBuf buf, Map<String, Object> ctx) {
+		return buf;
+	}
+
+	/** 
+	 * fromBinary。
+	 * @see org.quincy.rock.comm.netty.parser.Message#fromBinary(io.netty.buffer.ByteBuf, java.util.Map)
+	 */
+	@Override
+	public Message fromBinary(ByteBuf buf, Map<String, Object> ctx) {
+		return this;
 	}
 }

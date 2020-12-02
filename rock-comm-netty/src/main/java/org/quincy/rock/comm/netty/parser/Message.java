@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
  * <b>报文消息类。</b>
  * <p><b>详细说明：</b></p>
  * <!-- 在此添加详细说明 -->
- * 适用于指令代码为Integer类型的情况。
+ * 无。
  * <p><b>修改列表：</b></p>
  * <table width="100%" cellSpacing=1 cellPadding=3 border=1>
  * <tr bgcolor="#CCCCFF"><td>序号</td><td>作者</td><td>修改日期</td><td>修改内容</td></tr>
@@ -24,7 +24,7 @@ import io.netty.buffer.ByteBuf;
  * @author wks
  * @since 1.0
  */
-public abstract class Message extends QueueMessage<Integer> {
+public abstract class Message extends QueueMessage {
 	/**
 	 * serialVersionUID。
 	 */
@@ -50,43 +50,6 @@ public abstract class Message extends QueueMessage<Integer> {
 	}
 
 	/**
-	 * <b>检查相等。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 */
-	protected void checkEquals(int expected, int actual, String fieldName) {
-		if (expected != actual) {
-			throw new IllegalArgumentException("The field value must be " + actual + ":" + fieldName);
-		}
-	}
-
-	/**
-	 * <b>检查相等。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 */
-	protected void checkEquals(Object expected, Object actual, String fieldName) {
-		if (expected != actual && expected.equals(actual)) {
-			throw new IllegalArgumentException("The field value must be " + actual + ":" + fieldName);
-		}
-	}
-
-	/**
-	 * <b>检查字段值区间。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 */
-	protected void checkValue(int value, int min, int max, String fieldName) {
-		if (value < min || value > max) {
-			throw new IllegalArgumentException(
-					"The field value must be between " + min + " and " + max + ":" + fieldName);
-		}
-	}
-
-	/**
 	 * <b>初始化。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -103,7 +66,7 @@ public abstract class Message extends QueueMessage<Integer> {
 		if (this.terminalId == null)
 			this.terminalId = ctx.get(CommUtils.COMM_TERMINAL_ID_KEY);
 	}
-	
+
 	/**
 	 * <b>初始化一次。</b>
 	 * <p><b>详细说明：</b></p>
@@ -114,7 +77,7 @@ public abstract class Message extends QueueMessage<Integer> {
 	protected final void initializeOnce(Map<String, Object> ctx) {
 		if (!initialized) {
 			this.initialize(ctx);
-			initialized=true;
+			initialized = true;
 		}
 	}
 
@@ -129,10 +92,7 @@ public abstract class Message extends QueueMessage<Integer> {
 	 * @param ctx 上下文对象
 	 * @return ByteBuf
 	 */
-	public ByteBuf toBinary(ByteBuf buf, Map<String, Object> ctx) {
-		this.initializeOnce(ctx);
-		return buf;
-	}
+	public abstract ByteBuf toBinary(ByteBuf buf, Map<String, Object> ctx);
 
 	/**
 	 * <b>将二进制报文转换成报文对象。</b>
@@ -143,8 +103,5 @@ public abstract class Message extends QueueMessage<Integer> {
 	 * @param ctx 上下文对象
 	 * @return this
 	 */
-	public Message fromBinary(ByteBuf buf, Map<String, Object> ctx) {
-		this.initializeOnce(ctx);
-		return this;
-	}
+	public abstract Message fromBinary(ByteBuf buf, Map<String, Object> ctx);
 }
