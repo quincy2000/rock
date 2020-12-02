@@ -4,7 +4,7 @@
 
 	<groupId>org.quincy.rock</groupId>
 	<artifactId>rock-core-mini</artifactId>
-	<version>1.0.48.RELEASE</version>
+	<version>1.0.47.RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>rock-core-mini</name>
