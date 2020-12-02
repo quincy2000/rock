@@ -4,7 +4,7 @@
 
 	<groupId>org.quincy.rock</groupId>
 	<artifactId>rock-comm</artifactId>
-	<version>1.0.48.RELEASE</version>
+	<version>1.0.47.RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>rock-comm</name>
@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.7</java.version>
 		<junit.version>4.12</junit.version>
-		<rock.version>1.0.48.RELEASE</rock.version>
+		<rock.version>1.0.47.RELEASE</rock.version>
 	</properties>
 
 	<dependencies>
