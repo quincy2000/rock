@@ -20,7 +20,8 @@ import org.quincy.rock.core.vo.Vo;
  * @author wks
  * @since 1.0
  */
-public class QueueMessage<K> extends Vo<String> implements HasTimestamp {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class QueueMessage extends Vo<String> implements HasTimestamp {
 	/**
 	 * serialVersionUID。
 	 */
@@ -42,7 +43,7 @@ public class QueueMessage<K> extends Vo<String> implements HasTimestamp {
 	/**
 	 * 功能码。
 	 */
-	protected K cmdCode;
+	protected Object cmdCode;
 	/**
 	 * 报文消息传输时间戳。
 	 */
@@ -56,14 +57,15 @@ public class QueueMessage<K> extends Vo<String> implements HasTimestamp {
 	 * 该报文在进入处理队列之前是否已经处理过。
 	 */
 	boolean processed;
+
 	/**
 	 * 报文处理器。
-	 */
-	transient MessageProcessor<K, Object> processor;
+	 */	
+	transient MessageProcessor processor;
 	/**
 	 * 报文发送者。
 	 */
-	transient MessageSender<K> sender;
+	transient MessageSender sender;
 
 	/**
 	 * <b>构造方法。</b>
@@ -90,8 +92,19 @@ public class QueueMessage<K> extends Vo<String> implements HasTimestamp {
 	 * @see org.quincy.rock.core.vo.Vo#id()
 	 */
 	@Override
-	public String id() {
+	public final String id() {
 		return msgId == null ? null : msgId.toString();
+	}
+
+	/**
+	 * <b>该报文在进入处理队列之前是否已经处理过。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 该报文在进入处理队列之前是否已经处理过
+	 */
+	public final boolean processed() {
+		return processed;
 	}
 
 	/** 
@@ -107,7 +120,7 @@ public class QueueMessage<K> extends Vo<String> implements HasTimestamp {
 	 * @see org.quincy.rock.core.cache.HasTimestamp#updateTimestamp()
 	 */
 	@Override
-	public void updateTimestamp() {
+	public final void updateTimestamp() {
 		this.timestamp = System.currentTimeMillis();
 	}
 
@@ -118,7 +131,7 @@ public class QueueMessage<K> extends Vo<String> implements HasTimestamp {
 	 * 无。
 	 * @return 功能码
 	 */
-	public final K cmdCode() {
+	public Object cmdCode() {
 		return cmdCode;
 	}
 
@@ -145,24 +158,13 @@ public class QueueMessage<K> extends Vo<String> implements HasTimestamp {
 	}
 
 	/**
-	 * <b>该报文在进入处理队列之前是否已经处理过。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 该报文在进入处理队列之前是否已经处理过
-	 */
-	public final boolean processed() {
-		return processed;
-	}
-
-	/**
 	 * <b>处理报文。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @param sender 报文发送者
 	 */
-	final void process(MessageSender<K> sender) {
+	final void process(MessageSender<?> sender) {
 		processor.process(this.sender == null ? sender : this.sender, terminalId, msgId,
 				content == null ? this : content);
 	}

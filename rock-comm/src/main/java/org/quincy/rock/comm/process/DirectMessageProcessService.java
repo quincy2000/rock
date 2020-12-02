@@ -23,7 +23,7 @@ public class DirectMessageProcessService<K> extends MessageProcessService<K> {
 	 * @see org.quincy.rock.comm.process.MessageProcessService#handleArrivedMessage(org.quincy.rock.comm.process.QueueMessage)
 	 */
 	@Override
-	protected void handleArrivedMessage(QueueMessage<K> queueMessage) {
+	protected void handleArrivedMessage(QueueMessage queueMessage) {
 		this.processQueueMessage(queueMessage);
 	}
 

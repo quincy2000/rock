@@ -27,7 +27,6 @@ import org.quincy.rock.core.lang.Recorder;
  * @author wks
  * @since 1.0
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class MessageProcessService<K> {
 	/**
 	 * _messageListener。
@@ -85,7 +84,7 @@ public abstract class MessageProcessService<K> {
 					recorder.write(ex, ex.getMessage());
 					throw ex;
 				}
-				QueueMessage<K> queueMessage = (content instanceof QueueMessage) ? (QueueMessage) content
+				QueueMessage queueMessage = (content instanceof QueueMessage) ? (QueueMessage) content
 						: new QueueMessage(content);
 				queueMessage.terminalId = terminalId;
 				queueMessage.msgId = msgId;
@@ -229,7 +228,7 @@ public abstract class MessageProcessService<K> {
 	 * 无。
 	 * @param queueMessage 队列消息
 	 */
-	protected final void processQueueMessage(QueueMessage<K> queueMessage) {
+	protected final void processQueueMessage(QueueMessage queueMessage) {
 		try {
 			queueMessage.process(messageService);
 		} catch (Exception e) {
@@ -245,7 +244,7 @@ public abstract class MessageProcessService<K> {
 	 * @param queueMessage 排队报文
 	 * @exception BlcokingException
 	 */
-	protected abstract void handleArrivedMessage(QueueMessage<K> queueMessage) throws BlcokingException;
+	protected abstract void handleArrivedMessage(QueueMessage queueMessage) throws BlcokingException;
 
 	/**
 	 * <b>开始处理报文。</b>

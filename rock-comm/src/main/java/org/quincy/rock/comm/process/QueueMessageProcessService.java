@@ -48,7 +48,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	/**
 	 * 执行者线程组。
 	 */
-	private Executor<QueueMessage<K>>[] executors = new Executor[512];
+	private Executor<QueueMessage>[] executors = new Executor[512];
 
 	/**
 	 * <b>构造方法。</b>
@@ -98,7 +98,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @param capacity 每个线程持有报文队列容量
 	 * @return 阻塞队列
 	 */
-	protected BlockingQueue<QueueMessage<K>> createBlockingQueue(int capacity) {
+	protected BlockingQueue<QueueMessage> createBlockingQueue(int capacity) {
 		return new ArrayBlockingQueue<>(capacity);
 	}
 
@@ -122,7 +122,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @return 队列中待处理报文条数
 	 */
 	public final int count(int threadIndex) {
-		Executor<QueueMessage<K>> executor = executors[threadIndex];
+		Executor<QueueMessage> executor = executors[threadIndex];
 		return (executor == null) ? 0 : executor.count();
 	}
 
@@ -135,7 +135,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @return 指定线程的报文等待秒数
 	 */
 	public final int waitSeconds(int threadIndex) {
-		Executor<QueueMessage<K>> executor = executors[threadIndex];
+		Executor<QueueMessage> executor = executors[threadIndex];
 		return (executor == null) ? 0 : executor.waitSeconds();
 	}
 
@@ -148,7 +148,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @return 指定线程的处理报文条数
 	 */
 	public final long processCount(int threadIndex) {
-		Executor<QueueMessage<K>> executor = executors[threadIndex];
+		Executor<QueueMessage> executor = executors[threadIndex];
 		return (executor == null) ? 0 : executor.processCount();
 	}
 
@@ -161,7 +161,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @return 指定线程的单个报文处理毫秒数
 	 */
 	public final long processMillis(int threadIndex) {
-		Executor<QueueMessage<K>> executor = executors[threadIndex];
+		Executor<QueueMessage> executor = executors[threadIndex];
 		return (executor == null) ? 0 : executor.processMillis();
 	}
 
@@ -174,7 +174,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @return 指定线程的单个报文解析毫秒数
 	 */
 	public final long resolveMillis(int threadIndex) {
-		Executor<QueueMessage<K>> executor = executors[threadIndex];
+		Executor<QueueMessage> executor = executors[threadIndex];
 		return (executor == null) ? 0 : executor.resolveMillis();
 	}
 
@@ -187,7 +187,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @return 指定线程的单个报文传输毫秒数
 	 */
 	public final long transferMillis(int threadIndex) {
-		Executor<QueueMessage<K>> executor = executors[threadIndex];
+		Executor<QueueMessage> executor = executors[threadIndex];
 		return (executor == null) ? 0 : executor.transferMillis();
 	}
 
@@ -231,7 +231,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @see org.quincy.rock.comm.process.MessageProcessService#handleArrivedMessage(org.quincy.rock.comm.process.QueueMessage)
 	 */
 	@Override
-	protected final void handleArrivedMessage(QueueMessage<K> queueMessage) {
+	protected final void handleArrivedMessage(QueueMessage queueMessage) {
 		int threadIndex = assignThreadExecutorIndex(queueMessage.terminalId(), getMaxThreadCount());
 		getValidExecutor(threadIndex).put(queueMessage);
 	}
@@ -244,7 +244,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	 * @param threadIndex 线程索引
 	 * @return 执行者线程
 	 */
-	private synchronized Executor<QueueMessage<K>> getValidExecutor(int threadIndex) {
+	private synchronized Executor<QueueMessage> getValidExecutor(int threadIndex) {
 		if (executors[threadIndex] == null) {
 			executors[threadIndex] = new Executor<>(threadIndex, createBlockingQueue(capacity));
 			threadPool.submit(executors[threadIndex]);
@@ -282,7 +282,7 @@ public class QueueMessageProcessService<K> extends MessageProcessService<K> {
 	}
 
 	//执行者
-	private class Executor<T extends QueueMessage<K>> implements Runnable {
+	private class Executor<T extends QueueMessage> implements Runnable {
 		/**
 		 * threadIndex。
 		 */
