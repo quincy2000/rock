@@ -4,7 +4,7 @@
 
 	<groupId>org.quincy.rock</groupId>
 	<artifactId>rock-core-mini</artifactId>
-	<version>1.0.47.RELEASE</version>
+	<version>1.0.48.RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>rock-core-mini</name>
@@ -14,10 +14,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.7</java.version>
-		<junit.version>4.12</junit.version>
-		<commons-lang3.version>3.9</commons-lang3.version>
+		<junit.version>4.13</junit.version>
+		<commons-lang3.version>3.11</commons-lang3.version>
 		<!-- json -->
-		<jackson.version>2.10.2</jackson.version>
+		<jackson.version>2.12.0</jackson.version>
 	</properties>
 
 	<dependencies>
