@@ -1,5 +1,6 @@
 package org.quincy.rock.comm.netty;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.quincy.rock.core.function.Consumer;
 import org.quincy.rock.core.function.Function;
 import org.quincy.rock.core.vo.Option;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
@@ -99,6 +102,10 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	 * 通道句柄创建器。
 	 */
 	private ChannelHandlerCreator channelHandlerCreator;
+	/**
+	 * 使用ByteBuffer。
+	 */
+	private boolean useByteBuffer;
 
 	/**
 	 * <b>构造方法。</b>
@@ -153,6 +160,28 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	 */
 	public int getTimeout() {
 		return timeout;
+	}
+
+	/**
+	 * <b>是否使用ByteBuffer。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否使用ByteBuffer
+	 */
+	public boolean isUseByteBuffer() {
+		return useByteBuffer;
+	}
+
+	/**
+	 * <b>是否使用ByteBuffer。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param useByteBuffer 是否使用ByteBuffer
+	 */
+	public void setUseByteBuffer(boolean useByteBuffer) {
+		this.useByteBuffer = useByteBuffer;
 	}
 
 	/**
@@ -459,6 +488,9 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 		 */
 		@Override
 		public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+			if (useByteBuffer && msg instanceof ByteBuf) {
+				msg = ((ByteBuf) msg).nioBuffer();
+			}
 			try {
 				fireReceiveDataEvent(getChannelTransformer().transform(ctx.channel(), STransformPoint.CHANNEL_READ),
 						msg, FOR_SLICE);
@@ -473,7 +505,10 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 		 * @see io.netty.channel.ChannelDuplexHandler#write(io.netty.channel.ChannelHandlerContext, java.lang.Object, io.netty.channel.ChannelPromise)
 		 */
 		@Override
-		public void write(ChannelHandlerContext ctx, final Object msg, ChannelPromise promise) throws Exception {
+		public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
+			final Object msg = (useByteBuffer && message instanceof ByteBuffer)
+					? Unpooled.wrappedBuffer((ByteBuffer) message)
+					: message;
 			final Channel channel = ctx.channel();
 			try {
 				promise.addListener(new GenericFutureListener<Future<? super Void>>() {
