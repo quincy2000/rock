@@ -118,7 +118,7 @@ public final class OSUtil {
 	public static List<NetInterface> getNetInterfaces() {
 		List<NetInterface> list = new ArrayList<>();
 		HardwareAbstractionLayer hal = getHardware();
-		NetworkIF[] ns = hal.getNetworkIFs();
+		List<NetworkIF> ns = hal.getNetworkIFs();
 		for (NetworkIF n : ns) {
 			String name = n.getDisplayName();
 			String[] addr = n.getIPv4addr();
@@ -142,15 +142,15 @@ public final class OSUtil {
 		List<DiskPartition> list = new ArrayList<>();
 		HardwareAbstractionLayer hal = getHardware();
 		OperatingSystem os = getOperatingSystem();
-		HWDiskStore[] disks = hal.getDiskStores();
-		OSFileStore[] fss = os.getFileSystem().getFileStores(true);
+		List<HWDiskStore> disks = hal.getDiskStores();
+		List<OSFileStore> fss = os.getFileSystem().getFileStores(true);
 		for (OSFileStore fs : fss) {
 			DiskPartition dp = new DiskPartition(fs);
 			list.add(dp);
 		}
 		//
 		for (HWDiskStore disk : disks) {
-			HWPartition[] ps = disk.getPartitions();
+			List<HWPartition> ps = disk.getPartitions();
 			for (HWPartition p : ps) {
 				DiskPartition dp = findDiskPartition(list, p.getUuid());
 				if (dp != null) {
@@ -171,7 +171,7 @@ public final class OSUtil {
 	 */
 	public static List<Disk> getDisks() {
 		List<Disk> list = new ArrayList<>();
-		HWDiskStore[] disks = getHardware().getDiskStores();
+		List<HWDiskStore> disks = getHardware().getDiskStores();
 		for (HWDiskStore disk : disks) {
 			list.add(new Disk(disk));
 		}
@@ -216,8 +216,8 @@ public final class OSUtil {
 	 */
 	public static List<ProcessInfo> getProcessInfos() {
 		OperatingSystem os = getOperatingSystem();
-		OSProcess[] ps = os.getProcesses();
-		List<ProcessInfo> list = new ArrayList<>(ps.length);
+		List<OSProcess> ps = os.getProcesses();
+		List<ProcessInfo> list = new ArrayList<>(ps.size());
 		for (OSProcess p : ps) {
 			ProcessInfo pi = new ProcessInfo(p.getProcessID(), p.getName());
 			pi.setUser(p.getUser());
