@@ -296,6 +296,39 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 		this.byteBufferCapacity = byteBufferCapacity;
 	}
 
+	/**
+	 * <b>创建CasingListMessage。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return CasingListMessage
+	 */
+	protected CasingListMessage<Message> createCasingListMessage() {
+		return new CasingListMessage<>();
+	}
+
+	/**
+	 * <b>创建CasingResultMessage。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return CasingResultMessage
+	 */
+	protected CasingResultMessage<Message> createCasingResultMessage() {
+		return new CasingResultMessage<>();
+	}
+
+	/**
+	 * <b>创建CasingListResultMessage。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return CasingListResultMessage
+	 */
+	protected CasingListResultMessage<Message> createCasingListResultMessage() {
+		return new CasingListResultMessage<>();
+	}
+
 	/** 
 	 * pack。
 	 * @see org.quincy.rock.comm.MessageParser#pack(java.lang.Object, java.util.Map)
@@ -344,7 +377,7 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 			vo = CoreUtil.constructor(messageClass).fromBinary(message, ctx);
 			break;
 		case 1:
-			CasingListMessage<Message> clm = new CasingListMessage<>();
+			CasingListMessage<Message> clm = this.createCasingListMessage();
 			clm.fromBinary(message, ctx);
 			while (message.hasRemaining()) {
 				clm.addData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
@@ -352,7 +385,7 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 			vo = clm;
 			break;
 		case 2:
-			CasingResultMessage<Message> crm = new CasingResultMessage<>();
+			CasingResultMessage<Message> crm = this.createCasingResultMessage();
 			crm.fromBinary(message, ctx);
 			if (message.hasRemaining()) {
 				crm.setData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
@@ -360,7 +393,7 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 			vo = crm;
 			break;
 		case 3:
-			CasingListResultMessage<Message> clrm = new CasingListResultMessage<>();
+			CasingListResultMessage<Message> clrm = this.createCasingListResultMessage();
 			clrm.fromBinary(message, ctx);
 			while (message.hasRemaining()) {
 				clrm.addData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
