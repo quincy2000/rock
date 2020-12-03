@@ -167,7 +167,7 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * <b>获得ByteBuffer的容量。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
 	 * @return ByteBuffer的容量
 	 */
 	public int getByteBufferCapacity() {
@@ -178,7 +178,7 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * <b>设置ByteBuffer的容量。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
 	 * @param byteBufferCapacity ByteBuffer的容量
 	 */
 	public void setByteBufferCapacity(int byteBufferCapacity) {
@@ -194,8 +194,7 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 		ByteBuffer buf = ByteBuffer.allocate(this.byteBufferCapacity);
 		value.toBinary(buf, ctx);
 		if (casing == 1) {
-			CasingListMessage<?> clm = (CasingListMessage<?>) value;
-			clm.toBinary(buf, ctx);
+			CasingListMessage<?> clm = (CasingListMessage<?>) value;			
 			List<? extends Message> list = clm.getData();
 			if (list != null && !list.isEmpty()) {
 				for (Message data : list) {
@@ -204,13 +203,11 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 			}
 		} else if (casing == 2) {
 			CasingResultMessage<?> crm = (CasingResultMessage<?>) value;
-			crm.toBinary(buf, ctx);
 			Message data = crm.getData();
 			if (data != null)
 				data.toBinary(buf, ctx);
 		} else if (casing == 3) {
 			CasingListResultMessage<?> clrm = (CasingListResultMessage<?>) value;
-			clrm.toBinary(buf, ctx);
 			List<? extends Message> list = clrm.getData();
 			if (list != null && !list.isEmpty()) {
 				for (Message data : list) {
