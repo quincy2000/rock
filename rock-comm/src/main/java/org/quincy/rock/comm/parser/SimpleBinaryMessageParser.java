@@ -1,6 +1,5 @@
 package org.quincy.rock.comm.parser;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ import org.quincy.rock.core.util.CoreUtil;
  * @since 1.0
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteBuffer, Message> {
+public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageParser<K, BUF, Message<BUF>> {
 	/**
 	 * 结果嵌套标记(0-对象,1-数组,2-嵌套结果对象,3-嵌套结果数组)。
 	 */
@@ -35,10 +34,6 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * Message报文实现类。
 	 */
 	private Class<? extends Message> messageClass;
-	/**
-	 * ByteBuffer的容量。
-	 */
-	private int byteBufferCapacity = 4096;
 
 	/**
 	 * <b>构造方法。</b>
@@ -164,37 +159,13 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	}
 
 	/**
-	 * <b>获得ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @return ByteBuffer的容量
-	 */
-	public int getByteBufferCapacity() {
-		return byteBufferCapacity;
-	}
-
-	/**
-	 * <b>设置ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 */
-	public void setByteBufferCapacity(int byteBufferCapacity) {
-		this.byteBufferCapacity = byteBufferCapacity;
-	}
-
-	/**
 	 * <b>创建CasingListMessage。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @return CasingListMessage
 	 */
-	protected CasingListMessage<Message> createCasingListMessage() {
-		return new CasingListMessage<>();
-	}
+	protected abstract CasingListMessage<BUF> createCasingListMessage();
 
 	/**
 	 * <b>创建CasingResultMessage。</b>
@@ -203,9 +174,7 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * 无。
 	 * @return CasingResultMessage
 	 */
-	protected CasingResultMessage<Message> createCasingResultMessage() {
-		return new CasingResultMessage<>();
-	}
+	protected abstract CasingResultMessage<BUF, ?> createCasingResultMessage();
 
 	/**
 	 * <b>创建CasingListResultMessage。</b>
@@ -214,34 +183,51 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * 无。
 	 * @return CasingListResultMessage
 	 */
-	protected CasingListResultMessage<Message> createCasingListResultMessage() {
-		return new CasingListResultMessage<>();
-	}
+	protected abstract CasingListResultMessage<BUF, ?> createCasingListResultMessage();
+
+	/**
+	 * <b>创建缓冲区。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 发送和pack报文时使用该缓冲区存放报文数据。
+	 * @return 缓冲区
+	 */
+	protected abstract BUF createBuffer();
+
+	/**
+	 * <b>缓冲区中是否还有未读完的字节。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 缓冲区
+	 * @return 缓冲区中是否还有未读完的字节
+	 */
+	protected abstract boolean hasRemaining(BUF buf);
 
 	/** 
 	 * pack。
 	 * @see org.quincy.rock.comm.MessageParser#pack(java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public ByteBuffer pack(Message value, Map<String, Object> ctx) {
-		ByteBuffer buf = ByteBuffer.allocate(this.byteBufferCapacity);
+	public BUF pack(Message<BUF> value, Map<String, Object> ctx) {
+		BUF buf = this.createBuffer();
 		value.toBinary(buf, ctx);
 		if (casing == 1) {
-			CasingListMessage<?> clm = (CasingListMessage<?>) value;
-			List<? extends Message> list = clm.getData();
+			CasingListMessage clm = (CasingListMessage) value;
+			List<Message> list = clm.getData();
 			if (list != null && !list.isEmpty()) {
 				for (Message data : list) {
 					data.toBinary(buf, ctx);
 				}
 			}
 		} else if (casing == 2) {
-			CasingResultMessage<?> crm = (CasingResultMessage<?>) value;
+			CasingResultMessage crm = (CasingResultMessage) value;
 			Message data = crm.getData();
 			if (data != null)
 				data.toBinary(buf, ctx);
 		} else if (casing == 3) {
-			CasingListResultMessage<?> clrm = (CasingListResultMessage<?>) value;
-			List<? extends Message> list = clrm.getData();
+			CasingListResultMessage clrm = (CasingListResultMessage) value;
+			List<Message> list = clrm.getData();
 			if (list != null && !list.isEmpty()) {
 				for (Message data : list) {
 					data.toBinary(buf, ctx);
@@ -256,32 +242,32 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * @see org.quincy.rock.comm.MessageParser#unpack(java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public Message unpack(ByteBuffer message, Map<String, Object> ctx) {
+	public Message<BUF> unpack(BUF message, Map<String, Object> ctx) {
 		Message vo = null;
 		switch (casing) {
 		case 0:
 			vo = CoreUtil.constructor(messageClass).fromBinary(message, ctx);
 			break;
 		case 1:
-			CasingListMessage<Message> clm = this.createCasingListMessage();
+			CasingListMessage<BUF> clm = this.createCasingListMessage();
 			clm.fromBinary(message, ctx);
-			while (message.hasRemaining()) {
+			while (hasRemaining(message)) {
 				clm.addData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
 			}
 			vo = clm;
 			break;
 		case 2:
-			CasingResultMessage<Message> crm = this.createCasingResultMessage();
+			CasingResultMessage<BUF, ?> crm = this.createCasingResultMessage();
 			crm.fromBinary(message, ctx);
-			if (message.hasRemaining()) {
+			if (hasRemaining(message)) {
 				crm.setData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
 			}
 			vo = crm;
 			break;
 		case 3:
-			CasingListResultMessage<Message> clrm = this.createCasingListResultMessage();
+			CasingListResultMessage<BUF, ?> clrm = this.createCasingListResultMessage();
 			clrm.fromBinary(message, ctx);
-			while (message.hasRemaining()) {
+			while (hasRemaining(message)) {
 				clrm.addData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
 			}
 			vo = clrm;
@@ -290,46 +276,5 @@ public class SimpleBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 			throw new UnsupportException("casing:" + casing);
 		}
 		return vo;
-	}
-
-	/**
-	 * <b>创建SimpleBinaryMessageParser的实例。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param functionCode 功能码
-	 * @param messageClass Message报文实现类
-	 * @param casing 结果嵌套标记(0-对象,1-数组,2-嵌套结果对象,3-嵌套结果数组)。
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 * @return SimpleBinaryMessageParser
-	 */
-	public static <K> SimpleBinaryMessageParser<K> of(K functionCode, Class<? extends Message> messageClass, int casing,
-			int byteBufferCapacity) {
-		SimpleBinaryMessageParser<K> parser = new SimpleBinaryMessageParser<>(functionCode);
-		parser.setMessageClass(messageClass);
-		parser.setCasing(casing);
-		parser.setByteBufferCapacity(byteBufferCapacity);
-		return parser;
-	}
-
-	/**
-	 * <b>创建SimpleBinaryMessageParser的实例。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param functionCode 功能码
-	 * @param contentType 内容类型
-	 * @param messageClass Message报文实现类
-	 * @param casing 结果嵌套标记(0-对象,1-数组,2-嵌套结果对象,3-嵌套结果数组)。
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 * @return SimpleBinaryMessageParser
-	 */
-	public static <K> SimpleBinaryMessageParser<K> of(K functionCode, String contentType,
-			Class<? extends Message> messageClass, int casing, int byteBufferCapacity) {
-		SimpleBinaryMessageParser<K> parser = new SimpleBinaryMessageParser<>(functionCode, contentType);
-		parser.setMessageClass(messageClass);
-		parser.setCasing(casing);
-		parser.setByteBufferCapacity(byteBufferCapacity);
-		return parser;
-	}
+	}	
 }

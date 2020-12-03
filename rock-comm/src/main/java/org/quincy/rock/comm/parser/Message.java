@@ -1,6 +1,5 @@
 package org.quincy.rock.comm.parser;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ import org.quincy.rock.comm.util.CommUtils;
  * @author wks
  * @since 1.0
  */
-public abstract class Message extends QueueMessage {
+public abstract class Message<BUF> extends QueueMessage {
 	/**
 	 * serialVersionUID。
 	 */
@@ -91,7 +90,7 @@ public abstract class Message extends QueueMessage {
 	 * @param ctx 上下文对象
 	 * @return ByteBuf
 	 */
-	public abstract ByteBuffer toBinary(ByteBuffer buf, Map<String, Object> ctx);
+	public abstract BUF toBinary(BUF buf, Map<String, Object> ctx);
 
 	/**
 	 * <b>将二进制报文转换成报文对象。</b>
@@ -102,5 +101,5 @@ public abstract class Message extends QueueMessage {
 	 * @param ctx 上下文对象
 	 * @return this
 	 */
-	public abstract Message fromBinary(ByteBuffer buf, Map<String, Object> ctx);
+	public abstract Message<BUF> fromBinary(BUF buf, Map<String, Object> ctx);
 }

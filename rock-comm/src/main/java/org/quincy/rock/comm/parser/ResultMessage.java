@@ -1,8 +1,5 @@
 package org.quincy.rock.comm.parser;
 
-import java.nio.ByteBuffer;
-import java.util.Map;
-
 /**
  * <b>响应报文。</b>
  * <p><b>详细说明：</b></p>
@@ -19,7 +16,7 @@ import java.util.Map;
  * @author wks
  * @since 1.0
  */
-public class ResultMessage extends Message {
+public abstract class ResultMessage<BUF, R> extends Message<BUF> {
 
 	/**
 	 * serialVersionUID。
@@ -29,7 +26,7 @@ public class ResultMessage extends Message {
 	/**
 	 * 返回的结果代码。
 	 */
-	private byte result;
+	private R result;
 
 	/**
 	 * <b>构造方法。</b>
@@ -48,8 +45,7 @@ public class ResultMessage extends Message {
 	 * 无。
 	 * @param result 返回的结果代码
 	 */
-	public ResultMessage(byte result) {
-		super();
+	public ResultMessage(R result) {
 		this.result = result;
 	}
 
@@ -60,7 +56,7 @@ public class ResultMessage extends Message {
 	 * 无。
 	 * @return 结果代码
 	 */
-	public byte getResult() {
+	public R getResult() {
 		return result;
 	}
 
@@ -71,30 +67,8 @@ public class ResultMessage extends Message {
 	 * 无。
 	 * @param result 结果代码
 	 */
-	public void setResult(byte result) {
+	public void setResult(R result) {
 		this.result = result;
-	}
-
-	/** 
-	 * toBinary。
-	 * @see org.quincy.rock.comm.parser.Message#toBinary(java.nio.ByteBuffer, java.util.Map)
-	 */
-	@Override
-	public ByteBuffer toBinary(ByteBuffer buf, Map<String, Object> ctx) {
-		this.initializeOnce(ctx);
-		buf.put(getResult());
-		return buf;
-	}
-
-	/** 
-	 * fromBinary。
-	 * @see org.quincy.rock.comm.parser.Message#fromBinary(java.nio.ByteBuffer, java.util.Map)
-	 */
-	@Override
-	public Message fromBinary(ByteBuffer buf, Map<String, Object> ctx) {
-		this.initializeOnce(ctx);
-		this.setResult(buf.get());
-		return this;
 	}
 
 	/** 

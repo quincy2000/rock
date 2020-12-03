@@ -19,16 +19,17 @@ import java.util.List;
  * @author wks
  * @since 1.0
  */
-public final class CasingListResultMessage<T extends Message> extends ResultMessage {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class CasingListResultMessage<BUF, R> extends ResultMessage<BUF, R> {
 	/**
 	 * serialVersionUID。
 	 */
 	private static final long serialVersionUID = 1678792415351299696L;
-	
+
 	/**
 	 * 返回的结果数据。
 	 */
-	private List<T> data;
+	private List<Message<BUF>> data;
 
 	/**
 	 * <b>构造方法。</b>
@@ -48,9 +49,9 @@ public final class CasingListResultMessage<T extends Message> extends ResultMess
 	 * @param result 返回的结果代码
 	 * @param data 返回的结果数据
 	 */
-	public CasingListResultMessage(byte result, List<T> data) {
+	public CasingListResultMessage(R result, List<? extends Message<BUF>> data) {
 		super(result);
-		this.data = data;
+		this.data = (List) data;
 	}
 
 	/**
@@ -60,7 +61,7 @@ public final class CasingListResultMessage<T extends Message> extends ResultMess
 	 * 无。
 	 * @return 返回的结果数据
 	 */
-	public List<T> getData() {
+	public List<Message<BUF>> getData() {
 		if (data == null) {
 			data = new ArrayList<>();
 		}
@@ -74,8 +75,8 @@ public final class CasingListResultMessage<T extends Message> extends ResultMess
 	 * 无。
 	 * @param data 返回的结果数据
 	 */
-	public void setData(List<T> data) {
-		this.data = data;
+	public void setData(List<? extends Message<BUF>> data) {
+		this.data = (List) data;
 	}
 
 	/**
@@ -85,7 +86,7 @@ public final class CasingListResultMessage<T extends Message> extends ResultMess
 	 * 无。
 	 * @param data 结果数据
 	 */
-	public void addData(T data) {
+	public void addData(Message<BUF> data) {
 		this.getData().add(data);
 	}
 }

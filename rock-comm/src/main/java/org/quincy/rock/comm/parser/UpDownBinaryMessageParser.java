@@ -1,6 +1,5 @@
 package org.quincy.rock.comm.parser;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ import org.quincy.rock.core.util.CoreUtil;
  * @since 1.0
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteBuffer, Message> {
+public abstract class UpDownBinaryMessageParser<K, BUF> extends AbstractMessageParser<K, BUF, Message<BUF>> {
 	/**
 	 * 上行结果嵌套标记(0-对象,1-数组,2-嵌套结果对象,3-嵌套结果数组)。
 	 */
@@ -47,10 +46,6 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * 是否是客户端。
 	 */
 	private boolean client;
-	/**
-	 * ByteBuffer的容量。
-	 */
-	private int byteBufferCapacity = 4096;
 
 	/** 
 	 * <b>构造方法。</b>
@@ -275,37 +270,13 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	}
 
 	/**
-	 * <b>获得ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @return ByteBuffer的容量
-	 */
-	public int getByteBufferCapacity() {
-		return byteBufferCapacity;
-	}
-
-	/**
-	 * <b>设置ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 */
-	public void setByteBufferCapacity(int byteBufferCapacity) {
-		this.byteBufferCapacity = byteBufferCapacity;
-	}
-
-	/**
 	 * <b>创建CasingListMessage。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @return CasingListMessage
 	 */
-	protected CasingListMessage<Message> createCasingListMessage() {
-		return new CasingListMessage<>();
-	}
+	protected abstract CasingListMessage<BUF> createCasingListMessage();
 
 	/**
 	 * <b>创建CasingResultMessage。</b>
@@ -314,9 +285,7 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * 无。
 	 * @return CasingResultMessage
 	 */
-	protected CasingResultMessage<Message> createCasingResultMessage() {
-		return new CasingResultMessage<>();
-	}
+	protected abstract CasingResultMessage<BUF, ?> createCasingResultMessage();
 
 	/**
 	 * <b>创建CasingListResultMessage。</b>
@@ -325,33 +294,53 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * 无。
 	 * @return CasingListResultMessage
 	 */
-	protected CasingListResultMessage<Message> createCasingListResultMessage() {
-		return new CasingListResultMessage<>();
-	}
+	protected abstract CasingListResultMessage<BUF, ?> createCasingListResultMessage();
+
+	/**
+	 * <b>创建缓冲区。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 发送和pack报文时使用该缓冲区存放报文数据。
+	 * @return 缓冲区
+	 */
+	protected abstract BUF createBuffer();
+
+	/**
+	 * <b>缓冲区中是否还有未读完的字节。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 缓冲区
+	 * @return 缓冲区中是否还有未读完的字节
+	 */
+	protected abstract boolean hasRemaining(BUF buf);
 
 	/** 
 	 * pack。
 	 * @see org.quincy.rock.comm.MessageParser#pack(java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public ByteBuffer pack(Message value, Map<String, Object> ctx) {
+	public BUF pack(Message<BUF> value, Map<String, Object> ctx) {
 		boolean received = Boolean.TRUE.equals(ctx.get(CommUtils.COMM_MSG_RECEIVE_FALG));
 		int casing = client ? (received ? casing4Down : casing4Up) : (received ? casing4Up : casing4Down);
-		ByteBuffer buf = ByteBuffer.allocate(this.byteBufferCapacity);
+		BUF buf = this.createBuffer();
 		value.toBinary(buf, ctx);
 		if (casing == 1) {
-			List<? extends Message> list = ((CasingListMessage<?>) value).getData();
+			CasingListMessage clm = (CasingListMessage) value;
+			List<Message> list = clm.getData();
 			if (list != null && !list.isEmpty()) {
 				for (Message data : list) {
 					data.toBinary(buf, ctx);
 				}
 			}
 		} else if (casing == 2) {
-			Message data = ((CasingResultMessage<?>) value).getData();
+			CasingResultMessage crm = (CasingResultMessage) value;
+			Message data = crm.getData();
 			if (data != null)
 				data.toBinary(buf, ctx);
 		} else if (casing == 3) {
-			List<? extends Message> list = ((CasingListResultMessage<?>) value).getData();
+			CasingListResultMessage clrm = (CasingListResultMessage) value;
+			List<Message> list = clrm.getData();
 			if (list != null && !list.isEmpty()) {
 				for (Message data : list) {
 					data.toBinary(buf, ctx);
@@ -366,7 +355,7 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 	 * @see org.quincy.rock.comm.MessageParser#unpack(java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public Message unpack(ByteBuffer message, Map<String, Object> ctx) {
+	public Message<BUF> unpack(BUF message, Map<String, Object> ctx) {
 		Message vo = null;
 		boolean received = Boolean.TRUE.equals(ctx.get(CommUtils.COMM_MSG_RECEIVE_FALG));
 		int casing = client ? (received ? casing4Down : casing4Up) : (received ? casing4Up : casing4Down);
@@ -377,25 +366,25 @@ public class UpDownBinaryMessageParser<K> extends AbstractMessageParser<K, ByteB
 			vo = CoreUtil.constructor(messageClass).fromBinary(message, ctx);
 			break;
 		case 1:
-			CasingListMessage<Message> clm = this.createCasingListMessage();
+			CasingListMessage<BUF> clm = this.createCasingListMessage();
 			clm.fromBinary(message, ctx);
-			while (message.hasRemaining()) {
+			while (hasRemaining(message)) {
 				clm.addData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
 			}
 			vo = clm;
 			break;
 		case 2:
-			CasingResultMessage<Message> crm = this.createCasingResultMessage();
+			CasingResultMessage<BUF, ?> crm = this.createCasingResultMessage();
 			crm.fromBinary(message, ctx);
-			if (message.hasRemaining()) {
+			if (hasRemaining(message)) {
 				crm.setData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
 			}
 			vo = crm;
 			break;
 		case 3:
-			CasingListResultMessage<Message> clrm = this.createCasingListResultMessage();
+			CasingListResultMessage<BUF, ?> clrm = this.createCasingListResultMessage();
 			clrm.fromBinary(message, ctx);
-			while (message.hasRemaining()) {
+			while (hasRemaining(message)) {
 				clrm.addData(CoreUtil.constructor(messageClass).fromBinary(message, ctx));
 			}
 			vo = clrm;

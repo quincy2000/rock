@@ -1,6 +1,5 @@
 package org.quincy.rock.comm.parser;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,8 @@ import java.util.Map;
  * @author wks
  * @since 1.0
  */
-public final class CasingListMessage<T extends Message> extends Message {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class CasingListMessage<BUF> extends Message<BUF> {
 	/**
 	 * serialVersionUID。
 	 */
@@ -30,7 +30,7 @@ public final class CasingListMessage<T extends Message> extends Message {
 	/**
 	 * 返回的结果数据。
 	 */
-	private List<T> data;
+	private List<Message<BUF>> data;
 
 	/**
 	 * <b>构造方法。</b>
@@ -49,9 +49,9 @@ public final class CasingListMessage<T extends Message> extends Message {
 	 * 无。
 	 * @param data 返回的结果数据
 	 */
-	public CasingListMessage(List<T> data) {
+	public CasingListMessage(List<? extends Message<BUF>> data) {
 		super();
-		this.data = data;
+		this.data = (List) data;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public final class CasingListMessage<T extends Message> extends Message {
 	 * 无。
 	 * @return 返回的结果数据
 	 */
-	public List<T> getData() {
+	public List<Message<BUF>> getData() {
 		if (data == null) {
 			data = new ArrayList<>();
 		}
@@ -75,8 +75,8 @@ public final class CasingListMessage<T extends Message> extends Message {
 	 * 无。
 	 * @param data 返回的结果数据
 	 */
-	public void setData(List<T> data) {
-		this.data = data;
+	public void setData(List<? extends Message<BUF>> data) {
+		this.data = (List) data;
 	}
 
 	/**
@@ -86,26 +86,26 @@ public final class CasingListMessage<T extends Message> extends Message {
 	 * 无。
 	 * @param data 结果数据
 	 */
-	public void addData(T data) {
+	public void addData(Message<BUF> data) {
 		this.getData().add(data);
 	}
 
 	/** 
 	 * toBinary。
-	 * @see org.quincy.rock.comm.parser.Message#toBinary(java.nio.ByteBuffer, java.util.Map)
+	 * @see org.quincy.rock.comm.parser.Message#toBinary(java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public ByteBuffer toBinary(ByteBuffer buf, Map<String, Object> ctx) {
+	public BUF toBinary(BUF buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
 		return buf;
 	}
 
 	/** 
 	 * fromBinary。
-	 * @see org.quincy.rock.comm.parser.Message#fromBinary(java.nio.ByteBuffer, java.util.Map)
+	 * @see org.quincy.rock.comm.parser.Message#fromBinary(java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public Message fromBinary(ByteBuffer buf, Map<String, Object> ctx) {
+	public Message<BUF> fromBinary(BUF buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
 		return this;
 	}

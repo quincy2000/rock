@@ -16,7 +16,7 @@ package org.quincy.rock.comm.parser;
  * @author wks
  * @since 1.0
  */
-public final class CasingResultMessage<T extends Message> extends ResultMessage {
+public abstract class CasingResultMessage<BUF, R> extends ResultMessage<BUF, R> {
 	/**
 	 * serialVersionUID。
 	 */
@@ -25,7 +25,7 @@ public final class CasingResultMessage<T extends Message> extends ResultMessage 
 	/**
 	 * 返回的结果数据。
 	 */
-	private T data;
+	private Message<BUF> data;
 
 	/**
 	 * <b>构造方法。</b>
@@ -45,7 +45,7 @@ public final class CasingResultMessage<T extends Message> extends ResultMessage 
 	 * @param result 返回的结果代码
 	 * @param data 返回的结果数据
 	 */
-	public CasingResultMessage(byte result, T data) {
+	public CasingResultMessage(R result, Message<BUF> data) {
 		super(result);
 		this.data = data;
 	}
@@ -57,7 +57,7 @@ public final class CasingResultMessage<T extends Message> extends ResultMessage 
 	 * 无。
 	 * @return 返回的结果数据
 	 */
-	public T getData() {
+	public Message<BUF> getData() {
 		return data;
 	}
 
@@ -68,7 +68,7 @@ public final class CasingResultMessage<T extends Message> extends ResultMessage 
 	 * 无。
 	 * @param data 返回的结果数据
 	 */
-	public void setData(T data) {
+	public void setData(Message<BUF> data) {
 		this.data = data;
-	}
+	}	
 }
