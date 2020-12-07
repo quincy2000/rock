@@ -103,7 +103,7 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 	 */
 	@Override
 	protected CasingListMessage<ByteBuffer> createCasingListMessage() {
-		return new CasingListMessage<>();
+		return new NioCasingListMessage();
 	}
 
 	/** 

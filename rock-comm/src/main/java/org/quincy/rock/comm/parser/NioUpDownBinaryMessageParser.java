@@ -108,7 +108,7 @@ public class NioUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser<K
 	 */
 	@Override
 	protected CasingListMessage<ByteBuffer> createCasingListMessage() {
-		return new CasingListMessage<>();
+		return new NioCasingListMessage();
 	}
 
 	/** 
