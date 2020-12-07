@@ -487,15 +487,14 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 		 * @see io.netty.channel.ChannelInboundHandlerAdapter#channelRead(io.netty.channel.ChannelHandlerContext, java.lang.Object)
 		 */
 		@Override
-		public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-			if (useByteBuffer && msg instanceof ByteBuf) {
-				msg = ((ByteBuf) msg).nioBuffer();
-			}
+		public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
+			final Object msg = (useByteBuffer && message instanceof ByteBuf) ? ((ByteBuf) message).nioBuffer()
+					: message;
 			try {
 				fireReceiveDataEvent(getChannelTransformer().transform(ctx.channel(), STransformPoint.CHANNEL_READ),
 						msg, FOR_SLICE);
 			} finally {
-				if (!NettyUtil.releaseRC(msg))
+				if (!NettyUtil.releaseRC(message))
 					recorder.write(NettyUtil.REF_CNT_0);
 			}
 		}

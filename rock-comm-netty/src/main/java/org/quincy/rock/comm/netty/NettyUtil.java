@@ -2,6 +2,7 @@ package org.quincy.rock.comm.netty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.quincy.rock.comm.CommunicateException;
@@ -45,7 +46,7 @@ public final class NettyUtil {
 	/**
 	 * 此Key存放解码器解码出来的分隔符。
 	 */
-	public static final AttributeKey<ByteBuf> DELIMITER_FOR_DECODER_KEY= AttributeKey.valueOf("ak_delimiter4Decoder");
+	public static final AttributeKey<ByteBuf> DELIMITER_FOR_DECODER_KEY = AttributeKey.valueOf("ak_delimiter4Decoder");
 	/**
 	 * 使用此Key存放通道时间戳。
 	 */
@@ -104,6 +105,9 @@ public final class NettyUtil {
 		String hex = null;
 		if (data instanceof ByteBuf) {
 			ByteBuf buf = ((ByteBuf) data).slice();
+			hex = NettyUtil.readHex(buf, buf.readableBytes());
+		} else if (data instanceof ByteBuffer) {
+			ByteBuf buf = Unpooled.wrappedBuffer((ByteBuffer) data).slice();
 			hex = NettyUtil.readHex(buf, buf.readableBytes());
 		} else if (data instanceof byte[]) {
 			hex = CoreUtil.byteArray2HexString((byte[]) data);
@@ -725,7 +729,9 @@ public final class NettyUtil {
 	public static Object slice(Object msg) {
 		if (msg instanceof ByteBuf)
 			return ((ByteBuf) msg).slice();
-		else
+		else if (msg instanceof ByteBuffer) {
+			return ((ByteBuffer) msg).slice();
+		} else
 			return msg;
 	}
 
