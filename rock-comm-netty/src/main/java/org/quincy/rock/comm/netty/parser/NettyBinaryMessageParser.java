@@ -1,8 +1,10 @@
 package org.quincy.rock.comm.netty.parser;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.quincy.rock.comm.parser.BinaryMessageParser;
+import org.quincy.rock.comm.parser.Message;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -74,8 +76,7 @@ public abstract class NettyBinaryMessageParser<K> extends BinaryMessageParser<K,
 	 * @param contentType 内容类型
 	 * @param initialCapacity ByteBuf的初始容量
 	 */
-	public NettyBinaryMessageParser(Collection<K> functionCode, Collection<String> contentType,
-			int initialCapacity) {
+	public NettyBinaryMessageParser(Collection<K> functionCode, Collection<String> contentType, int initialCapacity) {
 		super(functionCode, contentType);
 		this.setInitialCapacity(initialCapacity);
 	}
@@ -109,5 +110,19 @@ public abstract class NettyBinaryMessageParser<K> extends BinaryMessageParser<K,
 	@Override
 	protected ByteBuf createBuffer() {
 		return Unpooled.buffer(initialCapacity);
+	}
+
+	/** 
+	 * unpack。
+	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#unpack(java.lang.Object, java.util.Map)
+	 */
+	@Override
+	public Message<ByteBuf> unpack(ByteBuf buf, Map<String, Object> ctx) {
+		buf = buf.retainedSlice();
+		try {
+			return super.unpack(buf, ctx);
+		} finally {
+			buf.release();
+		}
 	}
 }
