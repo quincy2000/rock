@@ -3,9 +3,12 @@ package org.quincy.rock.comm.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import org.quincy.rock.comm.CommunicateException;
+import org.quincy.rock.core.lang.TwoString;
+import org.quincy.rock.core.util.CoreUtil;
 import org.quincy.rock.core.util.StringUtil;
 
 /**
@@ -130,7 +133,7 @@ public class CommUtils {
 	 * 存放接收标志的key(用来区分发送报文还是接受报文)。
 	 */
 	public static final String COMM_MSG_RECEIVE_FALG = "_receive_flag_true";
-	
+
 	/**
 	 * json格式报文类型。
 	 */
@@ -274,5 +277,194 @@ public class CommUtils {
 			}
 		}
 		return (sb.length() == 0 || sb.length() == clsName.length()) ? null : sb.toString();
+	}
+
+	/**
+	 * <b>将原始报文数据转换成十六进制字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param data 原始报文数据
+	 * @return 十六进制字符串
+	 */
+	public static String toHexString(Object data) {
+		String hex = null;
+		if (data instanceof ByteBuffer) {
+			ByteBuffer buf = ((ByteBuffer) data).slice();
+			hex = readHex(buf, buf.remaining());
+		} else if (data instanceof byte[]) {
+			hex = CoreUtil.byteArray2HexString((byte[]) data);
+		} else if (data instanceof String) {
+			hex = data.toString();
+		} else if (data != null) {
+			hex = data.getClass().getName() + ":";
+			try {
+				hex += data.toString();
+			} catch (Exception e) {
+				hex += e.getMessage();
+			}
+		}
+		//
+		return hex;
+	}
+
+	/**
+	 * <b>写时间戳。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 先写入4字节的无符号秒数，然后写入4字节的毫秒数。
+	 * @param buf 字节缓冲区
+	 * @param timestamp 时间戳毫秒数
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeTimestamp(ByteBuffer buf, long timestamp) {
+		long left = timestamp / 1000;
+		long right = timestamp % 1000;
+		buf.putInt((int) left);
+		buf.putInt((int) right);
+		return buf;
+	}
+
+	/**
+	 * <b>读时间戳。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 先读取4字节的无符号秒数，然后读取4字节的毫秒数。
+	 * @param buf 字节缓冲区
+	 * @return 时间戳毫秒数
+	 */
+	public static long readTimestamp(ByteBuffer buf) {
+		return (buf.getInt() & 0xFFFFFFFFL) * 1000 + buf.getInt();
+	}
+
+	/**
+	 * <b>写入重复字节数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param b 字节数据
+	 * @param repeat 重复次数
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeByte(ByteBuffer buf, byte b, int repeat) {
+		for (int i = 0; i < repeat; i++)
+			buf.put(b);
+		return buf;
+	}
+
+	/**
+	 * <b>读字节数组。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param len 读取长度
+	 * @return 字节数组
+	 */
+	public static byte[] readBytes(ByteBuffer buf, int len) {
+		byte[] dst = new byte[len];
+		buf.get(dst, 0, len);
+		return dst;
+	}
+
+	/**
+	 * <b>读剩余的全部字节数组。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @return 字节数组
+	 */
+	public static byte[] readBytes(ByteBuffer buf) {
+		return readBytes(buf, buf.remaining());
+	}
+
+	/**
+	 * <b>writeBCD。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 也支持16进制字符串。
+	 * @param buf ByteBuffer
+	 * @param decimal 十进制数字字符串(len*2)
+	 * @param len 写入字节数
+	 * @return ByteBuf
+	 */
+	public static ByteBuffer writeBCD(ByteBuffer buf, CharSequence decimal, int len) {
+		return writeHex(buf, decimal, len);
+	}
+
+	/**
+	 * <b>readBCD。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 也支持16进制字符串。
+	 * @param buf ByteBuffer
+	 * @param len 读取字节数
+	 * @return 十进制数字字符串(len*2)
+	 */
+	public static String readBCD(ByteBuffer buf, int len) {
+		return readHex(buf, len);
+	}
+
+	/**
+	 * <b>写入16进制。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuf
+	 * @param hex 16进制数字字符串(len*2)
+	 * @param len 写入字节数
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeHex(ByteBuffer buf, CharSequence hex, int len) {
+		if (hex != null && hex.length() > 0 && len > 0) {
+			int valLen = hex.length() >> 1;
+			int mod = hex.length() % 2;
+			if (mod != 0) {
+				hex = new TwoString("0", hex);
+				valLen++;
+			}
+			//
+			int l;
+			if (len > valLen) {
+				writeByte(buf, (byte) 0, len - valLen);
+				l = valLen << 1;
+			} else {
+				l = len << 1;
+			}
+			int hi, lo;
+			for (int i = 0; i < l;) {
+				hi = Character.digit(hex.charAt(i++), 16);
+				lo = Character.digit(hex.charAt(i++), 16);
+				if (hi != 0)
+					hi = hi << 4;
+				buf.put((byte) (hi | lo));
+			}
+		}
+		return buf;
+	}
+
+	/**
+	 * <b>读取16进制。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param len 读取字节数
+	 * @return 16进制数字字符串(len*2)
+	 */
+	public static String readHex(ByteBuffer buf, int len) {
+		StringBuilder sb = new StringBuilder(len << 1);
+		int b;
+		char c;
+		for (int i = 0; i < len; i++) {
+			b = buf.get() & 0xFFFF;
+			c = Character.forDigit(b >>> 4, 16);
+			sb.append(Character.toUpperCase(c));
+			c = Character.forDigit(b & 0x0F, 16);
+			sb.append(Character.toUpperCase(c));
+		}
+		return sb.toString();
 	}
 }
