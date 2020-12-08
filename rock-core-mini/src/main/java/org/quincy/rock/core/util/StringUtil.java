@@ -89,9 +89,17 @@ public abstract class StringUtil {
 	public static final char CHAR_Z = 'z';
 
 	/**
+	 * UTF_8。
+	 */
+	public static final Charset UTF_8 = Charset.forName("UTF-8");
+	/**
+	 * ISO_8859_1。
+	 */
+	public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+	/**
 	 * DEFAULT_ENCODING。
 	 */
-	public static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");
+	public static final Charset DEFAULT_ENCODING = UTF_8;
 
 	/**
 	 * <b>判断字符串是否为空白。</b>
