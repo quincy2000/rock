@@ -118,7 +118,7 @@ public abstract class NettyBinaryMessageParser<K> extends BinaryMessageParser<K,
 	 */
 	@Override
 	public Message<ByteBuf> unpack(ByteBuf buf, Map<String, Object> ctx) {
-		buf = buf.retainedSlice();
+		buf = buf.retain();
 		try {
 			return super.unpack(buf, ctx);
 		} finally {

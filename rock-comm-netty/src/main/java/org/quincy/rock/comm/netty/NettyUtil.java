@@ -1,11 +1,9 @@
 package org.quincy.rock.comm.netty;
 
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import org.quincy.rock.comm.CommunicateException;
 import org.quincy.rock.comm.netty.codec.DefaultDelimiterGetter;
 import org.quincy.rock.comm.util.CommUtils;
 import org.quincy.rock.core.concurrent.Waiter;
@@ -147,28 +145,14 @@ public final class NettyUtil {
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 如果长度不够则前面填充空格。
+	 * 仅支持ISO-8859-1字符集。
 	 * @param buf 字节缓冲区
 	 * @param value 字符串
 	 * @param len 写入长度
 	 * @return ByteBuf
 	 */
-	public static ByteBuf writeChars(ByteBuf buf, CharSequence value, int len) {
-		return writeChars(buf, value, len, StringUtil.CHAR_SPACE, CharsetUtil.UTF_8);
-	}
-
-	/**
-	 * <b>写入定长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 如果长度不够则前面填充空格。
-	 * @param buf 字节缓冲区
-	 * @param value 字符串
-	 * @param len 写入长度
-	 * @param charset 字符集
-	 * @return ByteBuf
-	 */
-	public static ByteBuf writeChars(ByteBuf buf, CharSequence value, int len, Charset charset) {
-		return writeChars(buf, value, len, StringUtil.CHAR_SPACE, charset);
+	public static ByteBuf writeChars(ByteBuf buf, String value, int len) {
+		return writeChars(buf, value, len, StringUtil.CHAR_SPACE);
 	}
 
 	/**
@@ -176,29 +160,14 @@ public final class NettyUtil {
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 前面填充字符到指定长度。
+	 * 仅支持ISO-8859-1字符集。
 	 * @param buf 字节缓冲区
 	 * @param value 字符串
 	 * @param len 写入长度
 	 * @param padding 前面填充字符
 	 * @return ByteBuf
 	 */
-	public static ByteBuf writeChars(ByteBuf buf, CharSequence value, int len, char padding) {
-		return writeChars(buf, value, len, padding, CharsetUtil.UTF_8);
-	}
-
-	/**
-	 * <b>写入定长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 前面填充字符到指定长度。
-	 * @param buf 字节缓冲区
-	 * @param value 字符串
-	 * @param len 写入长度
-	 * @param padding 前面填充字符
-	 * @param charset 字符集
-	 * @return ByteBuf
-	 */
-	public static ByteBuf writeChars(ByteBuf buf, CharSequence value, int len, char padding, Charset charset) {
+	public static ByteBuf writeChars(ByteBuf buf, String value, int len, char padding) {
 		int valSize, padSize;
 		if (value == null || value.length() == 0) {
 			valSize = 0;
@@ -212,8 +181,10 @@ public final class NettyUtil {
 		}
 		if (padSize > 0)
 			writeByte(buf, padding, padSize);
-		if (valSize > 0)
-			buf.writeCharSequence(value.subSequence(0, valSize > len ? len : valSize), charset);
+		if (valSize > 0) {
+			byte[] bs = value.getBytes(StringUtil.ISO_8859_1);
+			buf.writeBytes(bs, 0, valSize);
+		}
 		return buf;
 	}
 
@@ -221,67 +192,28 @@ public final class NettyUtil {
 	 * <b>读取定长字符串。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * 仅支持ISO-8859-1字符集。
 	 * @param buf 字节缓冲区
 	 * @param len 读取的长度
 	 * @return 字符串
 	 */
 	public static String readChars(ByteBuf buf, int len) {
-		return readChars(buf, len, false, CharsetUtil.UTF_8);
+		return readChars(buf, len, false);
 	}
 
 	/**
 	 * <b>读取定长字符串。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * 仅支持ISO-8859-1字符集。
 	 * @param buf 字节缓冲区
 	 * @param len 读取的长度
 	 * @param trim 是否要去掉前导空格
 	 * @return 字符串
 	 */
 	public static String readChars(ByteBuf buf, int len, boolean trim) {
-		return readChars(buf, len, trim, CharsetUtil.UTF_8);
-	}
-
-	/**
-	 * <b>读取定长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param buf 字节缓冲区
-	 * @param len 读取的长度
-	 * @param charset 字符集
-	 * @return 字符串
-	 */
-	public static String readChars(ByteBuf buf, int len, Charset charset) {
-		return readChars(buf, len, false, charset);
-	}
-
-	/**
-	 * <b>读取定长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param buf 字节缓冲区
-	 * @param len 读取的长度
-	 * @param trim 是否要去掉前导空格
-	 * @param charset 字符集
-	 * @return 字符串
-	 */
-	public static String readChars(ByteBuf buf, int len, boolean trim, Charset charset) {
-		CharSequence cs = buf.readCharSequence(len, charset);
-		len = cs.length();
-		if (trim) {
-			int i = 0;
-			while (i < len && cs.charAt(i) == StringUtil.CHAR_SPACE)
-				i++;
-			if (i == len)
-				cs = StringUtil.EMPTY;
-			else if (i != 0)
-				cs = cs.subSequence(i, len);
-		}
-		return cs.toString();
+		String cs = new String(readBytes(buf, len), StringUtil.ISO_8859_1);
+		return trim ? cs.trim() : cs;
 	}
 
 	/**
@@ -293,7 +225,7 @@ public final class NettyUtil {
 	 * @param value 字符串
 	 * @return ByteBuf
 	 */
-	public static ByteBuf writeVarchar(ByteBuf buf, CharSequence value) {
+	public static ByteBuf writeVarchar(ByteBuf buf, String value) {
 		return writeVarchar(buf, value, '\0', CharsetUtil.UTF_8);
 	}
 
@@ -305,40 +237,12 @@ public final class NettyUtil {
 	 * @param buf 字节缓冲区
 	 * @param value 字符串
 	 * @param ec 结束符
-	 * @return ByteBuf
-	 */
-	public static ByteBuf writeVarchar(ByteBuf buf, CharSequence value, char ec) {
-		return writeVarchar(buf, value, ec, CharsetUtil.UTF_8);
-	}
-
-	/**
-	 * <b>写变长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param buf 字节缓冲区
-	 * @param value 字符串
 	 * @param charset 字符集
 	 * @return ByteBuf
 	 */
-	public static ByteBuf writeVarchar(ByteBuf buf, CharSequence value, Charset charset) {
-		return writeVarchar(buf, value, '\0', charset);
-	}
-
-	/**
-	 * <b>写变长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param buf 字节缓冲区
-	 * @param value 字符串
-	 * @param ec 结束符
-	 * @param charset 字符集
-	 * @return ByteBuf
-	 */
-	public static ByteBuf writeVarchar(ByteBuf buf, CharSequence value, char ec, Charset charset) {
+	public static ByteBuf writeVarchar(ByteBuf buf, String value, char ec, Charset charset) {
 		if (value != null && value.length() != 0)
-			buf.writeCharSequence(value, charset);
+			buf.writeBytes(value.getBytes(charset));
 		buf.writeByte(ec);
 		return buf;
 	}
@@ -362,32 +266,6 @@ public final class NettyUtil {
 	 * 无。
 	 * @param buf 字节缓冲区
 	 * @param ec 结束符
-	 * @return 字符串
-	 */
-	public static String readVarchar(ByteBuf buf, char ec) {
-		return readVarchar(buf, ec, CharsetUtil.UTF_8);
-	}
-
-	/**
-	 * <b>读取变长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param buf 字节缓冲区
-	 * @param charset 字符集
-	 * @return 字符串
-	 */
-	public static String readVarchar(ByteBuf buf, Charset charset) {
-		return readVarchar(buf, '\0', charset);
-	}
-
-	/**
-	 * <b>读取变长字符串。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param buf 字节缓冲区
-	 * @param ec 结束符
 	 * @param charset 字符集
 	 * @return 字符串
 	 */
@@ -397,11 +275,7 @@ public final class NettyUtil {
 		while (buf.readableBytes() > 0 && (c = buf.readByte()) != ec) {
 			baos.write(c);
 		}
-		try {
-			return baos.toString(charset.name());
-		} catch (UnsupportedEncodingException e) {
-			throw new CommunicateException(e.getMessage(), e);
-		}
+		return new String(baos.toByteArray(), charset);
 	}
 
 	/**
@@ -553,31 +427,19 @@ public final class NettyUtil {
 	 * <b>将分隔符封装成ByteBuf。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param delimiter 分隔符
-	 * @return 分隔符ByteBuf
-	 */
-	public static ByteBuf wrapDelimiter(String delimiter) {
-		return wrapDelimiter(delimiter, CharsetUtil.UTF_8);
-	}
-
-	/**
-	 * <b>将分隔符封装成ByteBuf。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * 仅支持ISO-8859-1字符集。
 	 * @param delimiter 分隔符
 	 * @param charset 字符集
 	 * @return 分隔符ByteBuf
 	 */
-	public static ByteBuf wrapDelimiter(String delimiter, Charset charset) {
+	public static ByteBuf wrapDelimiter(String delimiter) {
 		ByteBuf buf;
 		if (CoreUtil.isHex(delimiter)) {
 			byte[] arr = CoreUtil.hexString2ByteArray(delimiter.substring(2));
 			buf = Unpooled.wrappedBuffer(arr);
 		} else {
 			int len = delimiter.length();
-			buf = NettyUtil.writeChars(Unpooled.buffer(len, len), delimiter, len, charset);
+			buf = NettyUtil.writeChars(Unpooled.buffer(len, len), delimiter, len);
 		}
 		return buf;
 	}

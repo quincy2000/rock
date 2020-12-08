@@ -162,7 +162,7 @@ public class NettyUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser
 	 */
 	@Override
 	public Message<ByteBuf> unpack(ByteBuf message, Map<String, Object> ctx) {
-		message = message.retainedSlice();
+		message = message.retain();
 		try {
 			return super.unpack(message, ctx);
 		} finally {

@@ -5,7 +5,6 @@ import org.quincy.rock.core.function.Function;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
-import io.netty.util.CharsetUtil;
 
 /**
  * <b>基于单个分隔符的编解码器创建者。</b>
@@ -57,7 +56,7 @@ public class DelimiterCodecCreator extends AbstractDelimiterCodecCreator {
 	 * @param delimiter 分隔符
 	 */
 	public void setDelimiter(String delimiter) {
-		ByteBuf buf = NettyUtil.wrapDelimiter(delimiter, CharsetUtil.UTF_8);
+		ByteBuf buf = NettyUtil.wrapDelimiter(delimiter);
 		delimiter(buf);
 	}
 
