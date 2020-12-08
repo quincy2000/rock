@@ -1,5 +1,7 @@
 package org.quincy.rock.comm.netty.parser;
 
+import java.util.Map;
+
 import org.quincy.rock.comm.parser.CasingListMessage;
 import org.quincy.rock.comm.parser.CasingListResultMessage;
 import org.quincy.rock.comm.parser.CasingResultMessage;
@@ -147,6 +149,20 @@ public class NettySimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser
 	@Override
 	protected boolean hasRemaining(ByteBuf buf) {
 		return buf.readableBytes() > 0;
+	}
+
+	/** 
+	 * unpack。
+	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#unpack(java.lang.Object, java.util.Map)
+	 */
+	@Override
+	public Message<ByteBuf> unpack(ByteBuf message, Map<String, Object> ctx) {
+		message = message.retainedSlice();
+		try {
+			return super.unpack(message, ctx);
+		} finally {
+			message.release();
+		}
 	}
 
 	/**
