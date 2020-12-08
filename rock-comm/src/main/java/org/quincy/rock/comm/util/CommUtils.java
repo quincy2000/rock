@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.quincy.rock.comm.CommunicateException;
@@ -338,16 +339,31 @@ public class CommUtils {
 	}
 
 	/**
-	 * <b>写入重复字节数据。</b>
+	 * <b>写入一个字节。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @param buf ByteBuffer
 	 * @param b 字节数据
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeByte(ByteBuffer buf, int b) {
+		buf.put((byte) b);
+		return buf;
+	}
+
+	/**
+	 * <b>写入重复字节数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param c 字节数据
 	 * @param repeat 重复次数
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeByte(ByteBuffer buf, byte b, int repeat) {
+	public static ByteBuffer writeByte(ByteBuffer buf, int c, int repeat) {
+		byte b = (byte) c;
 		for (int i = 0; i < repeat; i++)
 			buf.put(b);
 		return buf;
@@ -428,7 +444,7 @@ public class CommUtils {
 			//
 			int l;
 			if (len > valLen) {
-				writeByte(buf, (byte) 0, len - valLen);
+				writeByte(buf, 0, len - valLen);
 				l = valLen << 1;
 			} else {
 				l = len << 1;
@@ -466,5 +482,144 @@ public class CommUtils {
 			sb.append(Character.toUpperCase(c));
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * <b>写入定长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 如果长度不够则前面填充空格。
+	 * 仅支持ISO-8859-1字符集。
+	 * @param buf 字节缓冲区
+	 * @param value 字符串
+	 * @param len 写入长度
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeChars(ByteBuffer buf, String value, int len) {
+		return writeChars(buf, value, len, StringUtil.CHAR_SPACE);
+	}
+
+	/**
+	 * <b>写入定长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 前面填充字符到指定长度。
+	 * 仅支持ISO-8859-1字符集。
+	 * @param buf 字节缓冲区
+	 * @param value 字符串
+	 * @param len 写入长度
+	 * @param padding 前面填充字符
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeChars(ByteBuffer buf, String value, int len, char padding) {
+		int valSize, padSize;
+		if (value == null || value.length() == 0) {
+			valSize = 0;
+			padSize = len;
+		} else if (value.length() < len) {
+			valSize = value.length();
+			padSize = len - value.length();
+		} else {
+			valSize = len;
+			padSize = 0;
+		}
+		if (padSize > 0)
+			writeByte(buf, padding, padSize);
+		if (valSize > 0) {
+			byte[] bs = value.getBytes(StringUtil.ISO_8859_1);
+			buf.put(bs, 0, valSize);
+		}
+		return buf;
+	}
+
+	/**
+	 * <b>读取定长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 仅支持ISO-8859-1字符集。
+	 * @param buf 字节缓冲区
+	 * @param len 读取的长度
+	 * @return 字符串
+	 */
+	public static String readChars(ByteBuffer buf, int len) {
+		return readChars(buf, len, false);
+	}
+
+	/**
+	 * <b>读取定长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 仅支持ISO-8859-1字符集。
+	 * @param buf 字节缓冲区
+	 * @param len 读取的长度
+	 * @param trim 是否要去掉前导空格
+	 * @return 字符串
+	 */
+	public static String readChars(ByteBuffer buf, int len, boolean trim) {
+		String cs = new String(readBytes(buf, len), StringUtil.ISO_8859_1);
+		return trim ? cs.trim() : cs;
+	}
+
+	/**
+	 * <b>写变长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 字节缓冲区
+	 * @param value 字符串
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeVarchar(ByteBuffer buf, String value) {
+		return writeVarchar(buf, value, '\0', StringUtil.UTF_8);
+	}
+
+	/**
+	 * <b>写变长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 字节缓冲区
+	 * @param value 字符串
+	 * @param ec 结束符
+	 * @param charset 字符集
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeVarchar(ByteBuffer buf, String value, char ec, Charset charset) {
+		if (value != null && value.length() != 0) {
+			buf.put(value.getBytes(charset));
+		}
+		writeByte(buf, ec);
+		return buf;
+	}
+
+	/**
+	 * <b>读取变长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 字节缓冲区
+	 * @return 字符串
+	 */
+	public static String readVarchar(ByteBuffer buf) {
+		return readVarchar(buf, '\0', StringUtil.UTF_8);
+	}
+
+	/**
+	 * <b>读取变长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 字节缓冲区
+	 * @param ec 结束符
+	 * @param charset 字符集
+	 * @return 字符串
+	 */
+	public static String readVarchar(ByteBuffer buf, char ec, Charset charset) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte c;
+		while (buf.hasRemaining() && (c = buf.get()) != ec) {
+			baos.write(c);
+		}
+		return new String(baos.toByteArray(), charset);
 	}
 }
