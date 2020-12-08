@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 
 import org.quincy.rock.comm.CommunicateException;
 import org.quincy.rock.comm.netty.codec.DefaultDelimiterGetter;
+import org.quincy.rock.comm.util.CommUtils;
 import org.quincy.rock.core.concurrent.Waiter;
 import org.quincy.rock.core.lang.Getter;
 import org.quincy.rock.core.lang.TwoString;
@@ -105,22 +106,9 @@ public final class NettyUtil {
 		String hex = null;
 		if (data instanceof ByteBuf) {
 			ByteBuf buf = ((ByteBuf) data).slice();
-			hex = NettyUtil.readHex(buf, buf.readableBytes());
-		} else if (data instanceof ByteBuffer) {
-			ByteBuf buf = Unpooled.wrappedBuffer((ByteBuffer) data).slice();
-			hex = NettyUtil.readHex(buf, buf.readableBytes());
-		} else if (data instanceof byte[]) {
-			hex = CoreUtil.byteArray2HexString((byte[]) data);
-		} else if (data instanceof String) {
-			hex = data.toString();
-		} else if (data != null) {
-			hex = data.getClass().getName() + ":";
-			try {
-				hex += data.toString();
-			} catch (Exception e) {
-				hex += e.getMessage();
-			}
-		}
+			hex = readHex(buf, buf.readableBytes());
+		} else
+			hex = CommUtils.toHexString(data);
 		//
 		return hex;
 	}
