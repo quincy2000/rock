@@ -55,6 +55,26 @@ public abstract class NioUtils {
 	}
 
 	/**
+	 * <b>确保缓冲区容量。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 实现缓冲区的自动增长逻辑。
+	 * @param buf 缓冲区
+	 * @param dataSize 待放入的数据字节数
+	 * @return 足够容量的缓冲区
+	 */
+	public static ByteBuffer ensureCapacity(ByteBuffer buf, int dataSize) {
+		if (buf.remaining() < dataSize) {
+			ByteBuffer newBuf = ByteBuffer.allocate((buf.capacity() + dataSize) * 3 / 2);
+			buf.flip();
+			newBuf.put(buf);
+			return newBuf;
+		} else {
+			return buf;
+		}
+	}
+
+	/**
 	 * <b>写时间戳。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -64,6 +84,7 @@ public abstract class NioUtils {
 	 * @return ByteBuffer
 	 */
 	public static ByteBuffer writeTimestamp(ByteBuffer buf, long timestamp) {
+		buf = ensureCapacity(buf, 8);
 		long left = timestamp / 1000;
 		long right = timestamp % 1000;
 		buf.putInt((int) left);
