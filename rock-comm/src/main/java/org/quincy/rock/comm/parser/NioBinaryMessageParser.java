@@ -2,6 +2,7 @@ package org.quincy.rock.comm.parser;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * <b>NioBinaryMessageParser。</b>
@@ -20,20 +21,18 @@ import java.util.Collection;
  * @since 1.0
  */
 public abstract class NioBinaryMessageParser<K> extends BinaryMessageParser<K, ByteBuffer> {
-	/**
-	 * ByteBuffer的容量。
-	 */
-	private int byteBufferCapacity = 4096;
-
+	
 	/**
 	 * <b>构造方法。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
+	 * @param functionCode 功能码
 	 * @param contentType 内容类型
+	 * @param initialCapacity Buffer的初始容量
 	 */
-	public NioBinaryMessageParser(Collection<String> contentType) {
-		this(contentType, 4096);
+	public NioBinaryMessageParser(Collection<K> functionCode, Collection<String> contentType, int initialCapacity) {
+		super(functionCode, contentType, initialCapacity);
 	}
 
 	/**
@@ -45,64 +44,49 @@ public abstract class NioBinaryMessageParser<K> extends BinaryMessageParser<K, B
 	 * @param contentType 内容类型
 	 */
 	public NioBinaryMessageParser(Collection<K> functionCode, Collection<String> contentType) {
-		this(functionCode, contentType, 4096);
-	}
-
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param contentType 内容类型
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 */
-	public NioBinaryMessageParser(Collection<String> contentType, int byteBufferCapacity) {
-		super(contentType);
-		this.setByteBufferCapacity(byteBufferCapacity);
-	}
-
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param functionCode 功能码
-	 * @param contentType 内容类型
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 */
-	public NioBinaryMessageParser(Collection<K> functionCode, Collection<String> contentType, int byteBufferCapacity) {
 		super(functionCode, contentType);
-		this.setByteBufferCapacity(byteBufferCapacity);
 	}
 
 	/**
-	 * <b>获得ByteBuffer的容量。</b>
+	 * <b>构造方法。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @return ByteBuffer的容量
+	 * 无。
+	 * @param contentType 内容类型
+	 * @param initialCapacity Buffer的初始容量
 	 */
-	public int getByteBufferCapacity() {
-		return byteBufferCapacity;
+	public NioBinaryMessageParser(Collection<String> contentType, int initialCapacity) {
+		super(contentType, initialCapacity);
 	}
 
 	/**
-	 * <b>设置ByteBuffer的容量。</b>
+	 * <b>构造方法。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @param byteBufferCapacity ByteBuffer的容量
+	 * 无。
+	 * @param contentType 内容类型
 	 */
-	public void setByteBufferCapacity(int byteBufferCapacity) {
-		this.byteBufferCapacity = byteBufferCapacity;
+	public NioBinaryMessageParser(Collection<String> contentType) {
+		super(contentType);
 	}
 
 	/** 
 	 * createBuffer。
-	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#createBuffer()
+	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#createBuffer(int)
 	 */
 	@Override
-	protected ByteBuffer createBuffer() {
-		return ByteBuffer.allocate(this.getByteBufferCapacity());
+	protected ByteBuffer createBuffer(int initialCapacity) {
+		return ByteBuffer.allocate(initialCapacity);
+	}
+
+	/** 
+	 * pack。
+	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#pack(org.quincy.rock.comm.parser.Message, java.util.Map)
+	 */
+	@Override
+	public ByteBuffer pack(Message<ByteBuffer> value, Map<String, Object> ctx) {
+		ByteBuffer buf=super.pack(value, ctx);
+		buf.flip();
+		return buf;
 	}
 }

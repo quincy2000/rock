@@ -1,6 +1,7 @@
 package org.quincy.rock.comm.parser;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
 
 /**
  * <b>NioSimpleBinaryMessageParser。</b>
@@ -20,10 +21,6 @@ import java.nio.ByteBuffer;
  */
 @SuppressWarnings("rawtypes")
 public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K, ByteBuffer> {
-	/**
-	 * ByteBuffer的容量。
-	 */
-	private int byteBufferCapacity = 4096;
 
 	/**
 	 * <b>构造方法。</b>
@@ -75,28 +72,6 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 		super(functionCode);
 	}
 
-	/**
-	 * <b>获得ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @return ByteBuffer的容量
-	 */
-	public int getByteBufferCapacity() {
-		return byteBufferCapacity;
-	}
-
-	/**
-	 * <b>设置ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 */
-	public void setByteBufferCapacity(int byteBufferCapacity) {
-		this.byteBufferCapacity = byteBufferCapacity;
-	}
-
 	/** 
 	 * createCasingListMessage。
 	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createCasingListMessage()
@@ -126,11 +101,11 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 
 	/** 
 	 * createBuffer。
-	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createBuffer()
+	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createBuffer(int)
 	 */
 	@Override
-	protected ByteBuffer createBuffer() {
-		return ByteBuffer.allocate(this.getByteBufferCapacity());
+	protected ByteBuffer createBuffer(int initialCapacity) {
+		return ByteBuffer.allocate(initialCapacity);
 	}
 
 	/** 
@@ -140,6 +115,17 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 	@Override
 	protected boolean hasRemaining(ByteBuffer buf) {
 		return buf.hasRemaining();
+	}
+
+	/** 
+	 * pack。
+	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#pack(org.quincy.rock.comm.parser.Message, java.util.Map)
+	 */
+	@Override
+	public ByteBuffer pack(Message<ByteBuffer> value, Map<String, Object> ctx) {
+		ByteBuffer buf = super.pack(value, ctx);
+		buf.flip();
+		return buf;
 	}
 
 	/**
@@ -152,13 +138,13 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 	 * @param casing 结果嵌套标记(0-对象,1-数组,2-嵌套结果对象,3-嵌套结果数组)。
 	 * @param byteBufferCapacity ByteBuffer的容量
 	 * @return SimpleBinaryMessageParser
-	 */	
+	 */
 	public static <K> SimpleBinaryMessageParser<K, ByteBuffer> of(K functionCode, Class<? extends Message> messageClass,
 			int casing, int byteBufferCapacity) {
 		NioSimpleBinaryMessageParser<K> parser = new NioSimpleBinaryMessageParser<>(functionCode);
 		parser.setMessageClass(messageClass);
 		parser.setCasing(casing);
-		parser.setByteBufferCapacity(byteBufferCapacity);
+		parser.setInitialCapacity(byteBufferCapacity);
 		return parser;
 	}
 
@@ -179,7 +165,7 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 		NioSimpleBinaryMessageParser<K> parser = new NioSimpleBinaryMessageParser<>(functionCode, contentType);
 		parser.setMessageClass(messageClass);
 		parser.setCasing(casing);
-		parser.setByteBufferCapacity(byteBufferCapacity);
+		parser.setInitialCapacity(byteBufferCapacity);
 		return parser;
 	}
 }

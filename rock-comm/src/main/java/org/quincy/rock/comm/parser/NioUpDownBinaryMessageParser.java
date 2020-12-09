@@ -1,6 +1,7 @@
 package org.quincy.rock.comm.parser;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
 
 /**
  * <b>NioUpDownBinaryMessageParser。</b>
@@ -19,10 +20,6 @@ import java.nio.ByteBuffer;
  * @since 1.0
  */
 public class NioUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser<K, ByteBuffer> {
-	/**
-	 * ByteBuffer的容量。
-	 */
-	private int byteBufferCapacity = 4096;
 
 	/**
 	 * <b>构造方法。</b>
@@ -80,28 +77,6 @@ public class NioUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser<K
 		super(functionCode);
 	}
 
-	/**
-	 * <b>获得ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @return ByteBuffer的容量
-	 */
-	public int getByteBufferCapacity() {
-		return byteBufferCapacity;
-	}
-
-	/**
-	 * <b>设置ByteBuffer的容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuffer报文缓冲区。
-	 * @param byteBufferCapacity ByteBuffer的容量
-	 */
-	public void setByteBufferCapacity(int byteBufferCapacity) {
-		this.byteBufferCapacity = byteBufferCapacity;
-	}
-
 	/** 
 	 * createCasingListMessage。
 	 * @see org.quincy.rock.comm.parser.UpDownBinaryMessageParser#createCasingListMessage()
@@ -131,11 +106,11 @@ public class NioUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser<K
 
 	/** 
 	 * createBuffer。
-	 * @see org.quincy.rock.comm.parser.UpDownBinaryMessageParser#createBuffer()
+	 * @see org.quincy.rock.comm.parser.UpDownBinaryMessageParser#createBuffer(int)
 	 */
 	@Override
-	protected ByteBuffer createBuffer() {
-		return ByteBuffer.allocate(this.getByteBufferCapacity());
+	protected ByteBuffer createBuffer(int initialCapacity) {
+		return ByteBuffer.allocate(initialCapacity);
 	}
 
 	/** 
@@ -147,4 +122,14 @@ public class NioUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser<K
 		return buf.hasRemaining();
 	}
 
+	/** 
+	 * pack。
+	 * @see org.quincy.rock.comm.parser.UpDownBinaryMessageParser#pack(org.quincy.rock.comm.parser.Message, java.util.Map)
+	 */
+	@Override
+	public ByteBuffer pack(Message<ByteBuffer> value, Map<String, Object> ctx) {
+		ByteBuffer buf = super.pack(value, ctx);
+		buf.flip();
+		return buf;
+	}
 }

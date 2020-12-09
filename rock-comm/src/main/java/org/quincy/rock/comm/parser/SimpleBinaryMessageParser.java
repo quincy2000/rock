@@ -34,6 +34,10 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	 * Message报文实现类。
 	 */
 	private Class<? extends Message> messageClass;
+	/**
+	 * Buffer的初始容量。
+	 */
+	private int initialCapacity = 256;
 
 	/**
 	 * <b>构造方法。</b>
@@ -159,6 +163,28 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	}
 
 	/**
+	 * <b>获得Buffer的初始容量。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * pack报文时使用该参数值创建报文缓冲区。
+	 * @return Buffer的初始容量
+	 */
+	public int getInitialCapacity() {
+		return initialCapacity;
+	}
+
+	/**
+	 * <b>设置Buffer的初始容量。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * pack报文时使用该参数值创建报文缓冲区。。
+	 * @param initialCapacity Buffer的初始容量
+	 */
+	public void setInitialCapacity(int initialCapacity) {
+		this.initialCapacity = initialCapacity;
+	}
+
+	/**
 	 * <b>创建CasingListMessage。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -190,9 +216,10 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 发送和pack报文时使用该缓冲区存放报文数据。
+	 * @param initialCapacity Buffer的初始容量
 	 * @return 缓冲区
 	 */
-	protected abstract BUF createBuffer();
+	protected abstract BUF createBuffer(int initialCapacity);
 
 	/**
 	 * <b>缓冲区中是否还有未读完的字节。</b>
@@ -210,27 +237,28 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	 */
 	@Override
 	public BUF pack(Message<BUF> value, Map<String, Object> ctx) {
-		BUF buf = this.createBuffer();
-		value.toBinary(buf, ctx);
+		Integer initSize = (Integer) ctx.get(CommUtils.COMM_BUFFER_INIT_SIZE);
+		BUF buf = this.createBuffer(initSize == null ? initialCapacity : initSize);
+		buf = value.toBinary(buf, ctx);
 		if (casing == 1) {
 			CasingListMessage clm = (CasingListMessage) value;
 			List<Message> list = clm.getData();
 			if (list != null && !list.isEmpty()) {
-				for (Message data : list) {
-					data.toBinary(buf, ctx);
+				for (Message<BUF> data : list) {
+					buf = data.toBinary(buf, ctx);
 				}
 			}
 		} else if (casing == 2) {
 			CasingResultMessage crm = (CasingResultMessage) value;
-			Message data = crm.getData();
+			Message<BUF> data = crm.getData();
 			if (data != null)
-				data.toBinary(buf, ctx);
+				buf = data.toBinary(buf, ctx);
 		} else if (casing == 3) {
 			CasingListResultMessage clrm = (CasingListResultMessage) value;
 			List<Message> list = clrm.getData();
 			if (list != null && !list.isEmpty()) {
-				for (Message data : list) {
-					data.toBinary(buf, ctx);
+				for (Message<BUF> data : list) {
+					buf = data.toBinary(buf, ctx);
 				}
 			}
 		}
@@ -276,5 +304,5 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 			throw new UnsupportException("casing:" + casing);
 		}
 		return vo;
-	}	
+	}
 }

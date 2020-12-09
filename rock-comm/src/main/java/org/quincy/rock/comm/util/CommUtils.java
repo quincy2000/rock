@@ -134,6 +134,10 @@ public class CommUtils {
 	 * 存放接收标志的key(用来区分发送报文还是接受报文)。
 	 */
 	public static final String COMM_MSG_RECEIVE_FALG = "_receive_flag_true";
+	/**
+	 * 存放报文(正文)缓冲区初始大小。
+	 */
+	public static final String COMM_BUFFER_INIT_SIZE = "_buffer_init_size";
 
 	/**
 	 * json格式报文类型。
