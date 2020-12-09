@@ -29,10 +29,6 @@ import io.netty.buffer.Unpooled;
  */
 @SuppressWarnings("rawtypes")
 public class NettySimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K, ByteBuf> {
-	/**
-	 * ByteBuf的初始容量。
-	 */
-	private int initialCapacity = 256;
 
 	/**
 	 * <b>构造方法。</b>
@@ -84,28 +80,6 @@ public class NettySimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser
 		super(functionCode);
 	}
 
-	/**
-	 * <b>获得ByteBuf的初始容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuf报文缓冲区。
-	 * @return ByteBuf的初始容量
-	 */
-	public int getInitialCapacity() {
-		return initialCapacity;
-	}
-
-	/**
-	 * <b>设置ByteBuf的初始容量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * pack报文时使用该参数值创建ByteBuf报文缓冲区。
-	 * @param initialCapacity ByteBuf的初始容量
-	 */
-	public void setInitialCapacity(int initialCapacity) {
-		this.initialCapacity = initialCapacity;
-	}
-
 	/** 
 	 * createCasingListMessage。
 	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createCasingListMessage()
@@ -135,10 +109,10 @@ public class NettySimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser
 
 	/** 
 	 * createBuffer。
-	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createBuffer()
+	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createBuffer(int)
 	 */
 	@Override
-	protected ByteBuf createBuffer() {
+	protected ByteBuf createBuffer(int initialCapacity) {
 		return Unpooled.buffer(initialCapacity);
 	}
 

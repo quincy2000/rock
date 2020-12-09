@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.quincy.rock.comm.netty.codec.DefaultDelimiterGetter;
-import org.quincy.rock.comm.util.CommUtils;
+import org.quincy.rock.comm.util.NioUtils;
 import org.quincy.rock.core.concurrent.Waiter;
 import org.quincy.rock.core.lang.Getter;
 import org.quincy.rock.core.lang.TwoString;
@@ -106,7 +106,7 @@ public final class NettyUtil {
 			ByteBuf buf = ((ByteBuf) data).slice();
 			hex = readHex(buf, buf.readableBytes());
 		} else
-			hex = CommUtils.toHexString(data);
+			hex = NioUtils.toHexString(data);
 		//
 		return hex;
 	}
