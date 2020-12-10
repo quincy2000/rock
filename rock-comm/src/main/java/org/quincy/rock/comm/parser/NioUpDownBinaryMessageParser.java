@@ -133,4 +133,14 @@ public class NioUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser<K
 		buf.flip();
 		return buf;
 	}
+
+	/** 
+	 * unpack。
+	 * @see org.quincy.rock.comm.parser.UpDownBinaryMessageParser#unpack(java.lang.Object, java.util.Map)
+	 */
+	@Override
+	public Message<ByteBuffer> unpack(ByteBuffer buf, Map<String, Object> ctx) {
+		buf = buf.order(isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+		return super.unpack(buf, ctx);
+	}
 }

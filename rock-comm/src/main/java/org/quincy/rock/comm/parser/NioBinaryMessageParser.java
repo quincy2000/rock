@@ -90,4 +90,14 @@ public abstract class NioBinaryMessageParser<K> extends BinaryMessageParser<K, B
 		buf.flip();
 		return buf;
 	}
+
+	/** 
+	 * unpack。
+	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#unpack(java.lang.Object, java.util.Map)
+	 */
+	@Override
+	public Message<ByteBuffer> unpack(ByteBuffer buf, Map<String, Object> ctx) {
+		buf = buf.order(isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+		return super.unpack(buf, ctx);
+	}
 }
