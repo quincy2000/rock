@@ -1,6 +1,7 @@
 package org.quincy.rock.comm.parser;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Collection;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import java.util.Map;
  * @since 1.0
  */
 public abstract class NioBinaryMessageParser<K> extends BinaryMessageParser<K, ByteBuffer> {
-	
+
 	/**
 	 * <b>构造方法。</b>
 	 * <p><b>详细说明：</b></p>
@@ -72,11 +73,11 @@ public abstract class NioBinaryMessageParser<K> extends BinaryMessageParser<K, B
 
 	/** 
 	 * createBuffer。
-	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#createBuffer(int)
+	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#createBuffer(int, boolean)
 	 */
 	@Override
-	protected ByteBuffer createBuffer(int initialCapacity) {
-		return ByteBuffer.allocate(initialCapacity);
+	protected ByteBuffer createBuffer(int initialCapacity, boolean bigEndian) {
+		return ByteBuffer.allocate(initialCapacity).order(bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 	}
 
 	/** 
@@ -85,7 +86,7 @@ public abstract class NioBinaryMessageParser<K> extends BinaryMessageParser<K, B
 	 */
 	@Override
 	public ByteBuffer pack(Message<ByteBuffer> value, Map<String, Object> ctx) {
-		ByteBuffer buf=super.pack(value, ctx);
+		ByteBuffer buf = super.pack(value, ctx);
 		buf.flip();
 		return buf;
 	}

@@ -1,5 +1,6 @@
 package org.quincy.rock.comm.netty.parser;
 
+import java.nio.ByteOrder;
 import java.util.Map;
 
 import org.quincy.rock.comm.parser.CasingListMessage;
@@ -109,11 +110,12 @@ public class NettySimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser
 
 	/** 
 	 * createBuffer。
-	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createBuffer(int)
+	 * @see org.quincy.rock.comm.parser.SimpleBinaryMessageParser#createBuffer(int, boolean)
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
-	protected ByteBuf createBuffer(int initialCapacity) {
-		return Unpooled.buffer(initialCapacity);
+	protected ByteBuf createBuffer(int initialCapacity, boolean bigEndian) {
+		return Unpooled.buffer(initialCapacity).order(bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 	}
 
 	/** 
