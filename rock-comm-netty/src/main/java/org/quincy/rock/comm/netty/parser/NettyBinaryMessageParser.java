@@ -26,6 +26,7 @@ import io.netty.buffer.Unpooled;
  * @author wks
  * @since 1.0
  */
+@SuppressWarnings("deprecation")
 public abstract class NettyBinaryMessageParser<K> extends BinaryMessageParser<K, ByteBuf> {
 
 	/**
@@ -80,7 +81,6 @@ public abstract class NettyBinaryMessageParser<K> extends BinaryMessageParser<K,
 	 * createBuffer。
 	 * @see org.quincy.rock.comm.parser.BinaryMessageParser#createBuffer(int, boolean)
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	protected ByteBuf createBuffer(int initialCapacity, boolean bigEndian) {
 		return Unpooled.buffer(initialCapacity).order(bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
@@ -94,7 +94,7 @@ public abstract class NettyBinaryMessageParser<K> extends BinaryMessageParser<K,
 	public Message<ByteBuf> unpack(ByteBuf buf, Map<String, Object> ctx) {
 		buf = buf.retain();
 		try {
-			return super.unpack(buf, ctx);
+			return super.unpack(buf.order(isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN), ctx);
 		} finally {
 			buf.release();
 		}
