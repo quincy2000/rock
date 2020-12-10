@@ -26,6 +26,10 @@ public abstract class BinaryMessageParser<K, BUF> extends MessageParser4Suffix<K
 	 * Buffer的初始容量。
 	 */
 	private int initialCapacity = 256;
+	/**
+	 * 是否是大端协议。
+	 */
+	private boolean bigEndian = true;
 
 	/**
 	 * <b>构造方法。</b>
@@ -37,7 +41,7 @@ public abstract class BinaryMessageParser<K, BUF> extends MessageParser4Suffix<K
 	public BinaryMessageParser(Collection<String> contentType) {
 		super(contentType);
 	}
-	
+
 	/**
 	 * <b>构造方法。</b>
 	 * <p><b>详细说明：</b></p>
@@ -58,11 +62,11 @@ public abstract class BinaryMessageParser<K, BUF> extends MessageParser4Suffix<K
 	 * @param contentType 内容类型
 	 * @param initialCapacity Buffer的初始容量
 	 */
-	public BinaryMessageParser(Collection<String> contentType,int initialCapacity) {
+	public BinaryMessageParser(Collection<String> contentType, int initialCapacity) {
 		super(contentType);
 		this.setInitialCapacity(initialCapacity);
 	}
-	
+
 	/**
 	 * <b>构造方法。</b>
 	 * <p><b>详细说明：</b></p>
@@ -72,11 +76,11 @@ public abstract class BinaryMessageParser<K, BUF> extends MessageParser4Suffix<K
 	 * @param contentType 内容类型
 	 * @param initialCapacity Buffer的初始容量
 	 */
-	public BinaryMessageParser(Collection<K> functionCode, Collection<String> contentType,int initialCapacity) {
+	public BinaryMessageParser(Collection<K> functionCode, Collection<String> contentType, int initialCapacity) {
 		super(functionCode, contentType);
 		this.setInitialCapacity(initialCapacity);
 	}
-	
+
 	/**
 	 * <b>获得Buffer的初始容量。</b>
 	 * <p><b>详细说明：</b></p>
@@ -100,14 +104,37 @@ public abstract class BinaryMessageParser<K, BUF> extends MessageParser4Suffix<K
 	}
 
 	/**
+	 * <b>是否是大端协议。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否是大端协议
+	 */
+	public boolean isBigEndian() {
+		return bigEndian;
+	}
+
+	/**
+	 * <b>是否是大端协议。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param bigEndian 是否是大端协议
+	 */
+	public void setBigEndian(boolean bigEndian) {
+		this.bigEndian = bigEndian;
+	}
+
+	/**
 	 * <b>创建缓冲区。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 发送和pack报文时使用该缓冲区存放报文数据。
 	 * @param initialCapacity Buffer的初始容量
+	 * @param bigEndian 是否是大端协议
 	 * @return 缓冲区
 	 */
-	protected abstract BUF createBuffer(int initialCapacity);
+	protected abstract BUF createBuffer(int initialCapacity, boolean bigEndian);
 
 	/**
 	 * <b>创建Message的新实例。</b>
@@ -125,7 +152,7 @@ public abstract class BinaryMessageParser<K, BUF> extends MessageParser4Suffix<K
 	@Override
 	public BUF pack(Message<BUF> value, Map<String, Object> ctx) {
 		Integer initSize = (Integer) ctx.get(CommUtils.COMM_BUFFER_INIT_SIZE);
-		BUF buf = this.createBuffer(initSize == null ? initialCapacity : initSize);
+		BUF buf = this.createBuffer(initSize == null ? initialCapacity : initSize, bigEndian);
 		buf = value.toBinary(buf, ctx);
 		return buf;
 	}

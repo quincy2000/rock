@@ -102,8 +102,83 @@ public abstract class NioUtils {
 	 */
 	public static long readTimestamp(ByteBuffer buf) {
 		return (buf.getInt() & 0xFFFFFFFFL) * 1000 + buf.getInt();
+	}	
+
+	/**
+	 * <b>写入双精度数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param value 双精度数据
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeDouble(ByteBuffer buf, double value) {
+		buf = ensureCapacity(buf, 8);
+		buf.putDouble(value);
+		return buf;
 	}
 
+	/**
+	 * <b>写入单精度数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param value 单精度数据
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeFloat(ByteBuffer buf, float value) {
+		buf = ensureCapacity(buf, 4);
+		buf.putFloat(value);
+		return buf;
+	}
+
+	/**
+	 * <b>写入长整型数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param value 长整型数据
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeLong(ByteBuffer buf, long value) {
+		buf = ensureCapacity(buf, 8);
+		buf.putLong(value);
+		return buf;
+	}
+	
+	/**
+	 * <b>写入整型数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param value 整型数据
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeInt(ByteBuffer buf, int value) {
+		buf = ensureCapacity(buf, 4);
+		buf.putInt(value);
+		return buf;
+	}
+	
+	/**
+	 * <b>写入短整型数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param value 短整型数据
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeShort(ByteBuffer buf, int value) {
+		buf = ensureCapacity(buf, 2);
+		buf.putShort((short)value);
+		return buf;
+	}
+	
 	/**
 	 * <b>写入一个字节。</b>
 	 * <p><b>详细说明：</b></p>
@@ -114,6 +189,7 @@ public abstract class NioUtils {
 	 * @return ByteBuffer
 	 */
 	public static ByteBuffer writeByte(ByteBuffer buf, int b) {
+		buf = ensureCapacity(buf, 1);
 		buf.put((byte) b);
 		return buf;
 	}
@@ -129,6 +205,7 @@ public abstract class NioUtils {
 	 * @return ByteBuffer
 	 */
 	public static ByteBuffer writeByte(ByteBuffer buf, int c, int repeat) {
+		buf = ensureCapacity(buf, repeat);
 		byte b = (byte) c;
 		for (int i = 0; i < repeat; i++)
 			buf.put(b);

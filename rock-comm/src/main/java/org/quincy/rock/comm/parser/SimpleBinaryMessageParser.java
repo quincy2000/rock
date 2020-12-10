@@ -38,6 +38,10 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	 * Buffer的初始容量。
 	 */
 	private int initialCapacity = 256;
+	/**
+	 * 是否是大端协议。
+	 */
+	private boolean bigEndian = true;
 
 	/**
 	 * <b>构造方法。</b>
@@ -185,6 +189,28 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	}
 
 	/**
+	 * <b>是否是大端协议。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否是大端协议
+	 */
+	public boolean isBigEndian() {
+		return bigEndian;
+	}
+
+	/**
+	 * <b>是否是大端协议。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param bigEndian 是否是大端协议
+	 */
+	public void setBigEndian(boolean bigEndian) {
+		this.bigEndian = bigEndian;
+	}
+
+	/**
 	 * <b>创建CasingListMessage。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -217,9 +243,10 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	 * <!-- 在此添加详细说明 -->
 	 * 发送和pack报文时使用该缓冲区存放报文数据。
 	 * @param initialCapacity Buffer的初始容量
+	 * @param bigEndian 是否是大端协议
 	 * @return 缓冲区
 	 */
-	protected abstract BUF createBuffer(int initialCapacity);
+	protected abstract BUF createBuffer(int initialCapacity, boolean bigEndian);
 
 	/**
 	 * <b>缓冲区中是否还有未读完的字节。</b>
@@ -238,7 +265,7 @@ public abstract class SimpleBinaryMessageParser<K, BUF> extends AbstractMessageP
 	@Override
 	public BUF pack(Message<BUF> value, Map<String, Object> ctx) {
 		Integer initSize = (Integer) ctx.get(CommUtils.COMM_BUFFER_INIT_SIZE);
-		BUF buf = this.createBuffer(initSize == null ? initialCapacity : initSize);
+		BUF buf = this.createBuffer(initSize == null ? initialCapacity : initSize, bigEndian);
 		buf = value.toBinary(buf, ctx);
 		if (casing == 1) {
 			CasingListMessage clm = (CasingListMessage) value;

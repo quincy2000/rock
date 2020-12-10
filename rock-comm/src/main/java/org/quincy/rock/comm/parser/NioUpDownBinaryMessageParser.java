@@ -1,6 +1,7 @@
 package org.quincy.rock.comm.parser;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Map;
 
 /**
@@ -106,11 +107,11 @@ public class NioUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser<K
 
 	/** 
 	 * createBuffer。
-	 * @see org.quincy.rock.comm.parser.UpDownBinaryMessageParser#createBuffer(int)
+	 * @see org.quincy.rock.comm.parser.UpDownBinaryMessageParser#createBuffer(int, boolean)
 	 */
 	@Override
-	protected ByteBuffer createBuffer(int initialCapacity) {
-		return ByteBuffer.allocate(initialCapacity);
+	protected ByteBuffer createBuffer(int initialCapacity, boolean bigEndian) {
+		return ByteBuffer.allocate(initialCapacity).order(bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 	}
 
 	/** 
