@@ -80,13 +80,16 @@ public abstract class NioUtils {
 	 * <!-- 在此添加详细说明 -->
 	 * 先写入4字节的无符号秒数，然后写入4字节的毫秒数。
 	 * @param buf 字节缓冲区
-	 * @param timestamp 时间戳毫秒数
+	 * @param value 时间戳毫秒数
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeTimestamp(ByteBuffer buf, long timestamp) {
-		buf = ensureCapacity(buf, 8);
-		long left = timestamp / 1000;
-		long right = timestamp % 1000;
+	public static ByteBuffer writeTimestamp(ByteBuffer buf, long value, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, 8);
+		//
+		long left = value / 1000;
+		long right = value % 1000;
 		buf.putInt((int) left);
 		buf.putInt((int) right);
 		return buf;
@@ -102,7 +105,7 @@ public abstract class NioUtils {
 	 */
 	public static long readTimestamp(ByteBuffer buf) {
 		return (buf.getInt() & 0xFFFFFFFFL) * 1000 + buf.getInt();
-	}	
+	}
 
 	/**
 	 * <b>写入双精度数据。</b>
@@ -111,10 +114,13 @@ public abstract class NioUtils {
 	 * 无。
 	 * @param buf ByteBuffer
 	 * @param value 双精度数据
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeDouble(ByteBuffer buf, double value) {
-		buf = ensureCapacity(buf, 8);
+	public static ByteBuffer writeDouble(ByteBuffer buf, double value, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, 8);
+		//
 		buf.putDouble(value);
 		return buf;
 	}
@@ -126,10 +132,13 @@ public abstract class NioUtils {
 	 * 无。
 	 * @param buf ByteBuffer
 	 * @param value 单精度数据
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeFloat(ByteBuffer buf, float value) {
-		buf = ensureCapacity(buf, 4);
+	public static ByteBuffer writeFloat(ByteBuffer buf, float value, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, 4);
+		//
 		buf.putFloat(value);
 		return buf;
 	}
@@ -141,14 +150,17 @@ public abstract class NioUtils {
 	 * 无。
 	 * @param buf ByteBuffer
 	 * @param value 长整型数据
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeLong(ByteBuffer buf, long value) {
-		buf = ensureCapacity(buf, 8);
+	public static ByteBuffer writeLong(ByteBuffer buf, long value, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, 8);
+		//
 		buf.putLong(value);
 		return buf;
 	}
-	
+
 	/**
 	 * <b>写入整型数据。</b>
 	 * <p><b>详细说明：</b></p>
@@ -156,14 +168,17 @@ public abstract class NioUtils {
 	 * 无。
 	 * @param buf ByteBuffer
 	 * @param value 整型数据
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeInt(ByteBuffer buf, int value) {
-		buf = ensureCapacity(buf, 4);
+	public static ByteBuffer writeInt(ByteBuffer buf, int value, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, 4);
+		//
 		buf.putInt(value);
 		return buf;
 	}
-	
+
 	/**
 	 * <b>写入短整型数据。</b>
 	 * <p><b>详细说明：</b></p>
@@ -171,14 +186,17 @@ public abstract class NioUtils {
 	 * 无。
 	 * @param buf ByteBuffer
 	 * @param value 短整型数据
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeShort(ByteBuffer buf, int value) {
-		buf = ensureCapacity(buf, 2);
-		buf.putShort((short)value);
+	public static ByteBuffer writeShort(ByteBuffer buf, int value, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, 2);
+		//
+		buf.putShort((short) value);
 		return buf;
 	}
-	
+
 	/**
 	 * <b>写入一个字节。</b>
 	 * <p><b>详细说明：</b></p>
@@ -186,10 +204,13 @@ public abstract class NioUtils {
 	 * 无。
 	 * @param buf ByteBuffer
 	 * @param b 字节数据
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeByte(ByteBuffer buf, int b) {
-		buf = ensureCapacity(buf, 1);
+	public static ByteBuffer writeByte(ByteBuffer buf, int b, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, 1);
+		//
 		buf.put((byte) b);
 		return buf;
 	}
@@ -202,13 +223,72 @@ public abstract class NioUtils {
 	 * @param buf ByteBuffer
 	 * @param c 字节数据
 	 * @param repeat 重复次数
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeByte(ByteBuffer buf, int c, int repeat) {
-		buf = ensureCapacity(buf, repeat);
+	public static ByteBuffer writeBytes(ByteBuffer buf, int c, int repeat, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, repeat);
+		//
 		byte b = (byte) c;
 		for (int i = 0; i < repeat; i++)
 			buf.put(b);
+		return buf;
+	}
+
+	/**
+	 * <b>写入字节数组。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param src 字节数组
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeBytes(ByteBuffer buf, byte[] src, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, src.length);
+		//
+		buf.put(src);
+		return buf;
+	}
+
+	/**
+	 * <b>写入字节数组。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param src 字节数组
+	 * @param offset src的开始位置
+	 * @param length 要写入的长度
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
+	 * @return ByteBuffer 
+	 */
+	public static ByteBuffer writeBytes(ByteBuffer buf, byte[] src, int offset, int length, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, length);
+		//
+		buf.put(src, offset, length);
+		return buf;
+	}
+
+	/**
+	 * <b>写入ByteBuffer。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @param src 要写入的ByteBuffer
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeBytes(ByteBuffer buf, ByteBuffer src, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, src.remaining());
+		//
+		buf.put(src);
 		return buf;
 	}
 
@@ -247,10 +327,11 @@ public abstract class NioUtils {
 	 * @param buf ByteBuffer
 	 * @param decimal 十进制数字字符串(len*2)
 	 * @param len 写入字节数
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuf
 	 */
-	public static ByteBuffer writeBCD(ByteBuffer buf, CharSequence decimal, int len) {
-		return writeHex(buf, decimal, len);
+	public static ByteBuffer writeBCD(ByteBuffer buf, CharSequence decimal, int len, boolean ensureCapacity) {
+		return writeHex(buf, decimal, len, ensureCapacity);
 	}
 
 	/**
@@ -274,9 +355,13 @@ public abstract class NioUtils {
 	 * @param buf ByteBuf
 	 * @param hex 16进制数字字符串(len*2)
 	 * @param len 写入字节数
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeHex(ByteBuffer buf, CharSequence hex, int len) {
+	public static ByteBuffer writeHex(ByteBuffer buf, CharSequence hex, int len, boolean ensureCapacity) {
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, len);
+		//
 		if (hex != null && hex.length() > 0 && len > 0) {
 			int valLen = hex.length() >> 1;
 			int mod = hex.length() % 2;
@@ -287,7 +372,7 @@ public abstract class NioUtils {
 			//
 			int l;
 			if (len > valLen) {
-				writeByte(buf, 0, len - valLen);
+				buf = writeBytes(buf, 0, len - valLen, false);
 				l = valLen << 1;
 			} else {
 				l = len << 1;
@@ -298,7 +383,7 @@ public abstract class NioUtils {
 				lo = Character.digit(hex.charAt(i++), 16);
 				if (hi != 0)
 					hi = hi << 4;
-				buf.put((byte) (hi | lo));
+				buf = writeByte(buf, hi | lo, false);
 			}
 		}
 		return buf;
@@ -336,10 +421,11 @@ public abstract class NioUtils {
 	 * @param buf 字节缓冲区
 	 * @param value 字符串
 	 * @param len 写入长度
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeChars(ByteBuffer buf, String value, int len) {
-		return writeChars(buf, value, len, StringUtil.CHAR_SPACE);
+	public static ByteBuffer writeChars(ByteBuffer buf, String value, int len, boolean ensureCapacity) {
+		return writeChars(buf, value, len, StringUtil.CHAR_SPACE, ensureCapacity);
 	}
 
 	/**
@@ -352,9 +438,10 @@ public abstract class NioUtils {
 	 * @param value 字符串
 	 * @param len 写入长度
 	 * @param padding 前面填充字符
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeChars(ByteBuffer buf, String value, int len, char padding) {
+	public static ByteBuffer writeChars(ByteBuffer buf, String value, int len, char padding, boolean ensureCapacity) {
 		int valSize, padSize;
 		if (value == null || value.length() == 0) {
 			valSize = 0;
@@ -366,11 +453,13 @@ public abstract class NioUtils {
 			valSize = len;
 			padSize = 0;
 		}
+		if (ensureCapacity)
+			buf = ensureCapacity(buf, valSize + padSize);
 		if (padSize > 0)
-			writeByte(buf, padding, padSize);
+			buf = writeBytes(buf, padding, padSize, false);
 		if (valSize > 0) {
 			byte[] bs = value.getBytes(StringUtil.ISO_8859_1);
-			buf.put(bs, 0, valSize);
+			buf = writeBytes(buf, bs, 0, valSize, false);
 		}
 		return buf;
 	}
@@ -410,10 +499,11 @@ public abstract class NioUtils {
 	 * 无。
 	 * @param buf 字节缓冲区
 	 * @param value 字符串
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeVarchar(ByteBuffer buf, String value) {
-		return writeVarchar(buf, value, '\0', StringUtil.UTF_8);
+	public static ByteBuffer writeVarchar(ByteBuffer buf, String value, boolean ensureCapacity) {
+		return writeVarchar(buf, value, '\0', StringUtil.UTF_8, ensureCapacity);
 	}
 
 	/**
@@ -425,13 +515,16 @@ public abstract class NioUtils {
 	 * @param value 字符串
 	 * @param ec 结束符
 	 * @param charset 字符集
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
 	 */
-	public static ByteBuffer writeVarchar(ByteBuffer buf, String value, char ec, Charset charset) {
+	public static ByteBuffer writeVarchar(ByteBuffer buf, String value, char ec, Charset charset,
+			boolean ensureCapacity) {
 		if (value != null && value.length() != 0) {
-			buf.put(value.getBytes(charset));
+			byte[] bs = value.getBytes(charset);
+			writeBytes(buf, bs, ensureCapacity);
 		}
-		writeByte(buf, ec);
+		writeByte(buf, ec, ensureCapacity);
 		return buf;
 	}
 
