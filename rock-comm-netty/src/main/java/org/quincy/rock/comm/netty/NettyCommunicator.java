@@ -314,7 +314,7 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	 * <b>初始化通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 子类实现该方法设置编码解码器。
+	 * 子类实现该方法设置编码解码器或进行其他通道设置
 	 * @param ch 通道
 	 * @throws Exception
 	 */
