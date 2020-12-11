@@ -5,7 +5,7 @@
 
 	<groupId>org.quincy.rock</groupId>
 	<artifactId>rock-message</artifactId>
-	<version>1.0.47.RELEASE</version>
+	<version>1.0.48.RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>rock-message</name>
@@ -15,11 +15,11 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13</junit.version>
 		<spring.version>5.2.5.RELEASE</spring.version>
-		<rock.version>1.0.47.RELEASE</rock.version>
-		<oshi.version>4.7.0</oshi.version>
-		<jna.version>5.5.0</jna.version>
+		<rock.version>1.0.48.RELEASE</rock.version>
+		<oshi.version>5.3.6</oshi.version>
+		<jna.version>5.6.0</jna.version>
 		<logback-classic.version>1.2.3</logback-classic.version>
 	</properties>
 
