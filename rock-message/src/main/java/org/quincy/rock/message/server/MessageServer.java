@@ -876,7 +876,7 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 				this.stop();
 				if (this.reconnectSecs > 0) {
 					this.busy(true);
-					DateUtil.sleep(1000 * this.reconnectSecs); //10秒后再重连
+					DateUtil.sleep(1000 * this.reconnectSecs); //n秒后再重连
 					this.busy(false);
 				}
 				runningFlag = true;//修正运行状态

@@ -40,7 +40,7 @@ public class ChannelHandler4Send extends ChannelDuplexHandler {
 		try {
 			logger4Send.info(NettyUtil.toHexString(msg));
 		} catch (Exception e) {
-			logger4Send.error(e.getMessage(), e);
+			logger4Send.error("Log error:write!", e);
 		}
 		ctx.write(msg, promise);
 	}

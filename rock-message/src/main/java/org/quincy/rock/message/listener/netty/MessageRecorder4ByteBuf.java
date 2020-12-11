@@ -19,7 +19,7 @@ import org.quincy.rock.message.listener.MessageRecorder;
  * @author wks
  * @since 1.0
  */
-public class MessageRecorder4ByteBuf extends MessageRecorder {
+public class MessageRecorder4ByteBuf extends MessageRecorder<Object> {
 
 	/** 
 	 * toHexString。

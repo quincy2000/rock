@@ -39,7 +39,7 @@ public class ChannelHandler4Receive extends ChannelDuplexHandler {
 		try {
 			logger4Receive.info(NettyUtil.toHexString(msg));
 		} catch (Exception e) {
-			logger4Receive.error("channelRead error!", e);
+			logger4Receive.error("Log error:channelRead!", e);
 		}
 		ctx.fireChannelRead(msg);
 	}

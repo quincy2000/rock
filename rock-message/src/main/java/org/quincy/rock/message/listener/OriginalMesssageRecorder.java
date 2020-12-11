@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author wks
  * @since 1.0
  */
-public abstract class OriginalMesssageRecorder implements CommunicateListener<IChannel> {
+public abstract class OriginalMesssageRecorder<CH extends IChannel> implements CommunicateListener<CH> {
 	/**
 	 * logger。
 	 */
@@ -51,12 +51,12 @@ public abstract class OriginalMesssageRecorder implements CommunicateListener<IC
 	 * @see org.quincy.rock.comm.communicator.CommunicateListener#receiveData(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void receiveData(IChannel channel, Object data) {
+	public void receiveData(CH channel, Object data) {
 		if (logger4Receive.isInfoEnabled()) {
 			try {
 				logger4Receive.info("[{}]:{}", channel.addressInfo(), toHexString(data));
 			} catch (Exception e) {
-				logger4Receive.error("receiveData error!", e);
+				logger4Receive.error("Log error:receiveData!", e);
 			}
 		}
 	}
@@ -66,13 +66,13 @@ public abstract class OriginalMesssageRecorder implements CommunicateListener<IC
 	 * @see org.quincy.rock.comm.communicator.CommunicateListener#sendData(java.lang.Object, java.lang.Object, boolean)
 	 */
 	@Override
-	public void sendData(IChannel channel, Object data, boolean success) {
+	public void sendData(CH channel, Object data, boolean success) {
 		if (logger4Receive.isInfoEnabled()) {
 			try {
 				logger4Send.info("[{}]:{}:{}", channel.addressInfo(), toHexString(data),
 						success ? "success" : "failure");
 			} catch (Exception e) {
-				logger4Send.error("sendData error!", e);
+				logger4Send.error("Log error:sendData!", e);
 			}
 		}
 	}
@@ -82,13 +82,13 @@ public abstract class OriginalMesssageRecorder implements CommunicateListener<IC
 	 * @see org.quincy.rock.comm.communicator.CommunicateListener#connection(java.lang.Object)
 	 */
 	@Override
-	public void connection(IChannel channel) {
+	public void connection(CH channel) {
 		if (logger.isDebugEnabled()) {
 			try {
 				String msg = _Utils.MSA.getMessage("log.connection", new Object[] { channel.addressInfo() });
 				logger.debug(msg);
 			} catch (Exception ex) {
-				logger.error("connection error!", ex);
+				logger.error("Log error:connection!", ex);
 			}
 		}
 	}
@@ -98,13 +98,13 @@ public abstract class OriginalMesssageRecorder implements CommunicateListener<IC
 	 * @see org.quincy.rock.comm.communicator.CommunicateListener#disconnection(java.lang.Object)
 	 */
 	@Override
-	public void disconnection(IChannel channel) {
+	public void disconnection(CH channel) {
 		if (logger.isDebugEnabled()) {
 			try {
 				String msg = _Utils.MSA.getMessage("log.disconnection", new Object[] { channel.addressInfo() });
 				logger.debug(msg);
 			} catch (Exception ex) {
-				logger.error("disconnection error!", ex);
+				logger.error("Log error:disconnection!", ex);
 			}
 		}
 	}
@@ -114,12 +114,12 @@ public abstract class OriginalMesssageRecorder implements CommunicateListener<IC
 	 * @see org.quincy.rock.comm.communicator.CommunicateListener#exceptionCaught(java.lang.Object, java.lang.Throwable)
 	 */
 	@Override
-	public void exceptionCaught(IChannel channel, Throwable e) {
+	public void exceptionCaught(CH channel, Throwable e) {
 		try {
 			String msg = _Utils.MSA.getMessage("log.exceptionCaught", new Object[] { channel.addressInfo() });
 			logger.error(msg, e);
 		} catch (Exception ex) {
-			logger.error("exceptionCaught error!", ex);
+			logger.error("Log error:exceptionCaught!", ex);
 		}
 	}
 }

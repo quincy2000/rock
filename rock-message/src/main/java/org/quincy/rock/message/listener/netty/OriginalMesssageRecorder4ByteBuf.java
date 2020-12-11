@@ -1,5 +1,6 @@
 package org.quincy.rock.message.listener.netty;
 
+import org.quincy.rock.comm.communicate.IChannel;
 import org.quincy.rock.comm.netty.NettyUtil;
 import org.quincy.rock.message.listener.OriginalMesssageRecorder;
 
@@ -19,7 +20,7 @@ import org.quincy.rock.message.listener.OriginalMesssageRecorder;
  * @author wks
  * @since 1.0
  */
-public class OriginalMesssageRecorder4ByteBuf extends OriginalMesssageRecorder {
+public class OriginalMesssageRecorder4ByteBuf extends OriginalMesssageRecorder<IChannel> {
 
 	/** 
 	 * toHexString。

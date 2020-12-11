@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class MessageRecorder implements MessageListener<Object> {
+public abstract class MessageRecorder<K> implements MessageListener<K> {
 	/**
 	 * logger,存放终端上下线信息。
 	 */
@@ -78,13 +78,13 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 	 * @see org.quincy.rock.comm.MessageListener#terminalOnline(org.quincy.rock.comm.MessageSender, java.lang.Object)
 	 */
 	@Override
-	public void terminalOnline(MessageSender<Object> sender, Object terminalId) {
+	public void terminalOnline(MessageSender<K> sender, Object terminalId) {
 		if (logger.isDebugEnabled()) {
 			try {
 				String msg = _Utils.MSA.getMessage("log.terminalOnline", new Object[] { terminalId });
 				logger.debug(msg);
 			} catch (Exception e) {
-				logger.error("terminalOnline error!", e);
+				logger.error("Log error:terminalOnline!", e);
 			}
 		}
 	}
@@ -94,13 +94,13 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 	 * @see org.quincy.rock.comm.MessageListener#terminalOffline(org.quincy.rock.comm.MessageSender, java.lang.Object)
 	 */
 	@Override
-	public void terminalOffline(MessageSender<Object> sender, Object terminalId) {
+	public void terminalOffline(MessageSender<K> sender, Object terminalId) {
 		if (logger.isDebugEnabled()) {
 			try {
 				String msg = _Utils.MSA.getMessage("log.terminalOffline", new Object[] { terminalId });
 				logger.debug(msg);
 			} catch (Exception e) {
-				logger.error("terminalOffline error!", e);
+				logger.error("Log error:terminalOffline!", e);
 			}
 		}
 	}
@@ -110,8 +110,8 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 	 * @see org.quincy.rock.comm.MessageListener#messageArrived(org.quincy.rock.comm.MessageSender, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void messageArrived(MessageSender<Object> sender, Object terminalId, Object msgId, Object functionCode,
-			Object content, Map<String, Object> ctx) {
+	public void messageArrived(MessageSender<K> sender, Object terminalId, Object msgId, K functionCode, Object content,
+			Map<String, Object> ctx) {
 		if (logger4Receive.isInfoEnabled()) {
 			try {
 				TerminalId id = (TerminalId) terminalId;
@@ -119,7 +119,7 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 				logger4Receive.info("receive:{type:{},code:{},address:{},msgId:{},cmdCode:{},timestamp:{},content:{}}",
 						id.getType(), id.getCode(), id.getAddress(), msgId, functionCode, timestamp, content);
 			} catch (Exception e) {
-				logger4Receive.error("messageArrived error!", e);
+				logger4Receive.error("Log error:messageArrived!", e);
 			}
 		}
 	}
@@ -129,8 +129,8 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 	 * @see org.quincy.rock.comm.MessageListener#messageSended(org.quincy.rock.comm.MessageSender, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.util.Map, boolean)
 	 */
 	@Override
-	public void messageSended(MessageSender<Object> sender, Object terminalId, Object msgId, Object functionCode,
-			Object content, Map<String, Object> ctx, boolean success) {
+	public void messageSended(MessageSender<K> sender, Object terminalId, Object msgId, K functionCode, Object content,
+			Map<String, Object> ctx, boolean success) {
 		if (logger4Send.isInfoEnabled()) {
 			try {
 				TerminalId id = (TerminalId) terminalId;
@@ -139,7 +139,7 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 						"send:{type:{},code:{},address:{},msgId:{},cmdCode:{},timestamp:{},content:{},success:{}}",
 						id.getType(), id.getCode(), id.getAddress(), msgId, functionCode, timestamp, content, success);
 			} catch (Exception e) {
-				logger4Send.error("messageSended error!", e);
+				logger4Send.error("Log error:messageSended!", e);
 			}
 		}
 	}
@@ -149,8 +149,7 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 	 * @see org.quincy.rock.comm.MessageListener#messageHeadParserException(org.quincy.rock.comm.MessageSender, java.lang.Object, java.util.Map, java.lang.Throwable)
 	 */
 	@Override
-	public void messageHeadParserException(MessageSender<Object> sender, Object data, Map<String, Object> ctx,
-			Throwable e) {
+	public void messageHeadParserException(MessageSender<K> sender, Object data, Map<String, Object> ctx, Throwable e) {
 		boolean isReceive = Boolean.TRUE.equals(ctx.get(CommUtils.COMM_MSG_RECEIVE_FALG));
 		if (isReceive) {
 			//解码报文头失败
@@ -159,7 +158,7 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 						this.toHexString(data), e.getMessage());
 				logger4Receive.error(msg, e);
 			} catch (Exception ex) {
-				logger4Receive.error("messageHeadParserException receive error!", ex);
+				logger4Receive.error("Log error:messageHeadParserException(receive)!", ex);
 			}
 		} else {
 			//编码报文头失败
@@ -168,7 +167,7 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 						this.toHexString(data), e.getMessage());
 				logger4Send.error(msg, e);
 			} catch (Exception ex) {
-				logger4Send.error("messageHeadParserException send error!", ex);
+				logger4Send.error("Log error:messageHeadParserException(send)!", ex);
 			}
 		}
 		if (!isContinueWhileParseError()) {
@@ -181,8 +180,8 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 	 * @see org.quincy.rock.comm.MessageListener#messageParserException(org.quincy.rock.comm.MessageSender, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.util.Map, java.lang.Throwable)
 	 */
 	@Override
-	public void messageParserException(MessageSender<Object> sender, Object terminalId, Object msgId,
-			Object functionCode, Object content, Map<String, Object> ctx, Throwable e) {
+	public void messageParserException(MessageSender<K> sender, Object terminalId, Object msgId, K functionCode,
+			Object content, Map<String, Object> ctx, Throwable e) {
 		boolean isReceive = Boolean.TRUE.equals(ctx.get(CommUtils.COMM_MSG_RECEIVE_FALG));
 		if (isReceive) {
 			//解码报文正文失败
@@ -192,7 +191,7 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 						this.toHexString(content), terminalId, msgId, functionCode, e.getMessage());
 				logger4Receive.error(msg, e);
 			} catch (Exception ex) {
-				logger4Receive.error("messageParserException receive error!", ex);
+				logger4Receive.error("Log error:messageParserException(receive)!", ex);
 			}
 		} else {
 			//编码报文正文失败
@@ -202,7 +201,7 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 						this.toHexString(content), terminalId, msgId, functionCode, e.getMessage());
 				logger4Send.error(msg, e);
 			} catch (Exception ex) {
-				logger4Send.error("messageParserException send error!", ex);
+				logger4Send.error("Log error:messageParserException(send)!", ex);
 			}
 		}
 		if (!isContinueWhileParseError()) {
@@ -215,14 +214,14 @@ public abstract class MessageRecorder implements MessageListener<Object> {
 	 * @see org.quincy.rock.comm.MessageListener#checkLegalityException(org.quincy.rock.comm.MessageSender, java.lang.Object, java.lang.Object, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void checkLegalityException(MessageSender<Object> sender, Object msgId, Object functionCode, Object content,
+	public void checkLegalityException(MessageSender<K> sender, Object msgId, K functionCode, Object content,
 			Map<String, Object> ctx) {
 		if (logger4Receive.isWarnEnabled()) {
 			try {
 				TerminalChannel ch = (TerminalChannel) MapUtil.getObject(ctx, CommUtils.COMM_CHANNEL_KEY);
-				logger4Receive.warn("Illegal terminal:{}!",ch.remote());
+				logger4Receive.warn("Illegal terminal:{}!", ch.remote());
 			} catch (Exception ex) {
-				logger4Receive.error("checkLegalityException error!", ex);
+				logger4Receive.error("Log error:checkLegalityException!", ex);
 			}
 		}
 	}
