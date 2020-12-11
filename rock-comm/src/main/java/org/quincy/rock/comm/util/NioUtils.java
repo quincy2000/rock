@@ -514,6 +514,21 @@ public abstract class NioUtils {
 	 * @param buf 字节缓冲区
 	 * @param value 字符串
 	 * @param ec 结束符
+	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
+	 * @return ByteBuffer
+	 */
+	public static ByteBuffer writeVarchar(ByteBuffer buf, String value, char ec, boolean ensureCapacity) {
+		return writeVarchar(buf, value, ec, StringUtil.UTF_8, ensureCapacity);
+	}
+
+	/**
+	 * <b>写变长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 字节缓冲区
+	 * @param value 字符串
+	 * @param ec 结束符
 	 * @param charset 字符集
 	 * @param ensureCapacity 确保容量(如果容量不够则自动扩展)
 	 * @return ByteBuffer
@@ -538,6 +553,19 @@ public abstract class NioUtils {
 	 */
 	public static String readVarchar(ByteBuffer buf) {
 		return readVarchar(buf, '\0', StringUtil.UTF_8);
+	}
+
+	/**
+	 * <b>读取变长字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf 字节缓冲区
+	 * @param ec 结束符
+	 * @return 字符串
+	 */
+	public static String readVarchar(ByteBuffer buf, char ec) {
+		return readVarchar(buf, ec, StringUtil.UTF_8);
 	}
 
 	/**
