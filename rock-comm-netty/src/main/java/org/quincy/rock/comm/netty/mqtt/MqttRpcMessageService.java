@@ -125,7 +125,14 @@ public class MqttRpcMessageService<K, UChannel extends TerminalChannel<?, ?>> ex
 	 * @return 新的发送通道
 	 */
 	protected UChannel newSendChannel(UChannel channel, Adviser adviser, boolean pattern) {
-		return channel.newSendChannel(adviser, true);
+		UChannel ch = channel.newSendChannel(adviser, true);
+		if (ch instanceof MqttSendConfig && adviser instanceof MqttSendConfig) {
+			MqttSendConfig src = (MqttSendConfig) adviser;
+			MqttSendConfig dest = (MqttSendConfig) ch;
+			dest.setBurnAfterRead(src.isBurnAfterRead());
+			dest.setMqttQos(src.getMqttQos());
+		}
+		return ch;
 	}
 
 	/**
