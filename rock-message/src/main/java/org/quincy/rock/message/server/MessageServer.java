@@ -99,9 +99,9 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 */
 	private boolean runningFlag;
 	/**
-	 * 重连等待秒数。
+	 * 重启等待秒数。
 	 */
-	private int reconnectSecs = 1;
+	private int resetSecs = 1;
 	/**
 	 * 告警管理器。
 	 */
@@ -334,25 +334,25 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	}
 
 	/**
-	 * <b>获得重连等待秒数。</b>
+	 * <b>获得重启等待秒数。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return 重连等待秒数
+	 * @return 重启等待秒数
 	 */
-	public int getReconnectSecs() {
-		return reconnectSecs;
+	public int getResetSecs() {
+		return resetSecs;
 	}
 
 	/**
-	 * <b>设置重连等待秒数。</b>
+	 * <b>设置重启等待秒数。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param reconnectSecs 重连等待秒数
+	 * @param resetSecs 重启等待秒数
 	 */
-	public void setReconnectSecs(int reconnectSecs) {
-		this.reconnectSecs = reconnectSecs;
+	public void setResetSecs(int resetSecs) {
+		this.resetSecs = resetSecs;
 	}
 
 	/**
@@ -655,27 +655,33 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	}
 
 	/**
-	 * <b>操作正忙，不可中断。</b>
+	 * <b>操作正忙(不可中断)。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return 操作正忙，不可中断
+	 * @return 操作正忙(不可中断)
 	 */
 	public boolean busy() {
 		return busy;
 	}
 
-	private void busy(boolean busy) {
-		synchronized (this) {
-			this.busy = busy;
-		}
-	}
-
-	private void checkBusy() {
+	/**
+	 * <b>检查是否操作正忙(不可中断)。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 */
+	public void checkBusy() {
 		if (busy()) {
 			String msg = _Utils.MSA.getMessage("rock.message.MessageServer.busy.error");
 			alarm("messageServer", Alarm.ALARM_TYPE_WARN, "checkBusy", msg);
 			throw new CommunicateException(msg);
+		}
+	}
+
+	private void busy(boolean busy) {
+		synchronized (this) {
+			this.busy = busy;
 		}
 	}
 
@@ -709,7 +715,6 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 * 无。
 	 */
 	public void start() {
-		this.checkBusy();
 		busy(true);
 		try {
 			//确保监听器已经配置
@@ -732,15 +737,39 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 * 无。
 	 */
 	public void stop() {
-		this.checkBusy();
 		busy(true);
 		try {
+			//停止
 			getCommunicateServer().stop();
-			this.runningFlag = false; //通讯器未运行
-			getMessageProcessService().reset();
 			getMessageProcessService().stop();
+			this.runningFlag = false; //通讯器未运行
 			this.updateTimestamp();
 			logger.info("报文服务器[{}]已停止运行", this.getName());
+		} finally {
+			busy(false);
+		}
+	}
+
+	/**
+	 * <b>重新启动报文服务器。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 */
+	public void reset() {
+		busy(true);
+		try {
+			//停止
+			getCommunicateServer().stop();
+			getMessageProcessService().reset();
+			//n秒后再重启
+			DateUtil.sleep(1000 * this.resetSecs);
+			//启动
+			this.configListener();
+			getCommunicateServer().start();
+			this.runningFlag = true; //通讯器已经运行
+			this.updateTimestamp();
+			logger.info("报文服务器[{}]已重新启动运行", this.getName());
 		} finally {
 			busy(false);
 		}
@@ -764,7 +793,6 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 * 无。
 	 */
 	public void pauseReceiver() {
-		this.checkBusy();
 		busy(true);
 		try {
 			getMessageProcessService().stop();
@@ -780,7 +808,6 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 * 无。
 	 */
 	public void resumeReceiver() {
-		this.checkBusy();
 		busy(true);
 		try {
 			getMessageProcessService().start();
@@ -846,6 +873,8 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 			logger.info("报文服务器[{}]已关闭.", this.getName());
 		} catch (Exception e) {
 			logger.warn(e.getMessage(), e);
+		} finally {
+			busy(false);
 		}
 	}
 
@@ -873,14 +902,8 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 			//应该处于运行状态但通讯器却损坏了，则重新起动
 			try {
 				logger.info("检测到报文服务器异常终止，尝试重新启动...");
-				this.stop();
-				if (this.reconnectSecs > 0) {
-					this.busy(true);
-					DateUtil.sleep(1000 * this.reconnectSecs); //n秒后再重连
-					this.busy(false);
-				}
-				runningFlag = true;//修正运行状态
-				this.start();
+				this.checkBusy();
+				this.reset();
 				logger.info("经过我的努力尝试，异常终止的报文服务器终于重新启动成功了。");
 				alarm("messageServer", Alarm.ALARM_TYPE_WARN, "checkServer.repair", "成功监测到报文服务器异常终止并成功修复重启。");
 			} catch (Exception e) {

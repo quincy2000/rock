@@ -60,6 +60,7 @@ public abstract class MessageServerController<CMD extends TerminalCommand<TERM, 
 		Result<ServerInfo> json;
 		MessageServer<CMD, TERM, TYPE, CODE> messageServer = this.getMessageServer();
 		try {
+			messageServer.checkBusy();
 			messageServer.start();
 			messageServer.alarm("messageServer", Alarm.ALARM_TYPE_NOTICE, "server.start.ok", "用户手动启动报文服务器成功.");
 			json = Result.toResult(messageServer.getServerInfo());
@@ -83,6 +84,7 @@ public abstract class MessageServerController<CMD extends TerminalCommand<TERM, 
 		Result<ServerInfo> json;
 		MessageServer<CMD, TERM, TYPE, CODE> messageServer = this.getMessageServer();
 		try {
+			messageServer.checkBusy();
 			messageServer.stop();
 			messageServer.alarm("messageServer", Alarm.ALARM_TYPE_NOTICE, "server.stop.ok", "用户手动停止报文服务器成功.");
 			json = Result.toResult(messageServer.getServerInfo());
@@ -106,8 +108,8 @@ public abstract class MessageServerController<CMD extends TerminalCommand<TERM, 
 		Result<ServerInfo> json;
 		MessageServer<CMD, TERM, TYPE, CODE> messageServer = this.getMessageServer();
 		try {
-			messageServer.stop();
-			messageServer.start();
+			messageServer.checkBusy();
+			messageServer.reset();
 			messageServer.alarm("messageServer", Alarm.ALARM_TYPE_NOTICE, "server.restart.ok", "用户手动重启报文服务器成功.");
 			json = Result.toResult(messageServer.getServerInfo());
 		} catch (Exception e) {
@@ -130,6 +132,7 @@ public abstract class MessageServerController<CMD extends TerminalCommand<TERM, 
 		Result<ServerInfo> json;
 		MessageServer<CMD, TERM, TYPE, CODE> messageServer = this.getMessageServer();
 		try {
+			messageServer.checkBusy();
 			messageServer.pauseReceiver();
 			json = Result.toResult(messageServer.getServerInfo());
 		} catch (Exception e) {
@@ -151,6 +154,7 @@ public abstract class MessageServerController<CMD extends TerminalCommand<TERM, 
 		Result<ServerInfo> json;
 		MessageServer<CMD, TERM, TYPE, CODE> messageServer = this.getMessageServer();
 		try {
+			messageServer.checkBusy();
 			messageServer.resumeReceiver();
 			json = Result.toResult(messageServer.getServerInfo());
 		} catch (Exception e) {
