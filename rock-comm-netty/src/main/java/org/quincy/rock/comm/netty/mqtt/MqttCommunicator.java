@@ -110,8 +110,6 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 		this.mqttHost = mqttHost;
 		this.mqttPort = mqttPort;
 		this.mqttChannelHandler = createMqttChannelHandler();
-		if (mqttChannelHandler.getClientid() == null)
-			mqttChannelHandler.setClientid(StringUtil.getUniqueIdentifierName("mqtt"));
 		//
 		super.setChannelTransformer(new MqttChannelTransformer<IMqttChannel>() {
 			private Getter<Channel> getter = new Getter<Channel>() {
@@ -139,7 +137,9 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	 * @return MqttChannelHandler
 	 */
 	protected MqttChannelHandler createMqttChannelHandler() {
-		return new MqttChannelHandler();
+		MqttChannelHandler mch = new MqttChannelHandler();
+		mch.setCleanSession(true);
+		return mch;
 	}
 
 	/**
@@ -254,7 +254,7 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	public <T extends IChannel> T rootChannel() {
 		return (T) this.mqttChannel;
 	}
-	
+
 	/** 
 	 * start。
 	 * @see org.quincy.rock.comm.communicator.CommunicatorServer#start()
@@ -571,6 +571,28 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	 */
 	public final void setHeartbeat(int heartbeat) {
 		mqttChannelHandler.setHeartbeat(heartbeat);
+	}
+
+	/**
+	 * <b>是否清除会话。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否清除会话
+	 */
+	public boolean isCleanSession() {
+		return mqttChannelHandler.isCleanSession();
+	}
+
+	/**
+	 * <b>是否清除会话。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param cleanSession 是否清除会话
+	 */
+	public void setCleanSession(boolean cleanSession) {
+		mqttChannelHandler.setCleanSession(cleanSession);
 	}
 
 	/**

@@ -128,10 +128,13 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 	 */
 	private String password;
 	/**
-	 * 心跳间隔时间。
+	 * 心跳间隔时间(秒)。
 	 */
 	private int heartbeat;
-
+	/**
+	 * 是否清除会话。
+	 */
+	private boolean cleanSession;
 	/**
 	 * 遗嘱字节码。
 	 */
@@ -228,25 +231,47 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 	}
 
 	/**
-	 * <b>获得心跳间隔时间。</b>
+	 * <b>获得心跳间隔时间(秒)。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return 心跳间隔时间
+	 * @return 心跳间隔时间(秒)
 	 */
 	public int getHeartbeat() {
 		return heartbeat;
 	}
 
 	/**
-	 * <b>设置心跳间隔时间。</b>
+	 * <b>设置心跳间隔时间(秒)。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param heartbeat 心跳间隔时间
+	 * @param heartbeat 心跳间隔时间(秒)
 	 */
 	public void setHeartbeat(int heartbeat) {
 		this.heartbeat = heartbeat < 0 ? 0 : heartbeat;
+	}
+
+	/**
+	 * <b>是否清除会话。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否清除会话
+	 */
+	public boolean isCleanSession() {
+		return cleanSession;
+	}
+
+	/**
+	 * <b>是否清除会话。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param cleanSession 是否清除会话
+	 */
+	public void setCleanSession(boolean cleanSession) {
+		this.cleanSession = cleanSession;
 	}
 
 	/**
@@ -431,7 +456,7 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		try {
-			ConnectBuilder builder = MqttMessageBuilders.connect().clientId(clientid).cleanSession(true)
+			ConnectBuilder builder = MqttMessageBuilders.connect().clientId(clientid).cleanSession(cleanSession)
 					.username(userName).password(password.getBytes(CharsetUtil.UTF_8)).keepAlive(heartbeat);
 			if (hasWill()) {
 				builder = builder.willQoS(getWillQos()).willMessage(willBytes).willTopic(willTopic).willRetain(true)
