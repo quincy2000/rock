@@ -34,12 +34,13 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.mqtt.MqttQoS;
 
 /**
  * <b>MqttCommunicator。</b>
  * <p><b>详细说明：</b></p>
  * <!-- 在此添加详细说明 -->
- * 无。
+ * 未完整支持qos=2。
  * <p><b>修改列表：</b></p>
  * <table width="100%" cellSpacing=1 cellPadding=3 border=1>
  * <tr bgcolor="#CCCCFF"><td>序号</td><td>作者</td><td>修改日期</td><td>修改内容</td></tr>
@@ -139,6 +140,7 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	protected MqttChannelHandler createMqttChannelHandler() {
 		MqttChannelHandler mch = new MqttChannelHandler();
 		mch.setCleanSession(true);
+		mch.setWillRetain(true);
 		return mch;
 	}
 
@@ -596,6 +598,39 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	}
 
 	/**
+	 * <b>是否设置了遗嘱。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否设置了遗嘱
+	 */
+	public final boolean hasWill() {
+		return mqttChannelHandler.hasWill();
+	}
+
+	/**
+	 * <b>获得遗嘱Topic。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 遗嘱Topic
+	 */
+	public final String getWillTopic() {
+		return mqttChannelHandler.getWillTopic();
+	}
+
+	/**
+	 * <b>设置遗嘱Topic。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param willTopic 遗嘱Topic
+	 */
+	public final void setWillTopic(String willTopic) {
+		mqttChannelHandler.setWillTopic(willTopic);
+	}
+
+	/**
 	 * <b>设置遗嘱。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -626,6 +661,50 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	 */
 	public final void setWillBytes(byte[] willBytes) {
 		mqttChannelHandler.setWillBytes(willBytes);
+	}
+
+	/**
+	 * <b>获得遗嘱MqttQoS。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 遗嘱MqttQoS
+	 */
+	public MqttQoS getWillQos() {
+		return mqttChannelHandler.getWillQos();
+	}
+
+	/**
+	 * <b>设置遗嘱MqttQoS。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param willQos 遗嘱MqttQoS
+	 */
+	public void setWillQos(MqttQoS willQos) {
+		mqttChannelHandler.setWillQos(willQos);
+	}
+
+	/**
+	 * <b>是否保持遗嘱。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否保持遗嘱
+	 */
+	public boolean isWillRetain() {
+		return mqttChannelHandler.isWillRetain();
+	}
+
+	/**
+	 * <b>是否保持遗嘱。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param willRetain 是否保持遗嘱
+	 */
+	public void setWillRetain(boolean willRetain) {
+		mqttChannelHandler.setWillRetain(willRetain);
 	}
 
 	/**
@@ -769,39 +848,6 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	 */
 	public final void setRandomKey(KeyGetter randomKey) {
 		mqttChannelHandler.setRandomKey(randomKey);
-	}
-
-	/**
-	 * <b>获得遗嘱Topic。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 遗嘱Topic
-	 */
-	public final String getWillTopic() {
-		return mqttChannelHandler.getWillTopic();
-	}
-
-	/**
-	 * <b>设置遗嘱Topic。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param willTopic 遗嘱Topic
-	 */
-	public final void setWillTopic(String willTopic) {
-		mqttChannelHandler.setWillTopic(willTopic);
-	}
-
-	/**
-	 * <b>是否设置了遗嘱。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 是否设置了遗嘱
-	 */
-	public final boolean hasWill() {
-		return mqttChannelHandler.hasWill();
 	}
 
 	/**

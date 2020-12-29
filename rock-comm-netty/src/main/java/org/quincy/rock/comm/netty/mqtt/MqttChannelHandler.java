@@ -26,6 +26,9 @@ import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.UnsupportedMessageTypeException;
+import io.netty.handler.codec.mqtt.MqttConnAckMessage;
+import io.netty.handler.codec.mqtt.MqttConnAckVariableHeader;
+import io.netty.handler.codec.mqtt.MqttConnectReturnCode;
 import io.netty.handler.codec.mqtt.MqttDecoder;
 import io.netty.handler.codec.mqtt.MqttEncoder;
 import io.netty.handler.codec.mqtt.MqttFixedHeader;
@@ -51,7 +54,7 @@ import io.netty.util.CharsetUtil;
  * <b>MqttChannelHandler。</b>
  * <p><b>详细说明：</b></p>
  * <!-- 在此添加详细说明 -->
- * 无。
+ * 未完整支持qos=2。
  * <p><b>修改列表：</b></p>
  * <table width="100%" cellSpacing=1 cellPadding=3 border=1>
  * <tr bgcolor="#CCCCFF"><td>序号</td><td>作者</td><td>修改日期</td><td>修改内容</td></tr>
@@ -85,6 +88,21 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 	 * MQTT_HEADER_PUBACK。
 	 */
 	private static final MqttFixedHeader MQTT_HEADER_PUBACK = new MqttFixedHeader(MqttMessageType.PUBACK, false,
+			MqttQoS.AT_MOST_ONCE, false, 2);
+	/**
+	 * MQTT_HEADER_PUBREC。
+	 */
+	private static final MqttFixedHeader MQTT_HEADER_PUBREC = new MqttFixedHeader(MqttMessageType.PUBREC, false,
+			MqttQoS.AT_MOST_ONCE, false, 2);
+	/**
+	 * MQTT_HEADER_PUBREL。
+	 */
+	private static final MqttFixedHeader MQTT_HEADER_PUBREL = new MqttFixedHeader(MqttMessageType.PUBREL, false,
+			MqttQoS.AT_MOST_ONCE, false, 2);
+	/**
+	 * MQTT_HEADER_PUBCOMP。
+	 */
+	private static final MqttFixedHeader MQTT_HEADER_PUBCOMP = new MqttFixedHeader(MqttMessageType.PUBCOMP, false,
 			MqttQoS.AT_MOST_ONCE, false, 2);
 	/**
 	 * mqtt缺省ping间隔。
@@ -148,6 +166,10 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 	 * 遗嘱MqttQoS。
 	 */
 	private MqttQoS willQos;
+	/**
+	 * 是否保持遗嘱。
+	 */
+	private boolean willRetain;
 
 	/**
 	 *  初始订阅的Topic列表。
@@ -357,6 +379,28 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 	}
 
 	/**
+	 * <b>是否保持遗嘱。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否保持遗嘱
+	 */
+	public boolean isWillRetain() {
+		return willRetain;
+	}
+
+	/**
+	 * <b>是否保持遗嘱。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param willRetain 是否保持遗嘱
+	 */
+	public void setWillRetain(boolean willRetain) {
+		this.willRetain = willRetain;
+	}
+
+	/**
 	 * <b>获得初始订阅的Topic列表。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -459,8 +503,8 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 			ConnectBuilder builder = MqttMessageBuilders.connect().clientId(clientid).cleanSession(cleanSession)
 					.username(userName).password(password.getBytes(CharsetUtil.UTF_8)).keepAlive(heartbeat);
 			if (hasWill()) {
-				builder = builder.willQoS(getWillQos()).willMessage(willBytes).willTopic(willTopic).willRetain(true)
-						.willFlag(true);
+				builder = builder.willQoS(getWillQos()).willMessage(willBytes).willTopic(willTopic)
+						.willRetain(willRetain).willFlag(true);
 			}
 			ctx.writeAndFlush(builder.build());
 			ctx.fireChannelActive();
@@ -495,49 +539,79 @@ public class MqttChannelHandler extends AbstractCRCCodecCreatorHandler
 			throw new CommunicateException(errMsg, result.cause());
 		}
 		//MQTT消息解析成功
-		MqttMessageType type = mqttMessage.fixedHeader().messageType();
-		switch (type) {
+		MqttFixedHeader fixHeader = mqttMessage.fixedHeader();
+		switch (fixHeader.messageType()) {
 		case CONNACK:
-			//第一次连接应答
-			ctx4ChannelMap.put(ctx.channel().id(), ctx);
-			//订阅topic
-			for (SubscribeTopic topic : this.getInitialSubscribeTopics())
-				this.subscribeTopic(ctx.channel().id(), topic);
-			NettyUtil.releaseRC(mqttMessage);
+			MqttConnAckVariableHeader connAckHeader = ((MqttConnAckMessage) mqttMessage).variableHeader();
+			if (connAckHeader.connectReturnCode() == MqttConnectReturnCode.CONNECTION_ACCEPTED) {
+				//第一次连接应答
+				ctx4ChannelMap.put(ctx.channel().id(), ctx);
+				//订阅topic
+				for (SubscribeTopic topic : this.getInitialSubscribeTopics()) {
+					this.subscribeTopic(ctx.channel().id(), topic);
+				}
+			} else {
+				String errMsg = "The connection to the MQTT server was refused:"
+						+ connAckHeader.connectReturnCode().byteValue();
+				recorder.write(errMsg);
+				throw new CommunicateException(errMsg);
+			}
 			break;
 		case PUBLISH:
-			MqttPublishVariableHeader pubHeader = (MqttPublishVariableHeader) mqttMessage.variableHeader();
+			MqttPublishVariableHeader pubHeader = ((MqttPublishMessage) mqttMessage).variableHeader();
 			String topic = pubHeader.topicName();
 			int messageId = pubHeader.packetId();
 			Attribute<String> topicKey = ctx.channel().attr(RECEIVED_MESSAGE_TOPIC_KEY);
 			topicKey.set(topic);
 			//消息收到
-			ctx.writeAndFlush(new MqttPubAckMessage(MQTT_HEADER_PUBACK, MqttMessageIdVariableHeader.from(messageId)));
+			if (fixHeader.qosLevel() == MqttQoS.AT_LEAST_ONCE) {
+				ctx.writeAndFlush(
+						new MqttPubAckMessage(MQTT_HEADER_PUBACK, MqttMessageIdVariableHeader.from(messageId)));
+			} else if (fixHeader.qosLevel() == MqttQoS.EXACTLY_ONCE) {
+				ctx.writeAndFlush(
+						new MqttPubAckMessage(MQTT_HEADER_PUBREC, MqttMessageIdVariableHeader.from(messageId)));
+			}
 			recorder.write("Messages are received({0}):{1}.", String.valueOf(messageId), topic);
 			//继续传递
 			ctx.fireChannelRead(mqttMessage.payload());
 			break;
 		case SUBACK:
-			//订阅成功	
+			//订阅成功
 			recorder.write("Successfully subscribed topics.");
-			NettyUtil.releaseRC(mqttMessage);
 			break;
 		case UNSUBACK:
 			//反订阅成功	
 			recorder.write("Successfully unsubscribed topics.");
-			NettyUtil.releaseRC(mqttMessage);
 			break;
 		case PUBACK:
+			//mqttQos=1
+			recorder.write("Send data successfully.");
+			break;
+		case PUBREC:
+			MqttPublishVariableHeader pubRecHeader = ((MqttPublishMessage) mqttMessage).variableHeader();
+			//mqttQos=2
+			ctx.writeAndFlush(new MqttPubAckMessage(MQTT_HEADER_PUBREL,
+					MqttMessageIdVariableHeader.from(pubRecHeader.packetId())));
+			NettyUtil.releaseRC(mqttMessage);
+			break;
+		case PUBREL:
+			//mqttQos=2
+			MqttPublishVariableHeader pubRelRecHeader = ((MqttPublishMessage) mqttMessage).variableHeader();
+			ctx.writeAndFlush(new MqttPubAckMessage(MQTT_HEADER_PUBCOMP,
+					MqttMessageIdVariableHeader.from(pubRelRecHeader.packetId())));
+			NettyUtil.releaseRC(mqttMessage);
+			break;
+		case PUBCOMP:
+			//mqttQos=2
 			recorder.write("Send data successfully");
 			NettyUtil.releaseRC(mqttMessage);
 			break;
 		case PINGRESP:
 			recorder.write("Received the heartbeat return value!");
-			NettyUtil.releaseRC(mqttMessage);
 			break;
 		default:
-			Exception ex = new UnsupportedMessageTypeException(type);
-			recorder.write(ex, "Unsupported message type:{0}.", type.toString());
+			Exception ex = new UnsupportedMessageTypeException(fixHeader.messageType());
+			recorder.write(ex, "Unsupported message type:{0}.", fixHeader.messageType());
 			NettyUtil.releaseRC(mqttMessage);
 			throw ex;
 		}
