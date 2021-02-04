@@ -586,4 +586,19 @@ public abstract class NioUtils {
 		}
 		return new String(baos.toByteArray(), charset);
 	}
+
+	/**
+	 * <b>切片。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param msg 报文对象
+	 * @return 切片报文对象
+	 */
+	public static Object slice(Object msg) {
+		if (msg instanceof ByteBuffer)
+			return ((ByteBuffer) msg).slice();
+		else
+			return msg;
+	}
 }
