@@ -1,7 +1,5 @@
 package org.quincy.rock.comm.netty;
 
-import org.quincy.rock.comm.communicate.ChannelTransformer;
-
 import io.netty.channel.Channel;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
@@ -78,7 +76,7 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 		Attribute<INettyChannel> attr = ch.attr(key);
 		UChannel channel = (UChannel) attr.get();
 		if (channel == null) {
-			channel = createChannel(ch);			
+			channel = createChannel(ch);
 			attr.set(channel);
 		}
 		return channel;

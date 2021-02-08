@@ -1,4 +1,4 @@
-package org.quincy.rock.comm.communicate;
+package org.quincy.rock.comm.netty;
 
 /**
  * <b>通道转换器。</b>

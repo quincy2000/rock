@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.quincy.rock.comm.CommunicateException;
-import org.quincy.rock.comm.communicate.ChannelTransformer;
-import org.quincy.rock.comm.communicate.ChannelTransformer.STransformPoint;
 import org.quincy.rock.comm.communicate.CommunicateClient;
 import org.quincy.rock.comm.communicate.CommunicateServer;
 import org.quincy.rock.comm.communicate.CommunicateServerListener;
 import org.quincy.rock.comm.communicate.IChannel;
 import org.quincy.rock.comm.netty.ChannelHandlerCreator;
+import org.quincy.rock.comm.netty.ChannelTransformer;
+import org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint;
 import org.quincy.rock.comm.netty.INettyChannel;
 import org.quincy.rock.comm.netty.NettyCommunicator;
 import org.quincy.rock.comm.netty.codec.KeyGetter;

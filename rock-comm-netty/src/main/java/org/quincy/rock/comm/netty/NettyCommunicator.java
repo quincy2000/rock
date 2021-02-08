@@ -9,9 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.quincy.rock.comm.CommunicateException;
 import org.quincy.rock.comm.communicate.AbstractCommunicator;
-import org.quincy.rock.comm.communicate.ChannelTransformer;
-import org.quincy.rock.comm.communicate.ChannelTransformer.STransformPoint;
-import org.quincy.rock.comm.communicate.ChannelTransformer.UTransformPoint;
+import org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint;
+import org.quincy.rock.comm.netty.ChannelTransformer.UTransformPoint;
 import org.quincy.rock.core.function.Consumer;
 import org.quincy.rock.core.function.Function;
 import org.quincy.rock.core.vo.Option;

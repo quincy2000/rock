@@ -4,8 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 
 import org.quincy.rock.comm.CommunicateException;
-import org.quincy.rock.comm.communicate.ChannelTransformer.STransformPoint;
 import org.quincy.rock.comm.communicate.CommunicateClient;
+import org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint;
 import org.quincy.rock.core.util.StringUtil;
 
 import io.netty.bootstrap.Bootstrap;
