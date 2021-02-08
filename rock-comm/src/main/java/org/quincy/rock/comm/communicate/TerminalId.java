@@ -52,6 +52,10 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 是否是服务器。
 	 */
 	private boolean server;
+	/**
+	 * 是否是强制的建议。
+	 */
+	private boolean forced;
 
 	/**
 	 * 唯一id。
@@ -85,7 +89,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return 终端地址
 	 */
-	public String getAddress() {
+	public final String getAddress() {
 		return address;
 	}
 
@@ -96,7 +100,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @param address 终端地址
 	 */
-	public void setAddress(String address) {
+	public final void setAddress(String address) {
 		this.address = address;
 	}
 
@@ -107,7 +111,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return 类型
 	 */
-	public TYPE getType() {
+	public final TYPE getType() {
 		return type;
 	}
 
@@ -118,7 +122,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @param type 类型
 	 */
-	public void setType(TYPE type) {
+	public final void setType(TYPE type) {
 		this.type = type;
 		this.clearId();
 	}
@@ -130,7 +134,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return 唯一编码
 	 */
-	public CODE getCode() {
+	public final CODE getCode() {
 		return code;
 	}
 
@@ -141,7 +145,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @param code 唯一编码
 	 */
-	public void setCode(CODE code) {
+	public final void setCode(CODE code) {
 		this.code = code;
 		this.clearId();
 	}
@@ -153,7 +157,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return 描述
 	 */
-	public String getDescr() {
+	public final String getDescr() {
 		return descr;
 	}
 
@@ -164,7 +168,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @param descr 描述
 	 */
-	public void setDescr(String descr) {
+	public final void setDescr(String descr) {
 		this.descr = descr;
 	}
 
@@ -175,7 +179,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return tag
 	 */
-	public Object getTag() {
+	public final Object getTag() {
 		return tag;
 	}
 
@@ -186,7 +190,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @param tag tag
 	 */
-	public void setTag(Object tag) {
+	public final void setTag(Object tag) {
 		this.tag = tag;
 	}
 
@@ -197,8 +201,46 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return 是否是服务器
 	 */
-	public boolean isServer() {
+	public final boolean isServer() {
 		return server;
+	}
+
+	/** 
+	 * isForced。
+	 * @see org.quincy.rock.comm.communicate.Adviser#isForced()
+	 */
+	@Override
+	public final boolean isForced() {
+		return this.forced;
+	}
+
+	/** 
+	 * forced。
+	 * @see org.quincy.rock.comm.communicate.Adviser#forced()
+	 */
+	@Override
+	public final <A extends Adviser> A forced() {
+		if (isForced())
+			return (A) this;
+		else {
+			TerminalId term = this.cloneMe();
+			term.forced = true;
+			return (A) term;
+		}
+	}
+
+	/** 
+	 * advised。
+	 * @see org.quincy.rock.comm.communicate.Adviser#advised()
+	 */
+	@Override
+	public final <A extends Adviser> A advised() {
+		if (isForced()) {
+			TerminalId term = this.cloneMe();
+			term.forced = false;
+			return (A) term;
+		} else
+			return (A) this;
 	}
 
 	/**
@@ -212,16 +254,24 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	public void advise(TerminalId<TYPE, CODE> adviser) {
 		if (isServer() != adviser.isServer())
 			throw new UnsupportException();
-		if (adviser.type != null)
+		if (adviser.isForced()) {
 			this.type = adviser.type;
-		if (adviser.code != null)
 			this.code = adviser.code;
-		if (adviser.address != null)
 			this.address = adviser.address;
-		if (adviser.tag != null)
 			this.tag = adviser.tag;
-		if (adviser.descr != null)
 			this.descr = adviser.descr;
+		} else {
+			if (adviser.type != null)
+				this.type = adviser.type;
+			if (adviser.code != null)
+				this.code = adviser.code;
+			if (adviser.address != null)
+				this.address = adviser.address;
+			if (adviser.tag != null)
+				this.tag = adviser.tag;
+			if (adviser.descr != null)
+				this.descr = adviser.descr;
+		}
 		this.clearId();
 	}
 
@@ -313,7 +363,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	@Override
 	public String toString() {
 		String id = id();
-		return id == null ? "all" : id;
+		return id == null ? (isPattern() ? "all" : "null") : id;
 	}
 
 	/**

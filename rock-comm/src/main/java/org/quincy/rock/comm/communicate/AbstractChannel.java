@@ -55,7 +55,11 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 * 报文协议版本。
 	 */
 	private String protocolVer;
-
+	/**
+	 * 是否是强制的建议。
+	 */
+	private boolean forced;
+	
 	/** 
 	 * id。
 	 * @see org.quincy.rock.core.vo.Vo#id()
@@ -88,7 +92,7 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 * @see org.quincy.rock.core.cache.HasTimestamp#updateTimestamp()
 	 */
 	@Override
-	public void updateTimestamp() {
+	public final void updateTimestamp() {
 		this.timestamp = System.currentTimeMillis();
 	}
 
@@ -108,6 +112,44 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	@Override
 	public final void updateAccessTime() {
 		lastAccessTime = System.currentTimeMillis();
+	}
+
+	/** 
+	 * isForced。
+	 * @see org.quincy.rock.comm.communicate.Adviser#isForced()
+	 */
+	@Override
+	public final boolean isForced() {
+		return this.forced;
+	}
+
+	/** 
+	 * forced。
+	 * @see org.quincy.rock.comm.communicate.Adviser#forced()
+	 */
+	@Override
+	public final <A extends Adviser> A forced() {
+		if (isForced())
+			return (A) this;
+		else {
+			AbstractChannel ch = this.cloneMe();
+			ch.forced = true;
+			return (A) ch;
+		}
+	}
+
+	/** 
+	 * advised。
+	 * @see org.quincy.rock.comm.communicate.Adviser#advised()
+	 */
+	@Override
+	public final <A extends Adviser> A advised() {
+		if (isForced()) {
+			AbstractChannel ch = this.cloneMe();
+			ch.forced = false;
+			return (A) ch;
+		} else
+			return (A) this;
 	}
 
 	/** 
@@ -164,7 +206,7 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 * @see org.quincy.rock.comm.communicate.IChannel#protocolVer()
 	 */
 	@Override
-	public String protocolVer() {
+	public final String protocolVer() {
 		return protocolVer;
 	}
 

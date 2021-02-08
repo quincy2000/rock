@@ -1,7 +1,7 @@
 package org.quincy.rock.comm.communicate;
 
 /**
- * <b>顾问建议接口。</b>
+ * <b>参考建议接口。</b>
  * <p><b>详细说明：</b></p>
  * <!-- 在此添加详细说明 -->
  * 无。
@@ -17,5 +17,29 @@ package org.quincy.rock.comm.communicate;
  * @since 1.0
  */
 public interface Adviser {
-
+	/**
+	 * <b>是否是强迫的建议。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 是否是强迫的建议
+	 */
+	public boolean isForced();
+	/**
+	 * <b>返回强迫的建议。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 强迫的建议
+	 */
+	public <A extends Adviser> A forced();
+	
+	/**
+	 * <b>返回非强迫建议。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 非强迫建议
+	 */
+	public <A extends Adviser> A  advised();
 }
