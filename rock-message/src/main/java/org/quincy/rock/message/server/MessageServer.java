@@ -48,7 +48,6 @@ import org.quincy.rock.message.vo.TerminalInfo;
 import org.slf4j.Logger;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * <b>报文服务器。</b>
@@ -895,7 +894,7 @@ public abstract class MessageServer<CMD extends TerminalCommand<TERM, TYPE, CODE
 	 * <!-- 在此添加详细说明 -->
 	 * 如果服务器是损坏的则自动重启。
 	 */
-	@Scheduled(cron = "0 0/2 * * * ?")
+	//@Scheduled(cron = "0 0/2 * * * ?")
 	public boolean checkServerAndRepair() {
 		boolean ok = true;
 		if (runningFlag && !running()) {
