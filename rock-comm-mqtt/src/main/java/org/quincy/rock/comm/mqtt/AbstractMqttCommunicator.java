@@ -227,6 +227,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 * 无。
 	 * @return mqtt通道
 	 */
+	@Override
 	public final UChannel getMqttChannel() {
 		if (mqttChannel == null)
 			throw new CommunicateException("MqttChannel not set!");

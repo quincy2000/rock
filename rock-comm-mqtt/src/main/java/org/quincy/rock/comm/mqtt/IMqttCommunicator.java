@@ -35,6 +35,15 @@ public interface IMqttCommunicator<UChannel extends IMqttChannel>
 	public String getMqttClientId();
 
 	/**
+	 * <b>获得mqtt通道。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return mqtt通道
+	 */
+	public UChannel getMqttChannel();
+
+	/**
 	 * <b>连接指定主机。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
