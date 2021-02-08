@@ -1,5 +1,7 @@
 package org.quincy.rock.comm.netty;
 
+import io.netty.channel.Channel;
+
 /**
  * <b>NoneChannelTransformer。</b>
  * <p><b>详细说明：</b></p>
@@ -16,13 +18,10 @@ package org.quincy.rock.comm.netty;
  * @author wks
  * @since 1.0
  */
-public class NoneChannelTransformer<UChannel> implements ChannelTransformer<UChannel, UChannel> {
-	/** 
-	 * transform。
-	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.communicate.ChannelTransformer.STransformPoint)
-	 */
+public class NoneChannelTransformer implements ChannelTransformer<Channel> {
+
 	@Override
-	public UChannel transform(UChannel source, STransformPoint point) {
+	public Channel transform(Channel source, STransformPoint point) {
 		return source;
 	}
 
@@ -31,7 +30,7 @@ public class NoneChannelTransformer<UChannel> implements ChannelTransformer<UCha
 	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.communicate.ChannelTransformer.UTransformPoint)
 	 */
 	@Override
-	public UChannel transform(UChannel userdefine, UTransformPoint point) {
+	public Channel transform(Channel userdefine, UTransformPoint point) {
 		return userdefine;
 	}
 
@@ -40,7 +39,7 @@ public class NoneChannelTransformer<UChannel> implements ChannelTransformer<UCha
 	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#retrieveSendLock(java.lang.Object)
 	 */
 	@Override
-	public Object retrieveSendLock(UChannel userdefine) {
+	public Object retrieveSendLock(Channel userdefine) {
 		return userdefine;
 	}
 }

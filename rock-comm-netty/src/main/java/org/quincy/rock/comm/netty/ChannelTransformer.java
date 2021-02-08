@@ -1,5 +1,7 @@
 package org.quincy.rock.comm.netty;
 
+import io.netty.channel.Channel;
+
 /**
  * <b>通道转换器。</b>
  * <p><b>详细说明：</b></p>
@@ -17,7 +19,7 @@ package org.quincy.rock.comm.netty;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public interface ChannelTransformer<UChannel, SChannel> {
+public interface ChannelTransformer<UChannel> {
 	/**
 	 * NONE。
 	 */
@@ -46,7 +48,7 @@ public interface ChannelTransformer<UChannel, SChannel> {
 	 * @param point 转换点
 	 * @return 定制通道
 	 */
-	public UChannel transform(SChannel source, STransformPoint point);
+	public UChannel transform(Channel source, STransformPoint point);
 
 	/**
 	 * <b>定制通道转换到原始通道。</b>
@@ -57,7 +59,7 @@ public interface ChannelTransformer<UChannel, SChannel> {
 	 * @param point 转换点
 	 * @return 原始通道
 	 */
-	public SChannel transform(UChannel userdefine, UTransformPoint point);
+	public Channel transform(UChannel userdefine, UTransformPoint point);
 
 	/**
 	 * <b>取得通道发送消息锁。</b>

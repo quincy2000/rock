@@ -21,7 +21,7 @@ import io.netty.util.AttributeKey;
  * @since 1.0
  */
 public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
-		implements ChannelTransformer<UChannel, Channel> {
+		implements ChannelTransformer<UChannel> {
 	/**
 	 * 存放纯净通道的Key。
 	 */

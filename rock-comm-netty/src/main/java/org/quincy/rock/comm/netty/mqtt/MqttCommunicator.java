@@ -422,7 +422,7 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	 */
 	@Override
 	@Deprecated
-	public final void setChannelTransformer(ChannelTransformer<IMqttChannel, Channel> channelTransformer) {
+	public final void setChannelTransformer(ChannelTransformer<IMqttChannel> channelTransformer) {
 		if (channelTransformer != this.getChannelTransformer())
 			throw new UnsupportException("Custom channelTransformer are not supported!");
 	}

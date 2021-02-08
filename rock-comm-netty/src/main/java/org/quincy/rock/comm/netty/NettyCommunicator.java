@@ -96,7 +96,7 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	/**
 	 * 通道转换器。
 	 */
-	private ChannelTransformer<UChannel, Channel> channelTransformer = ChannelTransformer.NONE;
+	private ChannelTransformer<UChannel> channelTransformer = ChannelTransformer.NONE;
 	/**
 	 * 通道句柄创建器。
 	 */
@@ -237,7 +237,7 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	 * 无。 
 	 * @return 通道转换器
 	 */
-	public ChannelTransformer<UChannel, Channel> getChannelTransformer() {
+	public ChannelTransformer<UChannel> getChannelTransformer() {
 		return channelTransformer;
 	}
 
@@ -248,7 +248,7 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	 * 无。
 	 * @param channelTransformer 通道转换器
 	 */
-	public void setChannelTransformer(ChannelTransformer<UChannel, Channel> channelTransformer) {
+	public void setChannelTransformer(ChannelTransformer<UChannel> channelTransformer) {
 		this.channelTransformer = channelTransformer;
 	}
 
@@ -335,7 +335,7 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 		GenericFutureListener<Future<? super Void>> gfListener;
 		ChannelFuture future;
 		//获得通道转换器
-		ChannelTransformer<UChannel, Channel> ct = this.getChannelTransformer();
+		ChannelTransformer<UChannel> ct = this.getChannelTransformer();
 		Object lock = ct.retrieveSendLock(channel);
 		synchronized (lock) {
 			Channel ch = ct.transform(channel, UTransformPoint.SEND_DATA);
