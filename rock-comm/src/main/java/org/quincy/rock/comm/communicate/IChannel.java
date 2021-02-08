@@ -116,12 +116,11 @@ public interface IChannel extends Adviser, HasTimestamp, HasAccessTime, HasPatte
 	 * <b>创建新的发送通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 创建新通道时可以参考顾问建议(全部采纳或部分采纳)。
-	 * @param adviser 顾问建议,没有建议时传null
-	 * @param force 是否强制接受全部建议(当建议不为空时)
+	 * 创建新通道时可以参考顾问建议。
+	 * @param adviser 顾问建议,如果没有建议可以传null
 	 * @return 新的发送通道
 	 */
-	public <T extends IChannel> T newSendChannel(Adviser adviser, boolean force);
+	public <T extends IChannel> T newSendChannel(Adviser adviser);
 
 	/**
 	 * <b>返回通道地址信息。</b>
@@ -131,22 +130,4 @@ public interface IChannel extends Adviser, HasTimestamp, HasAccessTime, HasPatte
 	 * @return 通道地址信息
 	 */
 	public String addressInfo();
-
-	/**
-	 * <b>一定是非模式通道。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 一定是非模式通道
-	 */
-	public boolean nonPattern();
-
-	/**
-	 * <b>设置成一定是非模式通道。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 模式通道的一票否决。
-	 * @param nonPattern 一定是非模式通道
-	 */
-	public void nonPattern(boolean nonPattern);
 }

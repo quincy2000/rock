@@ -180,6 +180,7 @@ public class RpcMessageService<K, UChannel> extends DefaultMessageService<K, UCh
 	public <T> T sendRpcMessage(Object terminalId, Object msgId, K functionCode, Object content,
 			Map<String, Object> attachment) throws CommunicateException {
 		UChannel channel = findSendChannel(terminalId);
+		checkSendChannel(channel);
 		return sendRpcMessage(channel, getTerminalId(channel, terminalId), msgId, functionCode, content, attachment,
 				null, null);
 	}
@@ -193,6 +194,7 @@ public class RpcMessageService<K, UChannel> extends DefaultMessageService<K, UCh
 			Map<String, Object> attachment, Consumer<?> succeed, Consumer<Exception> failed)
 			throws CommunicateException {
 		UChannel channel = findSendChannel(terminalId);
+		checkSendChannel(channel);
 		sendRpcMessage(channel, getTerminalId(channel, terminalId), msgId, functionCode, content, attachment, succeed,
 				failed);
 	}
@@ -205,7 +207,8 @@ public class RpcMessageService<K, UChannel> extends DefaultMessageService<K, UCh
 	public void sendRpcMessageByChannel(UChannel channel, Object msgId, K functionCode, Object content,
 			Map<String, Object> attachment, Consumer<?> succeed, Consumer<Exception> failed)
 			throws CommunicateException {
-		channel = findSendChannelByExample(channel);
+		channel = getSendChannel(channel);
+		checkSendChannel(channel);
 		sendRpcMessage(channel, getTerminalId(channel, null), msgId, functionCode, content, attachment, succeed,
 				failed);
 	}
@@ -217,7 +220,8 @@ public class RpcMessageService<K, UChannel> extends DefaultMessageService<K, UCh
 	@Override
 	public <T> T sendRpcMessageByChannel(UChannel channel, Object msgId, K functionCode, Object content,
 			Map<String, Object> attachment) throws CommunicateException {
-		channel = findSendChannelByExample(channel);
+		channel = getSendChannel(channel);
+		checkSendChannel(channel);
 		return sendRpcMessage(channel, getTerminalId(channel, null), msgId, functionCode, content, attachment, null,
 				null);
 	}

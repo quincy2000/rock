@@ -498,8 +498,8 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 */
 	protected byte[] dataToPayload(UChannel channel, Object data) {
 		if (data instanceof MqttMessage) {
-			MqttMessage msg=(MqttMessage)data;
-			data=msg.getPayload();
+			MqttMessage msg = (MqttMessage) data;
+			data = msg.getPayload();
 			channel.setMqttQos(msg.getQos());
 			channel.setRetained(msg.isRetained());
 		}
@@ -742,8 +742,10 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 
 	//检查发送通道合法性
 	private void checkSendChannel(UChannel ch) {
+		if (ch.mqttClient() == null)
+			ch.mqttClient(mqttClient);
 		this.checkMqttChannel(ch);
-		if (!ch.isValidChannel() ||  !ch.isSendChannel())
+		if (!ch.isValidChannel() || !ch.isSendChannel())
 			throw new CommunicateException("This is not a valid send MqttChannel!");
 	}
 

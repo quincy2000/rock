@@ -32,13 +32,13 @@ public abstract class AbstractNettyChannelTransformer<UChannel extends INettyCha
 		case CHANNEL_INACTIVE:
 		case CHANNEL_READ:
 		case CHANNEL_ERROR:
-			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY, true);
+			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY);
 			break;
 		case CHANNEL_WRITE:
-			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY, false);
+			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY);
 			break;
 		default:
-			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY, false);
+			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY);
 			break;
 		}
 		return channel;

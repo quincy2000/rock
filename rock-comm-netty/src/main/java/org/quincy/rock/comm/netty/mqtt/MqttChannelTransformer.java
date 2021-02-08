@@ -34,12 +34,12 @@ public abstract class MqttChannelTransformer<UChannel extends IMqttChannel>
 		switch (point) {
 		case CHANNEL_READ:
 		case CHANNEL_ERROR:
-			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY, false);
+			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY);
 			topic = ch.attr(MqttChannelHandler.RECEIVED_MESSAGE_TOPIC_KEY).get();
 			channel.fromTopic(topic);
 			break;
 		case CHANNEL_WRITE:
-			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY, false);
+			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY);
 			topic = channel.toTopic();
 			ch.attr(MqttChannelHandler.SENDED_MESSAGE_TOPIC_KEY).set(topic);
 			if (channel instanceof MqttSendConfig) {
@@ -52,7 +52,7 @@ public abstract class MqttChannelTransformer<UChannel extends IMqttChannel>
 			}
 			break;
 		default:
-			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY, false);
+			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY);
 			break;
 		}
 		return channel;

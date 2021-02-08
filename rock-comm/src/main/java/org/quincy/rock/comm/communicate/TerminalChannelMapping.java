@@ -155,17 +155,7 @@ public interface TerminalChannelMapping<UChannel> extends LiveTime<Object>, Acce
 	 * @return 通道对象
 	 */
 	public UChannel findChannel(Object terminalId);
-
-	/**
-	 * <b>通过示例查找一个通道。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param example 通道示例
-	 * @return 通道对象
-	 */
-	public UChannel findChannelByExample(UChannel example);
-
+	
 	/**
 	 * <b>获得终端标识。</b>
 	 * <p><b>详细说明：</b></p>

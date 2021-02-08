@@ -55,10 +55,6 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 * 报文协议版本。
 	 */
 	private String protocolVer;
-	/**
-	 * 非模式通道。
-	 */
-	private boolean nonPattern;
 
 	/** 
 	 * id。
@@ -120,25 +116,16 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 */
 	@Override
 	public boolean isPattern() {
-		return !nonPattern();
+		return false;
 	}
 
 	/** 
-	 * nonPattern。
-	 * @see org.quincy.rock.comm.communicate.IChannel#nonPattern()
+	 * isMatched。
+	 * @see org.quincy.rock.core.util.HasPattern#isMatched(java.lang.Object)
 	 */
 	@Override
-	public final boolean nonPattern() {
-		return nonPattern;
-	}
-
-	/** 
-	 * nonPattern。
-	 * @see org.quincy.rock.comm.communicate.IChannel#nonPattern(boolean)
-	 */
-	@Override
-	public final void nonPattern(boolean nonPattern) {
-		this.nonPattern = nonPattern;
+	public boolean isMatched(Object obj) {
+		return false;
 	}
 
 	/**
@@ -233,16 +220,16 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 * @see org.quincy.rock.comm.communicate.IChannel#newSendChannel()
 	 */
 	@Override
-	public final <T extends IChannel> T newSendChannel() {
-		return newSendChannel(null, false);
+	public <T extends IChannel> T newSendChannel() {
+		return newSendChannel(null);
 	}
 
 	/** 
 	 * newSendChannel。
-	 * @see org.quincy.rock.comm.communicate.IChannel#newSendChannel(org.quincy.rock.comm.communicate.Adviser, boolean)
+	 * @see org.quincy.rock.comm.communicate.IChannel#newSendChannel(org.quincy.rock.comm.communicate.Adviser)
 	 */
 	@Override
-	public <T extends IChannel> T newSendChannel(Adviser adviser, boolean force) {
+	public <T extends IChannel> T newSendChannel(Adviser adviser) {
 		AbstractChannel ch = this.cloneMe();
 		ch.sendChannel = true;
 		return (T) ch;

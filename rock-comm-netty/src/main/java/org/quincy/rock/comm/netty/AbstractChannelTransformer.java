@@ -74,12 +74,11 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 
 	//获得INettyChannel，如果没有就创建一个
 	@SuppressWarnings("unchecked")
-	protected UChannel getNettyChannel(Channel ch, AttributeKey<INettyChannel> key, boolean createUseNonPattern) {
+	protected UChannel getNettyChannel(Channel ch, AttributeKey<INettyChannel> key) {
 		Attribute<INettyChannel> attr = ch.attr(key);
 		UChannel channel = (UChannel) attr.get();
 		if (channel == null) {
-			channel = createChannel(ch);
-			channel.nonPattern(createUseNonPattern); //物理通道和逻辑通道一一对应，不支持模式
+			channel = createChannel(ch);			
 			attr.set(channel);
 		}
 		return channel;

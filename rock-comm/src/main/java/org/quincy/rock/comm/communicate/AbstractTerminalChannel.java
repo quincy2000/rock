@@ -166,24 +166,6 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 	}
 
 	/** 
-	 * isPattern。
-	 * @see org.quincy.rock.core.util.HasPattern#isPattern()
-	 */
-	@Override
-	public boolean isPattern() {
-		return super.isPattern() && remote().isPattern();
-	}
-
-	/** 
-	 * isMatched。
-	 * @see org.quincy.rock.core.util.HasPattern#isMatched(java.lang.Object)
-	 */
-	@Override
-	public boolean isMatched(Object obj) {
-		return remote().isMatched(obj);
-	}
-
-	/** 
 	 * clone。
 	 * @see org.quincy.rock.comm.communicate.AbstractChannel#clone()
 	 */
@@ -199,15 +181,15 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 
 	/** 
 	 * newSendChannel。
-	 * @see org.quincy.rock.comm.communicate.AbstractChannel#newSendChannel(org.quincy.rock.comm.communicate.Adviser, boolean)
+	 * @see org.quincy.rock.comm.communicate.AbstractChannel#newSendChannel(org.quincy.rock.comm.communicate.Adviser)
 	 */
 	@Override
-	public <T extends IChannel> T newSendChannel(Adviser adviser, boolean force) {
-		TerminalChannel ch = super.newSendChannel(adviser, force);
+	public <T extends IChannel> T newSendChannel(Adviser adviser) {
+		TerminalChannel ch = super.newSendChannel(adviser);
 		if (adviser instanceof TerminalId) {
-			ch.remote().advise((TerminalId) adviser, force);
+			ch.remote().advise((TerminalId) adviser);
 		} else if (adviser instanceof TerminalChannel) {
-			ch.remote().advise(((TerminalChannel) adviser).remote(), force);
+			ch.remote().advise(((TerminalChannel) adviser).remote());
 		}
 		return (T) ch;
 	}

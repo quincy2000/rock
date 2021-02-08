@@ -1,7 +1,5 @@
 package org.quincy.rock.comm;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -10,22 +8,15 @@ import org.quincy.rock.comm.cmd.CommandStation;
 import org.quincy.rock.comm.cmd.DefaultCommandStation;
 import org.quincy.rock.comm.communicate.Adviser;
 import org.quincy.rock.comm.communicate.IChannel;
-import org.quincy.rock.comm.communicate.PatternChannelMapping;
 import org.quincy.rock.comm.communicate.TerminalChannel;
 import org.quincy.rock.comm.communicate.TerminalChannelMapping;
 import org.quincy.rock.core.function.Consumer;
-import org.quincy.rock.core.function.ConsumerJoiner;
-import org.quincy.rock.core.util.HasPattern;
 
 /**
  * <b>报文服务抽象基类。</b>
  * <p><b>详细说明：</b></p>
  * <!-- 在此添加详细说明 -->
- * 如果要想使用群发功能，
- * 终端id类必须实现HasPattern接口，
- * 通道类必须实现IChannel接口，
- * 终端通道映射器必须实现PatternChannelMapping接口。
- * 
+ * 无。
  * <p><b>修改列表：</b></p>
  * <table width="100%" cellSpacing=1 cellPadding=3 border=1>
  * <tr bgcolor="#CCCCFF"><td>序号</td><td>作者</td><td>修改日期</td><td>修改内容</td></tr>
@@ -36,7 +27,6 @@ import org.quincy.rock.core.util.HasPattern;
  * @version 1.0
  * @author wks
  * @since 1.0
- * @see TerminalId,TerminalChannel
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class AbstractMessageService<K, UChannel> implements MessageService<K, UChannel> {
@@ -267,32 +257,10 @@ public abstract class AbstractMessageService<K, UChannel> implements MessageServ
 	@Override
 	public final void sendMessage(Object terminalId, Object msgId, K functionCode, Object content,
 			Map<String, Object> attachment, boolean async, Consumer<Boolean> consumer) {
-		if (supportMass(terminalId)) {
-			//支持群发,查找发送报文的可用通道列表
-			Collection<UChannel> channels = findSendChannels((HasPattern) terminalId);
-			if (channels == null || channels.isEmpty())
-				throw new CommunicateException("No suitable channel was found to send the message!");
-			if (consumer == null || channels.size() == 1) {
-				for (UChannel channel : channels) {
-					sendMessage(channel, getTerminalId(channel, terminalId), msgId, functionCode, content, attachment,
-							async, consumer);
-				}
-			} else {
-				int i = 0;
-				ConsumerJoiner joiner = new ConsumerJoiner(channels.size(), consumer);
-				for (UChannel channel : channels) {
-					sendMessage(channel, getTerminalId(channel, terminalId), msgId, functionCode, content, attachment,
-							async, joiner.chunkConsumer(i++));
-				}
-			}
-		} else {
-			//不支持群发
-			UChannel channel = findSendChannel(terminalId);
-			if (channel == null)
-				throw new CommunicateException("No suitable channel was found to send the message!");
-			sendMessage(channel, getTerminalId(channel, terminalId), msgId, functionCode, content, attachment, async,
-					consumer);
-		}
+		UChannel channel = findSendChannel(terminalId);
+		this.checkSendChannel(channel);
+		sendMessage(channel, getTerminalId(channel, terminalId), msgId, functionCode, content, attachment, async,
+				consumer);
 	}
 
 	/** 
@@ -302,30 +270,9 @@ public abstract class AbstractMessageService<K, UChannel> implements MessageServ
 	@Override
 	public final void sendMessageByChannel(UChannel ch, Object msgId, K functionCode, Object content,
 			Map<String, Object> attachment, boolean async, Consumer<Boolean> consumer) {
-		if (supportMass(ch)) {
-			//支持群发,查找发送报文的可用通道列表
-			Collection<UChannel> channels = findSendChannels((HasPattern) ch);
-			if (channels == null || channels.isEmpty())
-				throw new CommunicateException("No suitable channel was found to send the message!");
-			if (consumer == null || channels.size() == 1) {
-				for (UChannel channel : channels) {
-					sendMessage(channel, getTerminalId(channel, null), msgId, functionCode, content, attachment, async,
-							consumer);
-				}
-			} else {
-				int i = 0;
-				ConsumerJoiner joiner = new ConsumerJoiner(channels.size(), consumer);
-				for (UChannel channel : channels) {
-					sendMessage(channel, getTerminalId(channel, null), msgId, functionCode, content, attachment, async,
-							joiner.chunkConsumer(i++));
-				}
-			}
-		} else {
-			//不支持群发,精确发送
-			UChannel channel = findSendChannelByExample(ch);
-			sendMessage(channel, getTerminalId(channel, null), msgId, functionCode, content, attachment, async,
-					consumer);
-		}
+		UChannel channel = getSendChannel(ch);
+		this.checkSendChannel(channel);
+		sendMessage(channel, getTerminalId(channel, null), msgId, functionCode, content, attachment, async, consumer);
 	}
 
 	/**
@@ -333,34 +280,6 @@ public abstract class AbstractMessageService<K, UChannel> implements MessageServ
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 终端和通道必须一致。
-	 * @param channel 通道，必须是一个有效通道(包含原始通道)
-	 * @param terminalId 通道对应的终端标识
-	 * @param msgId 消息唯一id
-	 * @param functionCode 功能码
-	 * @param content 报文内容 
-	 * @param attachment 附加信息,可以为null
-	 * @param async 是否是异步发送，指示是立即返回还是发送完成后再返回
-	 * @param consumer 回调Consumer,指示发送是否成功,可以为null
-	 */
-	protected final void sendMessage(UChannel channel, Object terminalId, Object msgId, K functionCode, Object content,
-			Map<String, Object> attachment, boolean async, Consumer<Boolean> consumer) {
-		//确保通道合法性
-		if (channel instanceof IChannel) {
-			IChannel ch = (IChannel) channel;
-			if (!ch.isValidChannel())
-				throw new CommunicateException("Channel is invalid!");
-			if (!ch.isSendChannel()) {
-				channel = (UChannel) ch.newSendChannel();
-			}
-		}
-		sendMessage0(channel, terminalId, msgId, functionCode, content, attachment, async, consumer);
-	}
-
-	/**
-	 * <b>发送消息报文。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
 	 * @param channel 通道，必须是一个有效的发送通道（包含原始通道）
 	 * @param terminalId 终端唯一标识,不允许模式终端,但允许为null。
 	 * @param msgId 消息唯一id
@@ -370,62 +289,43 @@ public abstract class AbstractMessageService<K, UChannel> implements MessageServ
 	 * @param async 是否是异步发送，指示是立即返回还是发送完成后再返回
 	 * @param consumer 回调Consumer,指示发送是否成功,可以为null
 	 */
-	protected abstract void sendMessage0(UChannel channel, Object terminalId, Object msgId, K functionCode,
+	protected abstract void sendMessage(UChannel channel, Object terminalId, Object msgId, K functionCode,
 			Object content, Map<String, Object> attachment, boolean async, Consumer<Boolean> consumer);
 
 	/**
-	 * <b>为终端查找一个可用的精准发送通道。</b>
+	 * <b>为终端查找一个可用的有效发送通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 确保返回的是可用的精准发送通道,如果没有则返回null。
-	 * @param terminalId 终端唯一标识(非模式)
-	 * @return 发送通道,如果没有则返回null
+	 * 无。
+	 * @param terminalId 终端唯一标识
+	 * @return 返回一个可用的有效发送通道,如果没有则返回null
 	 */
 	protected UChannel findSendChannel(Object terminalId) {
 		UChannel channel = getTerminalChannelMapping().findChannel(terminalId);
 		if (channel instanceof IChannel) {
-			channel = ((IChannel) channel).newSendChannel(terminalId instanceof Adviser ? (Adviser) terminalId : null,
-					false);
+			channel = ((IChannel) channel).newSendChannel(terminalId instanceof Adviser ? (Adviser) terminalId : null);
 		}
 		return channel;
 	}
 
 	/**
-	 * <b>根据示例通道查找一个可用的精准发送通道。</b>
+	 * <b>获得一个可用的有效发送通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param ch 示例通道
-	 * @return 发送通道,如果没有则返回null
+	 * @param ch 通道
+	 * @return 返回一个可用的有效发送通道,如果没有则返回null
 	 */
-	protected UChannel findSendChannelByExample(UChannel ch) {
-		UChannel channel = getTerminalChannelMapping().findChannelByExample(ch);
-		if (channel instanceof IChannel) {
-			channel = ((IChannel) channel).newSendChannel(ch instanceof Adviser ? (Adviser) ch : null, false);
-		}
-		return channel;
-	}
-
-	/**
-	 * <b>根据匹配模式获得一个或多个可用的发送通道。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param pattern 匹配模式
-	 * @return 发送通道列表
-	 */
-	protected Collection<UChannel> findSendChannels(HasPattern pattern) {
-		PatternChannelMapping mapping = (PatternChannelMapping) this.getTerminalChannelMapping();
-		Collection<UChannel> channels = mapping.findChannels(pattern);
-		List<UChannel> list = new ArrayList<>(channels.size());
-		for (UChannel channel : channels) {
+	protected UChannel getSendChannel(UChannel ch) {
+		Object terminalId = getTerminalChannelMapping().findTerminal(ch);
+		if (terminalId != null) {
+			UChannel channel = getTerminalChannelMapping().findChannel(terminalId);
 			if (channel instanceof IChannel) {
-				UChannel ch = ((IChannel) channel).newSendChannel(pattern instanceof Adviser ? (Adviser) pattern : null,
-						false);
-				list.add(ch);
+				channel = ((IChannel) channel).newSendChannel(ch instanceof Adviser ? (Adviser) ch : null);
 			}
-		}
-		return list;
+			return channel;
+		} else
+			return null;
 	}
 
 	/**
@@ -433,7 +333,7 @@ public abstract class AbstractMessageService<K, UChannel> implements MessageServ
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param channel 精确通道
+	 * @param channel 通道
 	 * @param defTerm 缺省终端标识
 	 * @return 终端标识
 	 */
@@ -447,9 +347,20 @@ public abstract class AbstractMessageService<K, UChannel> implements MessageServ
 		return term == null ? defTerm : term;
 	}
 
-	//判断是否支持群发
-	private boolean supportMass(Object obj) {
-		TerminalChannelMapping<UChannel> mapping = getTerminalChannelMapping();
-		return mapping instanceof PatternChannelMapping && obj instanceof HasPattern;
+	/**
+	 * <b>检查发送通道合法性。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param channel 发送通道
+	 */
+	protected void checkSendChannel(UChannel channel) {
+		if (channel == null)
+			throw new CommunicateException("No suitable channel was found to send the message!");
+		if (channel instanceof IChannel) {
+			IChannel ch = (IChannel) channel;
+			if (!ch.isValidChannel() || !ch.isSendChannel())
+				throw new CommunicateException("This is not a valid send channel!");
+		}
 	}
 }

@@ -1,16 +1,10 @@
 package org.quincy.rock.comm.netty.mqtt;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.TreeSet;
-
 import org.quincy.rock.comm.DefaultMessageService;
 import org.quincy.rock.comm.communicate.Adviser;
 import org.quincy.rock.comm.communicate.Communicator;
-import org.quincy.rock.comm.communicate.PatternChannelMapping;
 import org.quincy.rock.comm.communicate.TerminalChannel;
 import org.quincy.rock.comm.communicate.TerminalId;
-import org.quincy.rock.core.util.HasPattern;
 
 /**
  * <b>MqttMessageService。</b>
@@ -28,7 +22,7 @@ import org.quincy.rock.core.util.HasPattern;
  * @author wks
  * @since 1.0
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes"})
 public class MqttMessageService<K, UChannel extends TerminalChannel<?, ?>> extends DefaultMessageService<K, UChannel> {
 	/**
 	 * 确保有可用的通道。
@@ -68,15 +62,16 @@ public class MqttMessageService<K, UChannel extends TerminalChannel<?, ?>> exten
 	}
 
 	/** 
-	 * findSendChannelByExample。
-	 * @see org.quincy.rock.comm.AbstractMessageService#findSendChannelByExample(java.lang.Object)
+	 * getSendChannel。
+	 * @see org.quincy.rock.comm.AbstractMessageService#getSendChannel(java.lang.Object)
 	 */
 	@Override
-	protected UChannel findSendChannelByExample(UChannel ch) {
-		UChannel channel = getTerminalChannelMapping().findChannelByExample(ch);
+	protected UChannel getSendChannel(UChannel ch) {
+		Object terminalId = getTerminalChannelMapping().findTerminal(ch);
+		UChannel channel = terminalId == null ? null : getTerminalChannelMapping().findChannel(terminalId);
 		if (channel == null && isEnsureChannel())
 			channel = getMqttCommunicator().rootChannel();
-		return channel == null ? null : newSendChannel(channel, ch, ch.isPattern());
+		return channel == null ? null : newSendChannel(channel, ch);
 	}
 
 	/** 
@@ -85,47 +80,24 @@ public class MqttMessageService<K, UChannel extends TerminalChannel<?, ?>> exten
 	 */
 	@Override
 	protected UChannel findSendChannel(Object terminalId) {
-		TerminalId<Short, String> term = (TerminalId) terminalId;
+		TerminalId term = (TerminalId) terminalId;
 		UChannel channel = getTerminalChannelMapping().findChannel(term);
 		if (channel == null && isEnsureChannel())
 			channel = getMqttCommunicator().rootChannel();
-		return channel == null ? null : newSendChannel(channel, term, term.isPattern());
-	}
-
-	/** 
-	 * findSendChannels。
-	 * @see org.quincy.rock.comm.AbstractMessageService#findSendChannels(org.quincy.rock.core.util.HasPattern)
-	 */
-	@Override
-	protected Collection<UChannel> findSendChannels(HasPattern pattern) {
-		Adviser adviser = (pattern instanceof Adviser) ? (Adviser) pattern : null;
-		Collection<UChannel> channels = ((PatternChannelMapping) this.getTerminalChannelMapping())
-				.findChannels(pattern);
-		Collection<UChannel> list = new TreeSet<>();
-		for (UChannel channel : channels) {
-			UChannel ch = newSendChannel(channel, adviser, pattern.isPattern());
-			list.add(ch);
-		}
-		if (list.isEmpty() && isEnsureChannel()) {
-			//如果没有通道则自己创建一个MQTT发送通道
-			UChannel ch = getMqttCommunicator().rootChannel();
-			list = Arrays.asList(newSendChannel(ch, adviser, pattern.isPattern()));
-		}
-		return list;
+		return channel == null ? null : newSendChannel(channel, term);
 	}
 
 	/**
-	 * <b>创新新的发送通道。</b>
+	 * <b>创建新的发送通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @param channel 原来的通道
 	 * @param adviser 建议
-	 * @param pattern 是否时模式匹配
 	 * @return 新的发送通道
 	 */
-	protected UChannel newSendChannel(UChannel channel, Adviser adviser, boolean pattern) {
-		UChannel ch = channel.newSendChannel(adviser, true);
+	protected UChannel newSendChannel(UChannel channel, Adviser adviser) {
+		UChannel ch = channel.newSendChannel(adviser);
 		if (ch instanceof MqttSendConfig && adviser instanceof MqttSendConfig) {
 			MqttSendConfig src = (MqttSendConfig) adviser;
 			MqttSendConfig dest = (MqttSendConfig) ch;

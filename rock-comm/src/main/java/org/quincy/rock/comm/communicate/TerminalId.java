@@ -209,27 +209,19 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * @param adviser 建议示例终端,不能为null
 	 * @param force 是否强制接受全部建议 
 	 */
-	public void advise(TerminalId<TYPE, CODE> adviser, boolean force) {
+	public void advise(TerminalId<TYPE, CODE> adviser) {
 		if (isServer() != adviser.isServer())
 			throw new UnsupportException();
-		if (force) {
+		if (adviser.type != null)
 			this.type = adviser.type;
+		if (adviser.code != null)
 			this.code = adviser.code;
+		if (adviser.address != null)
 			this.address = adviser.address;
+		if (adviser.tag != null)
 			this.tag = adviser.tag;
+		if (adviser.descr != null)
 			this.descr = adviser.descr;
-		} else {
-			if (adviser.type != null)
-				this.type = adviser.type;
-			if (adviser.code != null)
-				this.code = adviser.code;
-			if (adviser.address != null)
-				this.address = adviser.address;
-			if (adviser.tag != null)
-				this.tag = adviser.tag;
-			if (adviser.descr != null)
-				this.descr = adviser.descr;
-		}
 		this.clearId();
 	}
 

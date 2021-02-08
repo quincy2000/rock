@@ -22,7 +22,7 @@ import org.quincy.rock.comm.util.CommUtils;
  */
 @SuppressWarnings("rawtypes")
 public class DefaultTerminalChannelMapping<UChannel extends TerminalChannel<?, ?>>
-		extends AbstractPatternTerminalChannelMapping<UChannel> {
+		extends AbstractTerminalChannelMapping<UChannel> {
 	/**
 	 * 终端合法性检查器。
 	 */

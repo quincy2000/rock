@@ -241,16 +241,6 @@ public abstract class AbstractTerminalChannelMapping<UChannel extends IChannel>
 	}
 
 	/** 
-	 * findChannelByExample。
-	 * @see org.quincy.rock.comm.communicate.TerminalChannelMapping#findChannelByExample(java.lang.Object)
-	 */
-	@Override
-	public UChannel findChannelByExample(UChannel example) {
-		TermPair pair = channelTerminalMapping.get(example.channelId());
-		return pair == null ? null : pair.channel;
-	}
-
-	/** 
 	 * findTerminal。
 	 * @see org.quincy.rock.comm.communicate.TerminalChannelMapping#findTerminal(java.lang.Object)
 	 */

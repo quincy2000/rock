@@ -1,15 +1,16 @@
 package org.quincy.rock.comm;
 
 import java.text.MessageFormat;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.quincy.rock.comm.MessageParser.MsgType;
 import org.quincy.rock.comm.communicate.CommunicateAdapter;
 import org.quincy.rock.comm.communicate.CommunicateListener;
 import org.quincy.rock.comm.communicate.Communicator;
-import org.quincy.rock.comm.communicate.PatternChannelMapping;
 import org.quincy.rock.comm.communicate.TerminalChannelMapping;
 import org.quincy.rock.comm.entrepot.MessageEntrepot;
 import org.quincy.rock.comm.entrepot.MessageEntrepotListener;
@@ -244,27 +245,30 @@ public class DefaultMessageService<K, UChannel> extends AbstractMessageService<K
 	 * <b>连接通道关闭时调用。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * 仅仅关闭逻辑通道。
 	 * @param channel 关闭的连接通道
 	 * @param e 导致通道关闭的异常，可以为null
 	 */
 	protected void channelClosed(UChannel channel, Throwable e) {
-		TerminalChannelMapping mapping = getTerminalChannelMapping();
-		if (channel instanceof HasPattern && mapping instanceof PatternChannelMapping) {
-			//支持模式
-			Collection<Object> terminalIds = ((PatternChannelMapping) mapping).destroyMappings((HasPattern) channel);
-			if (terminalIds != null && !terminalIds.isEmpty()) {
-				for (Object terminalId : terminalIds) {
-					getMessageEntrepot().removeTerminal(terminalId);
-					fireTerminalOfflineEvent(terminalId);
-				}
+		TerminalChannelMapping<UChannel> mapping = getTerminalChannelMapping();
+		List<UChannel> list;
+		if (channel instanceof HasPattern && ((HasPattern) channel).isPattern()) {
+			//使用模式匹配
+			list = new ArrayList<>(mapping.count());
+			HasPattern pattern = (HasPattern) channel;			
+			for (UChannel ch : mapping.channels()) {
+				if (pattern.isMatched(ch))
+					list.add(ch);
 			}
 		} else {
-			//不支持模式
-			Object terminalId = mapping.destroyMapping(channel);
-			if (terminalId != null) {
-				getMessageEntrepot().removeTerminal(terminalId);
-				fireTerminalOfflineEvent(terminalId);
+			list = Arrays.asList(channel);
+		}
+		//移除通道
+		for (UChannel ch : list) {
+			Object termId = mapping.destroyMapping(ch);
+			if (termId != null) {
+				getMessageEntrepot().removeTerminal(termId);
+				fireTerminalOfflineEvent(termId);
 			}
 		}
 	}
@@ -484,10 +488,10 @@ public class DefaultMessageService<K, UChannel> extends AbstractMessageService<K
 	}
 
 	/** 
-	 * sendMessage0。
-	 * @see org.quincy.rock.comm.AbstractMessageService#sendMessage0(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.util.Map, boolean, java.util.function.Consumer)
+	 * sendMessage。
+	 * @see org.quincy.rock.comm.AbstractMessageService#sendMessage(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.util.Map, boolean, org.quincy.rock.core.function.Consumer)
 	 */
-	protected void sendMessage0(UChannel channel, Object terminalId, Object msgId, K functionCode, Object content,
+	protected void sendMessage(UChannel channel, Object terminalId, Object msgId, K functionCode, Object content,
 			Map<String, Object> attachment, boolean async, Consumer<Boolean> consumer) {
 		Map<String, Object> ctx = attachment == null ? new HashMap() : new HashMap(attachment);
 		ctx.put(CommUtils.COMM_CHANNEL_KEY, channel);
