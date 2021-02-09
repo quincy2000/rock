@@ -57,7 +57,7 @@ public abstract class AbstractCommunicator<UChannel> implements Communicator<UCh
 	 * 无。
 	 * @return 日志记录器
 	 */
-	public final Recorder getRecorder() {
+	public Recorder getRecorder() {
 		return recorder;
 	}
 
@@ -68,7 +68,7 @@ public abstract class AbstractCommunicator<UChannel> implements Communicator<UCh
 	 * 无。
 	 * @param recorder 日志记录器
 	 */
-	public final void setRecorder(Recorder recorder) {
+	public void setRecorder(Recorder recorder) {
 		this.recorder = recorder;
 	}
 
