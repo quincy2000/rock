@@ -2,6 +2,7 @@ package org.quincy.rock.comm.mqtt;
 
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient;
 import org.quincy.rock.comm.communicate.AbstractChannel;
+import org.quincy.rock.core.util.StringUtil;
 
 /**
  * <b>MqttChannel。</b>
@@ -93,7 +94,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	@Override
 	public final void serverURI(String serverURI) {
 		this.serverURI = serverURI;
-	}	
+	}
 
 	/** 
 	 * isRetained。
@@ -138,7 +139,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 * 无。
 	 * @return 主题Topic
 	 */
-	public final String getTopic() {
+	public final String topic() {
 		return toTopic();
 	}
 
@@ -149,7 +150,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 * 无。
 	 * @param topic 主题Topic
 	 */
-	public final void setTopic(String topic) {
+	public final void topic(String topic) {
 		this.fromTopic(topic);
 	}
 
@@ -160,8 +161,8 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 * 无。
 	 * @return 远程唯一id
 	 */
-	public final String getRemoteId() {
-		return remoteId == null ? topic : remoteId;
+	public final String remoteId() {
+		return StringUtil.isBlank(remoteId) ? topic : remoteId;
 	}
 
 	/**
@@ -171,7 +172,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 * 无。
 	 * @param remoteId 远程唯一id
 	 */
-	public final void setRemoteId(String remoteId) {
+	public final void remoteId(String remoteId) {
 		this.remoteId = remoteId;
 	}
 
@@ -181,9 +182,9 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 */
 	@Override
 	public Object channelId() {
-		return getRemoteId();
-	}	
-	
+		return remoteId();
+	}
+
 	/** 
 	 * fromTopic。
 	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#fromTopic(java.lang.String)
@@ -203,11 +204,28 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	}
 
 	/** 
+	 * isPattern。
+	 * @see org.quincy.rock.comm.communicate.AbstractChannel#isPattern()
+	 */
+	@Override
+	public boolean isPattern() {
+		return StringUtil.isBlank(remoteId());
+	}
+
+	/** 
 	 * isMatched。
 	 * @see org.quincy.rock.core.util.HasPattern#isMatched(java.lang.Object)
 	 */
 	@Override
 	public boolean isMatched(Object obj) {
-		return false;
+		String remoteId = this.remoteId();
+		if (StringUtil.isBlank(remoteId))
+			return true;
+		else if (obj instanceof MqttChannel) {
+			return remoteId.equals(((MqttChannel) obj).remoteId());
+		} else if (obj instanceof String) {
+			return remoteId.equals(obj);
+		} else
+			return false;
 	}
 }
