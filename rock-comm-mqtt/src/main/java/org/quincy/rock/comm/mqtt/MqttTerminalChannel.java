@@ -19,8 +19,9 @@ import org.quincy.rock.comm.communicate.AbstractTerminalChannel;
  * @author wks
  * @since 1.0
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TYPE, CODE>
-		implements IMqttChannel {
+		implements IMqttTerminalChannel<TYPE, CODE> {
 	/**
 	 * serialVersionUID。
 	 */
@@ -52,6 +53,24 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	 * 无。
 	 */
 	public MqttTerminalChannel() {
+	}
+
+	/** 
+	 * local。
+	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#local()
+	 */
+	@Override
+	public MqttTerminal<TYPE, CODE> local() {
+		return (MqttTerminal) super.local();
+	}
+
+	/** 
+	 * remote。
+	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#remote()
+	 */
+	@Override
+	public MqttTerminal<TYPE, CODE> remote() {
+		return (MqttTerminal) super.remote();
 	}
 
 	/** 
@@ -124,5 +143,5 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	@Override
 	public final void setMqttQos(int qos) {
 		this.mqttQos = qos;
-	}	
+	}
 }

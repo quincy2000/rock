@@ -33,4 +33,6 @@ public class MqttTerminalCommunicator<CODE, TYPE, UChannel extends MqttTerminalC
 	public MqttTerminalCommunicator(String serverURI, String clientId) {
 		super(serverURI, clientId);
 	}
+	
+	
 }

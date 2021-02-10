@@ -154,11 +154,12 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 				@Override
 				public void deliveryComplete(IMqttDeliveryToken token) {
 					//发送完成
-					Object ctx = token.getUserContext();
+					Object ctx = token.getUserContext(); //发送时传递过来的通道和发送数据		
 					Pair<UChannel, Object> pair = (ctx instanceof Pair) ? (Pair) ctx : null;
-					fireSendDataEvent(pair == null ? cloneMqttChannel() : pair.getLeft(),
-							pair == null ? token.getUserContext() : pair.getRight(), token.getException() == null,
-							dataSlicer);
+					UChannel ch = pair == null ? (UChannel) cloneMqttChannel().fromTopic(token.getTopics()[0])
+							: pair.getLeft();
+					Object data = pair == null ? token.getUserContext() : pair.getRight();
+					fireSendDataEvent(ch, data, token.getException() == null, dataSlicer);
 				}
 
 				@Override

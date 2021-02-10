@@ -59,7 +59,11 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 * 是否是强制的建议。
 	 */
 	private boolean forced;
-	
+	/**
+	 * 一定是非模式通道。
+	 */
+	private boolean nonPattern;
+
 	/** 
 	 * id。
 	 * @see org.quincy.rock.core.vo.Vo#id()
@@ -211,6 +215,24 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	}
 
 	/** 
+	 * nonPattern。
+	 * @see org.quincy.rock.comm.communicate.IChannel#nonPattern()
+	 */
+	@Override
+	public final boolean nonPattern() {
+		return nonPattern;
+	}
+
+	/** 
+	 * nonPattern。
+	 * @see org.quincy.rock.comm.communicate.IChannel#nonPattern(boolean)
+	 */
+	@Override
+	public final void nonPattern(boolean nonPattern) {
+		this.nonPattern = nonPattern;
+	}
+
+	/** 
 	 * isSendChannel。
 	 * @see org.quincy.rock.comm.communicate.IChannel#isSendChannel()
 	 */
@@ -296,5 +318,4 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	public String addressInfo() {
 		return CoreUtil.toString(id());
 	}
-
 }

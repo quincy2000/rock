@@ -190,8 +190,9 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#fromTopic(java.lang.String)
 	 */
 	@Override
-	public void fromTopic(String topic) {
+	public IMqttChannel fromTopic(String topic) {
 		this.topic = topic;
+		return this;
 	}
 
 	/** 
@@ -209,7 +210,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 */
 	@Override
 	public boolean isPattern() {
-		return StringUtil.isBlank(remoteId());
+		return !nonPattern() && StringUtil.isBlank(remoteId());
 	}
 
 	/** 

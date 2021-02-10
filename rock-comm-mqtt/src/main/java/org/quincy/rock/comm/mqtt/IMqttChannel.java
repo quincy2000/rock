@@ -106,7 +106,7 @@ public interface IMqttChannel extends IChannel {
 	 * 无。
 	 * @param topic topic字符串
 	 */
-	public void fromTopic(String topic);
+	public IMqttChannel fromTopic(String topic);
 
 	/**
 	 * <b>生成topic字符串。</b>

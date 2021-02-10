@@ -203,4 +203,22 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 		//使用远程终端作为通道id
 		return remote();
 	}
+
+	/** 
+	 * isPattern。
+	 * @see org.quincy.rock.comm.communicate.AbstractChannel#isPattern()
+	 */
+	@Override
+	public boolean isPattern() {
+		return !nonPattern() && remote().isPattern();
+	}
+
+	/** 
+	 * isMatched。
+	 * @see org.quincy.rock.comm.communicate.AbstractChannel#isMatched(java.lang.Object)
+	 */
+	@Override
+	public boolean isMatched(Object obj) {
+		return remote().isMatched(obj);
+	}
 }
