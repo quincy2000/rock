@@ -124,4 +124,23 @@ public interface TerminalChannel<TYPE, CODE> extends IChannel {
 	 * @return 报文发出端是服务器
 	 */
 	public boolean fromServer();
+
+	/**
+	 * <b>设置发送标记。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param sendFlag 发送标记
+	 * @return 通道
+	 */
+	public TerminalChannel<TYPE, CODE> sendFlag(Object sendFlag);
+
+	/**
+	 * <b>返回发送标记。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 发送标记
+	 */
+	public Object sendFlag();
 }

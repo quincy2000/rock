@@ -45,6 +45,10 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 */
 	private String descr;
 	/**
+	 * 发送标记。
+	 */
+	private Object sendFlag;
+	/**
 	 * tag。
 	 */
 	private Object tag;
@@ -173,6 +177,28 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	}
 
 	/**
+	 * <b>获得发送标记。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 发送标记
+	 */
+	public Object getSendFlag() {
+		return sendFlag;
+	}
+
+	/**
+	 * <b>设置发送标记。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param sendFlag 发送标记
+	 */
+	public void setSendFlag(Object sendFlag) {
+		this.sendFlag = sendFlag;
+	}
+
+	/**
 	 * <b>getTag。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -260,6 +286,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 			this.address = adviser.address;
 			this.tag = adviser.tag;
 			this.descr = adviser.descr;
+			this.sendFlag = adviser.sendFlag;
 		} else {
 			if (adviser.type != null)
 				this.type = adviser.type;
@@ -271,6 +298,8 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 				this.tag = adviser.tag;
 			if (adviser.descr != null)
 				this.descr = adviser.descr;
+			if (adviser.sendFlag != null)
+				this.sendFlag = adviser.sendFlag;
 		}
 		this.clearId();
 	}
