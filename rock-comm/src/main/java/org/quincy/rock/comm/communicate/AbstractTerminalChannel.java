@@ -166,6 +166,25 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 	}
 
 	/** 
+	 * sendFlag。
+	 * @see org.quincy.rock.comm.communicate.TerminalChannel#sendFlag(java.lang.Object)
+	 */
+	@Override
+	public TerminalChannel<TYPE, CODE> sendFlag(Object sendFlag) {
+		remote().setSendFlag(sendFlag);
+		return this;
+	}
+
+	/** 
+	 * sendFlag。
+	 * @see org.quincy.rock.comm.communicate.TerminalChannel#sendFlag()
+	 */
+	@Override
+	public Object sendFlag() {
+		return remote().getSendFlag();
+	}
+
+	/** 
 	 * clone。
 	 * @see org.quincy.rock.comm.communicate.AbstractChannel#clone()
 	 */

@@ -98,7 +98,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 
 	/** 
 	 * isRetained。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#isRetained()
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#isRetained()
 	 */
 	@Override
 	public final boolean isRetained() {
@@ -107,7 +107,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 
 	/** 
 	 * setRetained。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#setRetained(boolean)
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#setRetained(boolean)
 	 */
 	@Override
 	public final void setRetained(boolean retained) {
@@ -116,7 +116,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 
 	/** 
 	 * getMqttQos。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#getMqttQos()
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#getMqttQos()
 	 */
 	@Override
 	public final int getMqttQos() {
@@ -125,7 +125,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 
 	/** 
 	 * setMqttQos。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#setMqttQos(int)
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#setMqttQos(int)
 	 */
 	@Override
 	public final void setMqttQos(int qos) {

@@ -18,12 +18,28 @@ import org.quincy.rock.comm.communicate.TerminalId;
  * @author wks
  * @since 1.0
  */
-public class MqttTerminal<TYPE, CODE> extends TerminalId<TYPE, CODE> {
+public abstract class MqttTerminal<TYPE, CODE> extends TerminalId<TYPE, CODE> {
 	/**
 	 * serialVersionUID。
 	 */
-	private static final long serialVersionUID = 3451818661778985885L;
+	private static final long serialVersionUID = 1L;
 
-	
+	/**
+	 * <b>解析topic字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param topic topic字符串
+	 * @return MqttTerminal
+	 */
+	public abstract MqttTerminal<TYPE, CODE> fromTopic(String topic);
+
+	/**
+	 * <b>生成topic字符串。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return topic字符串
+	 */
+	public abstract String toTopic();
 }
-

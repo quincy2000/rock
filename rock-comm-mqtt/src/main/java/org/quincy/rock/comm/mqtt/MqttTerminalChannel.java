@@ -2,6 +2,8 @@ package org.quincy.rock.comm.mqtt;
 
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient;
 import org.quincy.rock.comm.communicate.AbstractTerminalChannel;
+import org.quincy.rock.comm.communicate.Adviser;
+import org.quincy.rock.comm.communicate.IChannel;
 
 /**
  * <b>MqttTerminalChannel。</b>
@@ -143,5 +145,38 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	@Override
 	public final void setMqttQos(int qos) {
 		this.mqttQos = qos;
+	}
+
+	/** 
+	 * fromTopic。
+	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#fromTopic(java.lang.String)
+	 */
+	@Override
+	public IMqttChannel fromTopic(String topic) {
+		remote().fromTopic(topic);
+		return this;
+	}
+
+	/** 
+	 * toTopic。
+	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#toTopic()
+	 */
+	@Override
+	public String toTopic() {
+		return remote().toTopic();
+	}
+
+	/** 
+	 * newSendChannel。
+	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#newSendChannel(org.quincy.rock.comm.communicate.Adviser)
+	 */
+	@Override
+	public <T extends IChannel> T newSendChannel(Adviser adviser) {
+		MqttTerminalChannel ch = super.newSendChannel(adviser);
+		if (adviser instanceof MqttSendConfig) {
+			ch.setMqttQos(((MqttSendConfig) adviser).getMqttQos());
+			ch.setRetained(((MqttSendConfig) adviser).isRetained());
+		}
+		return (T) ch;
 	}
 }

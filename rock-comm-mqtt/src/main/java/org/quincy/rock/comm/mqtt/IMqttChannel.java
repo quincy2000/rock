@@ -19,7 +19,7 @@ import org.quincy.rock.comm.communicate.IChannel;
  * @author wks
  * @since 1.0
  */
-public interface IMqttChannel extends IChannel {
+public interface IMqttChannel extends IChannel, MqttSendConfig {
 
 	/**
 	 * <b>返回Mqtt客户端。</b>
@@ -58,53 +58,12 @@ public interface IMqttChannel extends IChannel {
 	public void serverURI(String serverURI);
 
 	/**
-	 * <b>是否在服务器上保留消息。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 是否在服务器上保留消息
-	 */
-	public boolean isRetained();
-
-	/**
-	 * <b>是否在服务器上保留消息。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param retained 是否在服务器上保留消息
-	 */
-	public void setRetained(boolean retained);
-
-	/**
-	 * <b>获得MQTT消息服务质量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 消息服务质量(发送消息时需要):
-	 * 0:最多一次，不需要确认(质量最差)。
-	 * 1:最少一次,需要确认，收不到确认就会重复发送。
-	 * 2:只发送一次，确保每个消息只收到一次，是最慢也是最安全的等级(质量最好)。
-	 * @return MQTT消息服务质量
-	 */
-	public int getMqttQos();
-
-	/**
-	 * <b>设置MQTT消息服务质量。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 消息服务质量(发送消息时需要):
-	 * 0:最多一次，不需要确认(质量最差)。
-	 * 1:最少一次,需要确认，收不到确认就会重复发送。
-	 * 2:只发送一次，确保每个消息只收到一次，是最慢也是最安全的等级(质量最好)。
-	 * @param qos MQTT消息服务质量
-	 */
-	public void setMqttQos(int qos);
-
-	/**
 	 * <b>解析topic字符串。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @param topic topic字符串
+	 * @return IMqttChannel
 	 */
 	public IMqttChannel fromTopic(String topic);
 
