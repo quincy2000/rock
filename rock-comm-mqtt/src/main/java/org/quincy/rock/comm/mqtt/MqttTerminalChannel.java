@@ -117,7 +117,8 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	 */
 	@Override
 	public final boolean isRetained() {
-		return this.retained;
+		MqttTerminal remote = remote();
+		return (remote instanceof MqttSendConfig) ? ((MqttSendConfig) remote).isRetained() : this.retained;
 	}
 
 	/** 
@@ -126,7 +127,11 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	 */
 	@Override
 	public final void setRetained(boolean retained) {
-		this.setRetained(retained);
+		MqttTerminal remote = remote();
+		if (remote instanceof MqttSendConfig)
+			((MqttSendConfig) remote).setRetained(retained);
+		else
+			this.retained = retained;
 	}
 
 	/** 
@@ -135,7 +140,8 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	 */
 	@Override
 	public final int getMqttQos() {
-		return this.mqttQos;
+		MqttTerminal remote = remote();
+		return (remote instanceof MqttSendConfig) ? ((MqttSendConfig) remote).getMqttQos() : this.mqttQos;
 	}
 
 	/** 
@@ -144,7 +150,11 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	 */
 	@Override
 	public final void setMqttQos(int qos) {
-		this.mqttQos = qos;
+		MqttTerminal remote = remote();
+		if (remote instanceof MqttSendConfig)
+			((MqttSendConfig) remote).setMqttQos(qos);
+		else
+			this.mqttQos = qos;
 	}
 
 	/** 
