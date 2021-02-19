@@ -1,5 +1,7 @@
 package org.quincy.rock.comm.netty;
 
+import org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint;
+
 import io.netty.channel.Channel;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
@@ -59,6 +61,29 @@ public abstract class NettyChannelTransformer<UChannel extends INettyChannel>
 		return channel;
 	}
 
+	/** 
+	 * transform。
+	 * @see org.quincy.rock.comm.netty.ChannelTransformer#transform(io.netty.channel.Channel, org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint)
+	 */
+	@Override
+	public UChannel transform(Channel ch, STransformPoint point) {
+		UChannel channel;
+		switch (point) {
+		case CHANNEL_INACTIVE:
+		case CHANNEL_READ:
+		case CHANNEL_ERROR:
+			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY, false);
+			break;
+		case CHANNEL_WRITE:
+			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY, false);
+			break;
+		default:
+			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY, false);
+			break;
+		}
+		return channel;
+	}
+	
 	/** 
 	 * retrieveSendLock。
 	 * @see org.quincy.rock.comm.netty.ChannelTransformer#retrieveSendLock(java.lang.Object)

@@ -18,7 +18,7 @@ import io.netty.channel.Channel;
  * @author wks
  * @since 1.0
  */
-public class DefaultNettyChannelTransformer extends AbstractNettyChannelTransformer<INettyChannel> {
+public class DefaultNettyChannelTransformer extends NettyChannelTransformer<INettyChannel> {
 	/**
 	 * 用户自定义通道bean实例。
 	 */
