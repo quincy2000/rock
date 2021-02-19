@@ -1,6 +1,6 @@
 package org.quincy.rock.comm.netty.mqtt;
 
-import org.quincy.rock.comm.netty.NettyChannelTransformer;
+import org.quincy.rock.comm.netty.AbstractChannelTransformer;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.mqtt.MqttQoS;
@@ -21,7 +21,7 @@ import io.netty.handler.codec.mqtt.MqttQoS;
  * @author wks
  * @since 1.0
  */
-public abstract class MqttChannelTransformer<UChannel extends IMqttChannel> extends NettyChannelTransformer<UChannel> {
+public abstract class MqttChannelTransformer<UChannel extends IMqttChannel> extends AbstractChannelTransformer<UChannel> {
 	/** 
 	 * transform。
 	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.communicate.ChannelTransformer.STransformPoint)

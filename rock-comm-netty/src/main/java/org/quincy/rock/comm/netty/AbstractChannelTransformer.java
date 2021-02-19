@@ -1,7 +1,5 @@
 package org.quincy.rock.comm.netty;
 
-import org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint;
-
 import io.netty.channel.Channel;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
@@ -22,8 +20,7 @@ import io.netty.util.AttributeKey;
  * @author wks
  * @since 1.0
  */
-public abstract class NettyChannelTransformer<UChannel extends INettyChannel>
-		implements ChannelTransformer<UChannel> {
+public abstract class AbstractChannelTransformer<UChannel extends INettyChannel> implements ChannelTransformer<UChannel> {
 	/**
 	 * 存放纯净通道的Key。
 	 */
@@ -83,7 +80,7 @@ public abstract class NettyChannelTransformer<UChannel extends INettyChannel>
 		}
 		return channel;
 	}
-	
+
 	/** 
 	 * retrieveSendLock。
 	 * @see org.quincy.rock.comm.netty.ChannelTransformer#retrieveSendLock(java.lang.Object)
