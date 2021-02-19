@@ -1,6 +1,9 @@
 package org.quincy.rock.comm.mqtt;
 
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
  * <b>MqttTerminalCommunicator。</b>
@@ -33,6 +36,58 @@ public class MqttTerminalCommunicator<CODE, TYPE, UChannel extends MqttTerminalC
 	public MqttTerminalCommunicator(String serverURI, String clientId) {
 		super(serverURI, clientId);
 	}
-	
-	
+
+	/**
+	 * <b>订阅终端对应的Topic。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 该方法使用终端的toTopic方法获取终端Topic。
+	 * @param terms 要订阅的终端Topic
+	 * @return IMqttToken
+	 * @throws MqttException
+	 */
+	public IMqttToken subscribe(MqttTerminal<?, ?>... terms) throws MqttException {
+		int len = terms.length;
+		String[] topics = new String[len];
+		for (int i = 0; i < len; i++) {
+			topics[i] = terms[i].toTopic();
+		}
+		return this.subscribe(topics);
+	}
+
+	/**
+	 * <b>取消订阅终端对应的Topic。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 该方法使用终端的toTopic方法获取终端Topic。
+	 * @param terms 要取消订阅的终端Topic
+	 * @return IMqttToken
+	 * @throws MqttException
+	 */
+	public IMqttToken unsubscribe(MqttTerminal<?, ?>... terms) throws MqttException {
+		int len = terms.length;
+		String[] topics = new String[len];
+		for (int i = 0; i < len; i++) {
+			topics[i] = terms[i].toTopic();
+		}
+		return this.unsubscribe(topics);
+	}
+
+	/**
+	 * <b>发送数据。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param term 发送的终端
+	 * @param data 发送的数据
+	 * @param callback 回调监听
+	 * @return IMqttToken
+	 * @throws MqttException
+	 */
+	public IMqttToken sendData(MqttTerminal<?, ?> term, Object data, IMqttActionListener callback)
+			throws MqttException {
+		UChannel ch = this.getMqttChannel();
+		ch.newSendChannel(term);
+		return this.sendData(ch, data, callback);
+	}
 }
