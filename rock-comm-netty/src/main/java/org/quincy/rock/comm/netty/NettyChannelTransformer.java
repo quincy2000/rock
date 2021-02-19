@@ -20,7 +20,7 @@ import io.netty.util.AttributeKey;
  * @author wks
  * @since 1.0
  */
-public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
+public abstract class NettyChannelTransformer<UChannel extends INettyChannel>
 		implements ChannelTransformer<UChannel> {
 	/**
 	 * 存放纯净通道的Key。
@@ -40,16 +40,16 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 
 	/** 
 	 * transform。
-	 * @see org.quincy.rock.comm.communicator.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.communicator.ChannelTransformer.UTransformPoint)
+	 * @see org.quincy.rock.comm.netty.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.netty.ChannelTransformer.UTransformPoint)
 	 */
 	@Override
-	public Channel transform(UChannel userdefine, UTransformPoint point) {
-		Channel channel = userdefine.channel();
+	public Channel transform(UChannel uch, UTransformPoint point) {
+		Channel channel = uch.channel();
 		switch (point) {
 		case SEND_DATA:
-			if (!userdefine.isSendChannel())
-				userdefine = userdefine.newSendChannel();
-			channel.attr(NETTY_SEND_CHANNEL_KEY).set(userdefine);
+			if (!uch.isSendChannel())
+				uch = uch.newSendChannel();
+			channel.attr(NETTY_SEND_CHANNEL_KEY).set(uch);
 			break;
 		case CLOSE_CHANNEL:
 		case ONLY_RETURN:
@@ -61,22 +61,32 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 
 	/** 
 	 * retrieveSendLock。
-	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#retrieveSendLock(java.lang.Object)
+	 * @see org.quincy.rock.comm.netty.ChannelTransformer#retrieveSendLock(java.lang.Object)
 	 */
 	@Override
-	public Object retrieveSendLock(UChannel userdefine) {
-		Channel channel = userdefine.channel();
+	public Object retrieveSendLock(UChannel uch) {
+		Channel channel = uch.channel();
 		Object lock = NettyUtil.retrieveWaiter(channel, NettyUtil.CHANNEL_SEND_LOCK_NAME, false);
 		return lock;
 	}
 
-	//获得INettyChannel，如果没有就创建一个
+	/**
+	 * <b>获得INettyChannel，如果没有就创建一个。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param ch Channel
+	 * @param key AttributeKey
+	 * @param nonPattern 一定是非模式通道
+	 * @return INettyChannel
+	 */
 	@SuppressWarnings("unchecked")
-	protected UChannel getNettyChannel(Channel ch, AttributeKey<INettyChannel> key) {
+	protected UChannel getNettyChannel(Channel ch, AttributeKey<INettyChannel> key, boolean nonPattern) {
 		Attribute<INettyChannel> attr = ch.attr(key);
 		UChannel channel = (UChannel) attr.get();
 		if (channel == null) {
 			channel = createChannel(ch);
+			channel.nonPattern(nonPattern);
 			attr.set(channel);
 		}
 		return channel;

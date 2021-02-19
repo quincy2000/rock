@@ -171,7 +171,7 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 */
 	@Override
 	public boolean isMatched(Object obj) {
-		return false;
+		return this.equals(obj);
 	}
 
 	/**

@@ -22,7 +22,7 @@ import io.netty.channel.Channel;
  * @author wks
  * @since 1.0
  */
-public abstract class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TYPE, CODE>
+public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TYPE, CODE>
 		implements INettyTerminalChannel<TYPE, CODE> {
 	/**
 	 * serialVersionUID。
@@ -49,6 +49,16 @@ public abstract class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalC
 	@Override
 	public void setChannelGetter(Getter<Channel> getter) {
 		this.getter = getter;
+	}
+
+	@Override
+	protected TerminalId<TYPE, CODE> createLocal() {
+		return new TerminalId<>();
+	}
+
+	@Override
+	protected TerminalId<TYPE, CODE> createRemote() {		
+		return new TerminalId<>();
 	}
 
 	/** 

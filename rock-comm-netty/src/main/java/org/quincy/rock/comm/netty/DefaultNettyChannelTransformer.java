@@ -54,7 +54,7 @@ public class DefaultNettyChannelTransformer extends AbstractNettyChannelTransfor
 	 */
 	public INettyChannel getChannelBean() {
 		if (channelBean == null) {
-			channelBean = new SimpleNettyChannel();
+			channelBean = new NettyChannel();
 		}
 		return channelBean;
 	}

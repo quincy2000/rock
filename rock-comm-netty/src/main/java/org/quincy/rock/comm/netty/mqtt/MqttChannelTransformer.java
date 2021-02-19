@@ -1,6 +1,6 @@
 package org.quincy.rock.comm.netty.mqtt;
 
-import org.quincy.rock.comm.netty.AbstractChannelTransformer;
+import org.quincy.rock.comm.netty.NettyChannelTransformer;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.mqtt.MqttQoS;
@@ -21,8 +21,7 @@ import io.netty.handler.codec.mqtt.MqttQoS;
  * @author wks
  * @since 1.0
  */
-public abstract class MqttChannelTransformer<UChannel extends IMqttChannel>
-		extends AbstractChannelTransformer<UChannel> {
+public abstract class MqttChannelTransformer<UChannel extends IMqttChannel> extends NettyChannelTransformer<UChannel> {
 	/** 
 	 * transform。
 	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.communicate.ChannelTransformer.STransformPoint)
@@ -34,12 +33,12 @@ public abstract class MqttChannelTransformer<UChannel extends IMqttChannel>
 		switch (point) {
 		case CHANNEL_READ:
 		case CHANNEL_ERROR:
-			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY);
+			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY, false);
 			topic = ch.attr(MqttChannelHandler.RECEIVED_MESSAGE_TOPIC_KEY).get();
 			channel.fromTopic(topic);
 			break;
 		case CHANNEL_WRITE:
-			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY);
+			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY, false);
 			topic = channel.toTopic();
 			ch.attr(MqttChannelHandler.SENDED_MESSAGE_TOPIC_KEY).set(topic);
 			if (channel instanceof MqttSendConfig) {
@@ -52,7 +51,7 @@ public abstract class MqttChannelTransformer<UChannel extends IMqttChannel>
 			}
 			break;
 		default:
-			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY);
+			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY, false);
 			break;
 		}
 		return channel;

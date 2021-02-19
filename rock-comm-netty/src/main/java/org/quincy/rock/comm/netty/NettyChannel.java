@@ -21,7 +21,7 @@ import io.netty.channel.Channel;
  * @author wks
  * @since 1.0
  */
-public abstract class NettyChannel extends AbstractChannel implements INettyChannel {
+public class NettyChannel extends AbstractChannel implements INettyChannel {
 	/**
 	 * serialVersionUID。
 	 */

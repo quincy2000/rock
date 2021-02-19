@@ -19,7 +19,7 @@ import io.netty.channel.Channel;
  * @since 1.0
  */
 public abstract class AbstractNettyChannelTransformer<UChannel extends INettyChannel>
-		extends AbstractChannelTransformer<UChannel> {
+		extends NettyChannelTransformer<UChannel> {
 
 	/** 
 	 * transform。
@@ -32,13 +32,13 @@ public abstract class AbstractNettyChannelTransformer<UChannel extends INettyCha
 		case CHANNEL_INACTIVE:
 		case CHANNEL_READ:
 		case CHANNEL_ERROR:
-			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY);
+			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY, false);
 			break;
 		case CHANNEL_WRITE:
-			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY);
+			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY, false);
 			break;
 		default:
-			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY);
+			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY, false);
 			break;
 		}
 		return channel;
