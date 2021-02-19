@@ -23,7 +23,7 @@ import io.netty.channel.Channel;
  * @since 1.0
  */
 public abstract class AbstractNettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TYPE, CODE>
-		implements INettyChannel {
+		implements INettyTerminalChannel<TYPE, CODE> {
 	/**
 	 * serialVersionUID。
 	 */

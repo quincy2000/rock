@@ -50,23 +50,13 @@ public abstract class NettyCommunicateClient<UChannel> extends NettyCommunicator
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
+	 * @param defaultHost 缺省的服务器主机
 	 * @param defaultPort 缺省的端口号
+	 * @param channelTransformer 通道转换器
 	 */
-	public NettyCommunicateClient(int defaultPort) {
-		this(defaultPort, 1);
-	}
-
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param defaultPort 缺省的端口号
-	 * @param maxActive 最大活动连接数
-	 */
-	public NettyCommunicateClient(int defaultPort, int maxActive) {
-		super(maxActive);
-		this.defaultPort = defaultPort;
+	public NettyCommunicateClient(String defaultHost, int defaultPort,
+			ChannelTransformer<UChannel> channelTransformer) {
+		this(defaultHost, defaultPort, 1, channelTransformer);
 	}
 
 	/**
@@ -77,10 +67,13 @@ public abstract class NettyCommunicateClient<UChannel> extends NettyCommunicator
 	 * @param defaultHost 缺省的服务器主机
 	 * @param defaultPort 缺省的端口号
 	 * @param maxActive 最大活动连接数
+	 * @param channelTransformer 通道转换器
 	 */
-	public NettyCommunicateClient(String defaultHost, int defaultPort, int maxActive) {
-		this(defaultPort, maxActive);
+	public NettyCommunicateClient(String defaultHost, int defaultPort, int maxActive,
+			ChannelTransformer<UChannel> channelTransformer) {
+		super(maxActive, channelTransformer);
 		this.defaultHost = defaultHost;
+		this.defaultPort = defaultPort;
 	}
 
 	/**

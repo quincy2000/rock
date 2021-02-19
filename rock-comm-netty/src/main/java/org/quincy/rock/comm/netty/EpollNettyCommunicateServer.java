@@ -21,30 +21,15 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
  * @author wks
  * @since 1.0
  */
-public class EpollNettyCommunicateServer<IChannel> extends NettyCommunicateServer<IChannel> {
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param port 端口号
-	 * @param maxActive 最大活动连接数
-	 */
-	public EpollNettyCommunicateServer(int port, int maxActive) {
-		super(port, maxActive);
+public class EpollNettyCommunicateServer<UChannel> extends NettyCommunicateServer<UChannel> {
+
+	public EpollNettyCommunicateServer(int port, int maxActive, ChannelTransformer<UChannel> channelTransformer) {
+		super(port, maxActive, channelTransformer);
 	}
 
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param host 服务器主机
-	 * @param port 端口号
-	 * @param maxActive 最大活动连接数
-	 */
-	public EpollNettyCommunicateServer(String host, int port, int maxActive) {
-		super(host, port, maxActive);
+	public EpollNettyCommunicateServer(String host, int port, int maxActive,
+			ChannelTransformer<UChannel> channelTransformer) {
+		super(host, port, maxActive, channelTransformer);
 	}
 
 	/** 

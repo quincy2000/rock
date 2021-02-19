@@ -44,30 +44,30 @@ public interface ChannelTransformer<UChannel> {
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param source 原始通道
+	 * @param sch 原始通道
 	 * @param point 转换点
 	 * @return 定制通道
 	 */
-	public UChannel transform(Channel source, STransformPoint point);
+	public UChannel transform(Channel sch, STransformPoint point);
 
 	/**
 	 * <b>定制通道转换到原始通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param userdefine 定制通道
+	 * @param uch 定制通道
 	 * @param point 转换点
 	 * @return 原始通道
 	 */
-	public Channel transform(UChannel userdefine, UTransformPoint point);
+	public Channel transform(UChannel uch, UTransformPoint point);
 
 	/**
 	 * <b>取得通道发送消息锁。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param userdefine 用户定义通道
+	 * @param uch 用户定义通道
 	 * @return 通道发送消息锁
 	 */
-	public Object retrieveSendLock(UChannel userdefine);
+	public Object retrieveSendLock(UChannel uch);
 }

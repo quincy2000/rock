@@ -69,9 +69,10 @@ public abstract class NettyCommunicateServer<UChannel> extends NettyCommunicator
 	 * 无。
 	 * @param port 端口号
 	 * @param maxActive 最大活动连接数
+	 * @param channelTransformer 通道转换器
 	 */
-	public NettyCommunicateServer(int port, int maxActive) {
-		super(maxActive);
+	public NettyCommunicateServer(int port, int maxActive, ChannelTransformer<UChannel> channelTransformer) {
+		super(maxActive, channelTransformer);
 		this.port = port;
 	}
 
@@ -83,10 +84,13 @@ public abstract class NettyCommunicateServer<UChannel> extends NettyCommunicator
 	 * @param host 服务器主机
 	 * @param port 端口号
 	 * @param maxActive 最大活动连接数
+	 * @param channelTransformer 通道转换器
 	 */
-	public NettyCommunicateServer(String host, int port, int maxActive) {
-		this(port, maxActive);
+	public NettyCommunicateServer(String host, int port, int maxActive,
+			ChannelTransformer<UChannel> channelTransformer) {
+		super(maxActive, channelTransformer);
 		this.host = host;
+		this.port = port;
 	}
 
 	/**
@@ -122,6 +126,33 @@ public abstract class NettyCommunicateServer<UChannel> extends NettyCommunicator
 	protected abstract ServerBootstrap config(ServerBootstrap bootstrap);
 
 	/** 
+	 * start。
+	 * @see org.quincy.rock.comm.communicator.CommunicatorServer#start()
+	 */
+	public final void start() {
+		if (isRunning())
+			return;
+		//获得绑定地址
+		String host = getHost();
+		InetSocketAddress addr = StringUtil.isBlank(host) ? new InetSocketAddress(getPort())
+				: new InetSocketAddress(host, getPort());
+		//创建线程组
+		try {
+			//创建ServerBootstrap
+			ServerBootstrap b = serverBootstrap();
+			this.bossGroup = b.config().group();
+			this.workerGroup = b.config().childGroup();
+			//启动服务
+			this.channelFuture_boss = b.bind(addr).sync();
+			recorder.write("Start the netty communicate service.");
+			//触发启动事件
+			svrListenerSupport.fireServerStartedEvent(this);
+		} catch (Exception e) {
+			throw new CommunicateException(e.getMessage(), e);
+		}
+	}
+
+	/** 
 	 * stop。
 	 * @see org.quincy.rock.comm.communicator.CommunicatorServer#stop()
 	 */
@@ -146,33 +177,6 @@ public abstract class NettyCommunicateServer<UChannel> extends NettyCommunicator
 			channelFuture_boss = null;
 			recorder.write("Stop the netty communicate service.");
 			svrListenerSupport.fireServerStoppedEvent(this);
-		}
-	}
-
-	/** 
-	 * start。
-	 * @see org.quincy.rock.comm.communicator.CommunicatorServer#start()
-	 */
-	public final void start() {
-		if (isRunning())
-			return;
-		//获得绑定地址
-		String host = getHost();
-		InetSocketAddress addr = StringUtil.isBlank(host) ? new InetSocketAddress(getPort())
-				: new InetSocketAddress(host, getPort());
-		//创建线程组
-		try {
-			//创建ServerBootstrap
-			ServerBootstrap b = serverBootstrap();
-			this.bossGroup = b.config().group();
-			this.workerGroup = b.config().childGroup();
-			//启动服务
-			this.channelFuture_boss = b.bind(addr).sync();
-			recorder.write("Start the netty communicate service.");
-			//触发启动事件
-			svrListenerSupport.fireServerStartedEvent(this);
-		} catch (Exception e) {
-			throw new CommunicateException(e.getMessage(), e);
 		}
 	}
 
