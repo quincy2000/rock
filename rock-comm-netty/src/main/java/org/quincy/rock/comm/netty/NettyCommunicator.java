@@ -48,7 +48,6 @@ import io.netty.util.concurrent.GenericFutureListener;
  * @author wks
  * @since 1.0
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<UChannel> {
 	/**
 	 * 存放通讯器id的Key,标记Netty通道所属通讯器。
@@ -78,13 +77,13 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	/**
 	 * 超时秒数。
 	 */
-	private int timeout = Integer.MAX_VALUE;
+	private int timeout = 30;
 
 	/**
 	 * 最大活动连接数。
 	 */
 	private int maxActive;
-
+	
 	/**
 	 * 连接数。
 	 */
@@ -96,7 +95,7 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	/**
 	 * 通道转换器。
 	 */
-	private ChannelTransformer<UChannel> channelTransformer = ChannelTransformer.NONE;
+	private final ChannelTransformer<UChannel> channelTransformer;
 	/**
 	 * 通道句柄创建器。
 	 */
@@ -112,29 +111,27 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @param maxActive 最大活动连接数
+	 * @param channelTransformer 通道转换器
 	 */
-	public NettyCommunicator(int maxActive) {
+	public NettyCommunicator(int maxActive, ChannelTransformer<UChannel> channelTransformer) {
 		this.maxActive = maxActive;
+		this.channelTransformer = channelTransformer;
 	}
 
-	/**
-	 * <b>获得最大活动连接数。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 最大活动连接数
+	/** 
+	 * getMaxActive。
+	 * @see org.quincy.rock.comm.communicate.Communicator#getMaxActive()
 	 */
+	@Override
 	public int getMaxActive() {
 		return maxActive;
 	}
 
-	/**
-	 * <b>返回活动连接数。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 活动连接数
+	/** 
+	 * getActiveCount。
+	 * @see org.quincy.rock.comm.communicate.Communicator#getActiveCount()
 	 */
+	@Override
 	public int getActiveCount() {
 		return atomicCount.get();
 	}
@@ -239,29 +236,6 @@ public abstract class NettyCommunicator<UChannel> extends AbstractCommunicator<U
 	 */
 	public ChannelTransformer<UChannel> getChannelTransformer() {
 		return channelTransformer;
-	}
-
-	/**
-	 * <b>设置通道转换器。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param channelTransformer 通道转换器
-	 */
-	public void setChannelTransformer(ChannelTransformer<UChannel> channelTransformer) {
-		this.channelTransformer = channelTransformer;
-	}
-
-	/**
-	 * <b>设置NettyChannel。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param channel NettyChannel的实例
-	 */
-	public void setNettyChannel(INettyChannel channel) {
-		ChannelTransformer ct = new DefaultNettyChannelTransformer(channel);
-		this.setChannelTransformer(ct);
 	}
 
 	/**

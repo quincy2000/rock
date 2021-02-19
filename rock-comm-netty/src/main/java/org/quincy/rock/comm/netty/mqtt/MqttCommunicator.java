@@ -13,12 +13,10 @@ import org.quincy.rock.comm.communicate.IChannel;
 import org.quincy.rock.comm.netty.ChannelHandlerCreator;
 import org.quincy.rock.comm.netty.ChannelTransformer;
 import org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint;
-import org.quincy.rock.comm.netty.INettyChannel;
 import org.quincy.rock.comm.netty.NettyCommunicator;
 import org.quincy.rock.comm.netty.codec.KeyGetter;
 import org.quincy.rock.comm.util.CommunicateServerListenerSupport;
 import org.quincy.rock.core.exception.AlreadyExistException;
-import org.quincy.rock.core.exception.ConfigException;
 import org.quincy.rock.core.exception.UnsupportException;
 import org.quincy.rock.core.lang.Getter;
 import org.quincy.rock.core.lang.Recorder;
@@ -107,11 +105,12 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	 * @param mqttPort mqtt服务器端口号
 	 */
 	public MqttCommunicator(String mqttHost, int mqttPort) {
-		super(1);
+		super(1,null);
 		this.mqttHost = mqttHost;
 		this.mqttPort = mqttPort;
 		this.mqttChannelHandler = createMqttChannelHandler();
 		//
+		/*
 		super.setChannelTransformer(new MqttChannelTransformer<IMqttChannel>() {
 			private Getter<Channel> getter = new Getter<Channel>() {
 				@Override
@@ -128,6 +127,7 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 			}
 
 		});
+		*/
 	}
 
 	/**
@@ -221,18 +221,6 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 	//获得netty通道
 	private Channel nettyChannel() {
 		return nettyChannel;
-	}
-
-	/** 
-	 * setNettyChannel。
-	 * @see org.quincy.rock.comm.netty.NettyCommunicator#setNettyChannel(org.quincy.rock.comm.netty.INettyChannel)
-	 */
-	@Override
-	public void setNettyChannel(INettyChannel channel) {
-		if (channel instanceof IMqttChannel)
-			this.setMqttChannel((IMqttChannel) channel);
-		else
-			throw new ConfigException("A channel must be an instance of IMqttChannel");
 	}
 
 	/**
@@ -414,18 +402,7 @@ public class MqttCommunicator extends NettyCommunicator<IMqttChannel>
 			for (ChannelHandler handler : creator.createChannelHandlers())
 				pipeline.addLast(handler);
 		}
-	}
-
-	/** 
-	 * setChannelTransformer。
-	 * @see org.quincy.rock.comm.netty.NettyCommunicator#setChannelTransformer(org.quincy.rock.comm.communicate.ChannelTransformer)
-	 */
-	@Override
-	@Deprecated
-	public final void setChannelTransformer(ChannelTransformer<IMqttChannel> channelTransformer) {
-		if (channelTransformer != this.getChannelTransformer())
-			throw new UnsupportException("Custom channelTransformer are not supported!");
-	}
+	}	
 
 	/**
 	 * <b>返回Bootstrap。</b>

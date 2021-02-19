@@ -16,7 +16,7 @@ package org.quincy.rock.comm.netty;
  * @author wks
  * @since 1.0
  */
-class SimpleNettyChannel extends AbstractNettyChannel {
+class SimpleNettyChannel extends NettyChannel {
 
 	/**
 	 * serialVersionUID。

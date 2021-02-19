@@ -6,7 +6,7 @@ import org.quincy.rock.core.lang.Getter;
 import io.netty.channel.Channel;
 
 /**
- * <b>AbstractNettyChannel。</b>
+ * <b>NettyChannel。</b>
  * <p><b>详细说明：</b></p>
  * <!-- 在此添加详细说明 -->
  * 无。
@@ -21,7 +21,7 @@ import io.netty.channel.Channel;
  * @author wks
  * @since 1.0
  */
-public abstract class AbstractNettyChannel extends AbstractChannel implements INettyChannel {
+public abstract class NettyChannel extends AbstractChannel implements INettyChannel {
 	/**
 	 * serialVersionUID。
 	 */

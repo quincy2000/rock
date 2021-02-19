@@ -20,42 +20,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * @author wks
  * @since 1.0
  */
-public class NioNettyCommunicateClient<IChannel> extends NettyCommunicateClient<IChannel> {
+public class NioNettyCommunicateClient<UChannel> extends NettyCommunicateClient<UChannel> {
 
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param defaultPort  缺省的端口号
-	 */
-	public NioNettyCommunicateClient(int defaultPort) {
-		super(defaultPort);
+	public NioNettyCommunicateClient(String defaultHost, int defaultPort,
+			ChannelTransformer<UChannel> channelTransformer) {
+		super(defaultHost, defaultPort, channelTransformer);
 	}
 
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param defaultPort  缺省的端口号
-	 * @param maxActive 最大活动连接数
-	 */
-	public NioNettyCommunicateClient(int defaultPort, int maxActive) {
-		super(defaultPort, maxActive);
-	}
-
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param defaultHost 缺省的服务器主机
-	 * @param defaultPort  缺省的端口号
-	 * @param maxActive 最大活动连接数
-	 */
-	public NioNettyCommunicateClient(String defaultHost, int defaultPort, int maxActive) {
-		super(defaultHost, defaultPort, maxActive);
+	public NioNettyCommunicateClient(String defaultHost, int defaultPort, int maxActive,
+			ChannelTransformer<UChannel> channelTransformer) {
+		super(defaultHost, defaultPort, maxActive, channelTransformer);
 	}
 
 	/** 
