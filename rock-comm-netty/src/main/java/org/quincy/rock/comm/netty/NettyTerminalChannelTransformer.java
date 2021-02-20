@@ -20,6 +20,33 @@ import io.netty.channel.Channel;
  */
 public class NettyTerminalChannelTransformer<TYPE, CODE>
 		extends AbstractChannelTransformer<NettyTerminalChannel<TYPE, CODE>> {
+	/**
+	 * 是服务器。
+	 */
+	private boolean isServer;
+	/**
+	 * 本地终端类型。
+	 */
+	private TYPE localType;
+	/**
+	 * 本地终端代码。
+	 */
+	private CODE localCode;
+	
+	/**
+	 * <b>构造方法。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param isServer 是服务器
+	 * @param localType 本地终端类型
+	 * @param localCode 本地终端代码
+	 */
+	public NettyTerminalChannelTransformer(boolean isServer, TYPE localType, CODE localCode) {
+		this.isServer = isServer;
+		this.localType = localType;
+		this.localCode = localCode;
+	}
 
 	/** 
 	 * createChannel。
@@ -27,6 +54,10 @@ public class NettyTerminalChannelTransformer<TYPE, CODE>
 	 */
 	@Override
 	protected NettyTerminalChannel<TYPE, CODE> createChannel(Channel ch) {
-		return new NettyTerminalChannel<>().setChannelGetter(NettyUtil.createChannelGetter(ch));
+		NettyTerminalChannel<TYPE, CODE> channel=new NettyTerminalChannel<>().setChannelGetter(NettyUtil.createChannelGetter(ch));
+		channel.setServerSide(isServer);
+		channel.setLocalType(localType);
+		channel.setLocalCode(localCode);
+		return channel;
 	}
 }
