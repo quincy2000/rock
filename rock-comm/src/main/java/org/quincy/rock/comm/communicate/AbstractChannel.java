@@ -40,6 +40,11 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 */
 	protected boolean sendChannel;
 	/**
+	 * 一定是非模式通道。
+	 */
+	protected boolean nonPattern;
+
+	/**
 	 * 是请求还是响应。
 	 */
 	private boolean request = true;
@@ -59,10 +64,6 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 * 是否是强制的建议。
 	 */
 	private boolean forced;
-	/**
-	 * 一定是非模式通道。
-	 */
-	private boolean nonPattern;
 
 	/** 
 	 * id。
@@ -215,24 +216,6 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	}
 
 	/** 
-	 * nonPattern。
-	 * @see org.quincy.rock.comm.communicate.IChannel#nonPattern()
-	 */
-	@Override
-	public final boolean nonPattern() {
-		return nonPattern;
-	}
-
-	/** 
-	 * nonPattern。
-	 * @see org.quincy.rock.comm.communicate.IChannel#nonPattern(boolean)
-	 */
-	@Override
-	public final void nonPattern(boolean nonPattern) {
-		this.nonPattern = nonPattern;
-	}
-
-	/** 
 	 * isSendChannel。
 	 * @see org.quincy.rock.comm.communicate.IChannel#isSendChannel()
 	 */
@@ -277,6 +260,21 @@ public abstract class AbstractChannel extends Vo<Object> implements IChannel {
 	 */
 	public final void setServerSide(boolean serverSide) {
 		this.serverSide = serverSide;
+	}
+
+	/** 
+	 * nonPattern。
+	 * @see org.quincy.rock.comm.communicate.IChannel#nonPattern()
+	 */
+	@Override
+	public final <T extends IChannel> T nonPattern() {
+		if (this.nonPattern)
+			return (T) this;
+		else {
+			AbstractChannel ch = (AbstractChannel) this.cloneMe();
+			ch.nonPattern = true;
+			return (T) ch;
+		}
 	}
 
 	/** 

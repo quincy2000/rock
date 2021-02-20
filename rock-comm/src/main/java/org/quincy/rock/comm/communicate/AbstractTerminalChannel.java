@@ -229,7 +229,7 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 	 */
 	@Override
 	public boolean isPattern() {
-		return !nonPattern() && remote().isPattern();
+		return !nonPattern && remote().isPattern();
 	}
 
 	/** 

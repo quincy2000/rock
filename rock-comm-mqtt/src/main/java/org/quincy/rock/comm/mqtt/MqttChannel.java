@@ -210,7 +210,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 */
 	@Override
 	public boolean isPattern() {
-		return !nonPattern() && StringUtil.isBlank(remoteId());
+		return !nonPattern && StringUtil.isBlank(remoteId());
 	}
 
 	/** 
