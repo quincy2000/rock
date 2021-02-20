@@ -42,12 +42,6 @@
 			<version>${netty.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-codec-mqtt</artifactId>
-			<version>${netty.version}</version>
-			<scope>provided</scope>
-		</dependency>
 		<!-- test -->
 		<dependency>
 			<groupId>junit</groupId>

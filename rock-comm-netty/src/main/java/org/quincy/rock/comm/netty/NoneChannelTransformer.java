@@ -20,26 +20,30 @@ import io.netty.channel.Channel;
  */
 public class NoneChannelTransformer implements ChannelTransformer<Channel> {
 
+	/** 
+	 * transform。
+	 * @see org.quincy.rock.comm.netty.ChannelTransformer#transform(io.netty.channel.Channel, org.quincy.rock.comm.netty.ChannelTransformer.STransformPoint)
+	 */
 	@Override
-	public Channel transform(Channel source, STransformPoint point) {
-		return source;
+	public Channel transform(Channel sch, STransformPoint point) {
+		return sch;
 	}
 
 	/** 
 	 * transform。
-	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.communicate.ChannelTransformer.UTransformPoint)
+	 * @see org.quincy.rock.comm.netty.ChannelTransformer#transform(java.lang.Object, org.quincy.rock.comm.netty.ChannelTransformer.UTransformPoint)
 	 */
 	@Override
-	public Channel transform(Channel userdefine, UTransformPoint point) {
-		return userdefine;
+	public Channel transform(Channel uch, UTransformPoint point) {
+		return uch;
 	}
 
 	/** 
 	 * retrieveSendLock。
-	 * @see org.quincy.rock.comm.communicate.ChannelTransformer#retrieveSendLock(java.lang.Object)
+	 * @see org.quincy.rock.comm.netty.ChannelTransformer#retrieveSendLock(java.lang.Object)
 	 */
 	@Override
-	public Object retrieveSendLock(Channel userdefine) {
-		return userdefine;
+	public Object retrieveSendLock(Channel uch) {
+		return uch;
 	}
 }

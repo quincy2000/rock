@@ -20,7 +20,8 @@ import io.netty.util.AttributeKey;
  * @author wks
  * @since 1.0
  */
-public abstract class AbstractChannelTransformer<UChannel extends INettyChannel> implements ChannelTransformer<UChannel> {
+public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
+		implements ChannelTransformer<UChannel> {
 	/**
 	 * 存放纯净通道的Key。
 	 */
@@ -66,16 +67,23 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 	public UChannel transform(Channel ch, STransformPoint point) {
 		UChannel channel;
 		switch (point) {
+		case CHANNEL_ACTIVE:
+			channel = retrieveChannel(ch, NETTY_CHANNEL_KEY);
+			break;
 		case CHANNEL_INACTIVE:
-		case CHANNEL_READ:
+			channel = retrieveChannel(ch, NETTY_RECEIVE_CHANNEL_KEY).nonPattern();
+			break;
 		case CHANNEL_ERROR:
-			channel = getNettyChannel(ch, NETTY_RECEIVE_CHANNEL_KEY, false);
+			channel = retrieveChannel(ch, NETTY_RECEIVE_CHANNEL_KEY).nonPattern();
+			break;	
+		case CHANNEL_READ:
+			channel = retrieveChannel(ch, NETTY_RECEIVE_CHANNEL_KEY);
 			break;
 		case CHANNEL_WRITE:
-			channel = getNettyChannel(ch, NETTY_SEND_CHANNEL_KEY, false);
+			channel = retrieveChannel(ch, NETTY_SEND_CHANNEL_KEY);
 			break;
 		default:
-			channel = getNettyChannel(ch, NETTY_CHANNEL_KEY, false);
+			channel = retrieveChannel(ch, NETTY_CHANNEL_KEY);
 			break;
 		}
 		return channel;
@@ -93,22 +101,20 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 	}
 
 	/**
-	 * <b>获得INettyChannel，如果没有就创建一个。</b>
+	 * <b>获得用户通道，如果没有就创建一个。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @param ch Channel
 	 * @param key AttributeKey
-	 * @param nonPattern 一定是非模式通道
-	 * @return INettyChannel
+	 * @return UChannel
 	 */
 	@SuppressWarnings("unchecked")
-	protected UChannel getNettyChannel(Channel ch, AttributeKey<INettyChannel> key, boolean nonPattern) {
+	protected UChannel retrieveChannel(Channel ch, AttributeKey<INettyChannel> key) {
 		Attribute<INettyChannel> attr = ch.attr(key);
 		UChannel channel = (UChannel) attr.get();
 		if (channel == null) {
 			channel = createChannel(ch);
-			channel.nonPattern(nonPattern);
 			attr.set(channel);
 		}
 		return channel;
@@ -119,8 +125,8 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param source 原始netty通道
+	 * @param ch 原始netty通道
 	 * @return 自定义通道
 	 */
-	protected abstract UChannel createChannel(Channel source);
+	protected abstract UChannel createChannel(Channel ch);
 }
