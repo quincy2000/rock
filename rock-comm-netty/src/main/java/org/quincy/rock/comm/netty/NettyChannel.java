@@ -21,6 +21,7 @@ import io.netty.channel.Channel;
  * @author wks
  * @since 1.0
  */
+@SuppressWarnings("unchecked")
 public class NettyChannel extends AbstractChannel implements INettyChannel {
 	/**
 	 * serialVersionUID。
@@ -45,8 +46,9 @@ public class NettyChannel extends AbstractChannel implements INettyChannel {
 	 * @see org.quincy.rock.comm.netty.INettyChannel#setChannelGetter(org.quincy.rock.core.lang.Getter)
 	 */
 	@Override
-	public void setChannelGetter(Getter<Channel> getter) {
+	public <T extends INettyChannel> T setChannelGetter(Getter<Channel> getter) {
 		this.getter = getter;
+		return (T) this;
 	}
 
 	/** 

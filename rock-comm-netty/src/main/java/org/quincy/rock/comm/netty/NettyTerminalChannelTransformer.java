@@ -27,6 +27,6 @@ public class NettyTerminalChannelTransformer<TYPE, CODE>
 	 */
 	@Override
 	protected NettyTerminalChannel<TYPE, CODE> createChannel(Channel ch) {
-		return new NettyTerminalChannel<>();
+		return new NettyTerminalChannel<>().setChannelGetter(NettyUtil.createChannelGetter(ch));
 	}
 }

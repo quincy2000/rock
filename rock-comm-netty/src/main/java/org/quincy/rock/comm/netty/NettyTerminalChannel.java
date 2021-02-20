@@ -22,6 +22,7 @@ import io.netty.channel.Channel;
  * @author wks
  * @since 1.0
  */
+@SuppressWarnings("unchecked")
 public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TYPE, CODE>
 		implements INettyTerminalChannel<TYPE, CODE> {
 	/**
@@ -47,8 +48,9 @@ public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TY
 	 * @see org.quincy.rock.comm.netty.INettyChannel#setChannelGetter(org.quincy.rock.core.lang.Getter)
 	 */
 	@Override
-	public void setChannelGetter(Getter<Channel> getter) {
+	public <T extends INettyChannel> T setChannelGetter(Getter<Channel> getter) {
 		this.getter = getter;
+		return (T) this;
 	}
 
 	/** 
@@ -65,7 +67,7 @@ public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TY
 	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#createRemote()
 	 */
 	@Override
-	protected TerminalId<TYPE, CODE> createRemote() {		
+	protected TerminalId<TYPE, CODE> createRemote() {
 		return new TerminalId<>();
 	}
 

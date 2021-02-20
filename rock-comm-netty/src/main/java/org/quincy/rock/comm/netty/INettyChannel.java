@@ -37,6 +37,7 @@ public interface INettyChannel extends IChannel {
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
 	 * @param getter netty原始通道Getter
+	 * @return 通道
 	 */
-	public void setChannelGetter(Getter<Channel> getter);
+	public <T extends INettyChannel> T setChannelGetter(Getter<Channel> getter);
 }

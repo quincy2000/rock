@@ -25,7 +25,7 @@ public class NettyChannelTransformer extends AbstractChannelTransformer<NettyCha
 	 * @see org.quincy.rock.comm.netty.AbstractChannelTransformer#createChannel(io.netty.channel.Channel)
 	 */
 	@Override
-	protected NettyChannel createChannel(Channel ch) {		
-		return new NettyChannel();
+	protected NettyChannel createChannel(Channel ch) {
+		return new NettyChannel().setChannelGetter(NettyUtil.createChannelGetter(ch));
 	}
 }
