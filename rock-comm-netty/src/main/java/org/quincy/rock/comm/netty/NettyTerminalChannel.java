@@ -51,11 +51,19 @@ public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TY
 		this.getter = getter;
 	}
 
+	/** 
+	 * createLocal。
+	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#createLocal()
+	 */
 	@Override
 	protected TerminalId<TYPE, CODE> createLocal() {
 		return new TerminalId<>();
 	}
 
+	/** 
+	 * createRemote。
+	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#createRemote()
+	 */
 	@Override
 	protected TerminalId<TYPE, CODE> createRemote() {		
 		return new TerminalId<>();
@@ -105,6 +113,6 @@ public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TY
 	@Override
 	public Object channelId() {
 		Channel ch = this.channel();
-		return ch == null ? remote().id() : remote().id() + ch.id().asLongText();
+		return ch == null ? remote().id() : (remote().id() + ch.id().asLongText());
 	}
 }

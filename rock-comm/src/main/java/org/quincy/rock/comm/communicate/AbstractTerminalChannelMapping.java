@@ -8,6 +8,7 @@ import org.quincy.rock.comm.CommunicateException;
 import org.quincy.rock.comm.util.CommUtils;
 import org.quincy.rock.core.cache.AccessTime;
 import org.quincy.rock.core.cache.LiveTime;
+import org.quincy.rock.core.exception.AlreadyExistException;
 import org.quincy.rock.core.exception.NotFoundException;
 
 /**
@@ -137,8 +138,14 @@ public abstract class AbstractTerminalChannelMapping<UChannel extends IChannel>
 			}
 			//原始通道可能是一个共享通道，所以要克隆一份
 			channel = channel.cloneMe();
-			channelTerminalMapping.put(channel.channelId(), pair(terminalId, channel));
-			terminalChannelMapping.put(terminalId, channel);
+			Object channelId = channel.channelId();
+			if (terminalChannelMapping.containsKey(terminalId) || channelTerminalMapping.containsKey(channelId)) {
+				//该一对一关系已经存在
+				throw new AlreadyExistException("Terminal channels already exist:" + terminalId);
+			} else {
+				channelTerminalMapping.put(channelId, pair(terminalId, channel));
+				terminalChannelMapping.put(terminalId, channel);
+			}
 		}
 		return terminalId;
 	}

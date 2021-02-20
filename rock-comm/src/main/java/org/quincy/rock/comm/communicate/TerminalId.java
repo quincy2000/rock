@@ -205,7 +205,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return tag
 	 */
-	public final Object getTag() {
+	public Object getTag() {
 		return tag;
 	}
 
@@ -216,7 +216,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @param tag tag
 	 */
-	public final void setTag(Object tag) {
+	public void setTag(Object tag) {
 		this.tag = tag;
 	}
 
@@ -227,7 +227,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return 是否是服务器
 	 */
-	public final boolean isServer() {
+	public boolean isServer() {
 		return server;
 	}
 
