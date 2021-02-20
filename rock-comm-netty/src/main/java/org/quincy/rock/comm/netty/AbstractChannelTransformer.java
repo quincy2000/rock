@@ -22,21 +22,6 @@ import io.netty.util.AttributeKey;
  */
 public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 		implements ChannelTransformer<UChannel> {
-	/**
-	 * 存放纯净通道的Key。
-	 */
-	public static final AttributeKey<INettyChannel> NETTY_CHANNEL_KEY = AttributeKey.valueOf("nettyChannel");
-
-	/**
-	 * 存放接收通道的Key。
-	 */
-	public static final AttributeKey<INettyChannel> NETTY_RECEIVE_CHANNEL_KEY = AttributeKey
-			.valueOf("nettyReceiveChannel");
-
-	/**
-	 * 存放发送通道的Key。
-	 */
-	public static final AttributeKey<INettyChannel> NETTY_SEND_CHANNEL_KEY = AttributeKey.valueOf("nettySendChannel");
 
 	/** 
 	 * transform。
@@ -75,7 +60,7 @@ public abstract class AbstractChannelTransformer<UChannel extends INettyChannel>
 			break;
 		case CHANNEL_ERROR:
 			channel = retrieveChannel(ch, NETTY_RECEIVE_CHANNEL_KEY).nonPattern();
-			break;	
+			break;
 		case CHANNEL_READ:
 			channel = retrieveChannel(ch, NETTY_RECEIVE_CHANNEL_KEY);
 			break;

@@ -1,6 +1,7 @@
 package org.quincy.rock.comm.netty;
 
 import io.netty.channel.Channel;
+import io.netty.util.AttributeKey;
 
 /**
  * <b>通道转换器。</b>
@@ -20,6 +21,22 @@ import io.netty.channel.Channel;
  */
 @SuppressWarnings("rawtypes")
 public interface ChannelTransformer<UChannel> {
+	/**
+	 * 存放纯净通道的Key。
+	 */
+	public static final AttributeKey<INettyChannel> NETTY_CHANNEL_KEY = AttributeKey.valueOf("nettyChannel");
+
+	/**
+	 * 存放接收通道的Key。
+	 */
+	public static final AttributeKey<INettyChannel> NETTY_RECEIVE_CHANNEL_KEY = AttributeKey
+			.valueOf("nettyReceiveChannel");
+
+	/**
+	 * 存放发送通道的Key。
+	 */
+	public static final AttributeKey<INettyChannel> NETTY_SEND_CHANNEL_KEY = AttributeKey.valueOf("nettySendChannel");
+
 	/**
 	 * NONE。
 	 */
