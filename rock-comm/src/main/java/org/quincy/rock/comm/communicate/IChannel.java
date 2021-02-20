@@ -123,6 +123,15 @@ public interface IChannel extends Adviser, HasTimestamp, HasAccessTime, HasPatte
 	public <T extends IChannel> T newSendChannel(Adviser adviser);
 
 	/**
+	 * <b>返回非模式通道。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 返回非模式通道
+	 */
+	public <T extends IChannel> T nonPattern();
+	
+	/**
 	 * <b>返回通道地址信息。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
@@ -130,22 +139,4 @@ public interface IChannel extends Adviser, HasTimestamp, HasAccessTime, HasPatte
 	 * @return 通道地址信息
 	 */
 	public String addressInfo();
-
-	/**
-	 * <b>一定是非模式通道。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 一定是非模式通道
-	 */
-	public boolean nonPattern();
-
-	/**
-	 * <b>设置成一定是非模式通道。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 模式通道的一票否决。
-	 * @param nonPattern 一定是非模式通道
-	 */
-	public void nonPattern(boolean nonPattern);
 }
