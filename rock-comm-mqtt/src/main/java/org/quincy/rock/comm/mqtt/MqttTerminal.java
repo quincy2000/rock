@@ -25,6 +25,27 @@ public abstract class MqttTerminal<TYPE, CODE> extends TerminalId<TYPE, CODE> {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * <b>构造方法。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 */
+	public MqttTerminal() {
+		super();
+	}
+
+	/**
+	 * <b>构造方法。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param server 是否是服务器
+	 */
+	public MqttTerminal(boolean server) {
+		super(server);
+	}
+
+	/**
 	 * <b>解析topic字符串。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
