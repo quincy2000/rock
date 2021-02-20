@@ -159,10 +159,10 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 
 	/** 
 	 * fromTopic。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#fromTopic(java.lang.String)
+	 * @see org.quincy.rock.comm.mqtt.IMqttTerminalChannel#fromTopic(java.lang.String)
 	 */
 	@Override
-	public IMqttChannel fromTopic(String topic) {
+	public MqttTerminalChannel<TYPE, CODE> fromTopic(String topic) {
 		remote().fromTopic(topic);
 		return this;
 	}
@@ -189,4 +189,15 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 		}
 		return (T) ch;
 	}
+
+	/** 
+	 * sendFlag。
+	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#sendFlag(java.lang.Object)
+	 */
+	@Override
+	public MqttTerminalChannel<TYPE, CODE> sendFlag(Object sendFlag) {
+		super.sendFlag(sendFlag);
+		return this;
+	}
+
 }

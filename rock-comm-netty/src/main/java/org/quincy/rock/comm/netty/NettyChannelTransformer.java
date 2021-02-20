@@ -19,6 +19,21 @@ import io.netty.channel.Channel;
  * @since 1.0
  */
 public class NettyChannelTransformer extends AbstractChannelTransformer<NettyChannel> {
+	/**
+	 * 是服务器。
+	 */
+	private boolean isServer;
+	
+	/**
+	 * <b>构造方法。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param isServer 是服务器
+	 */
+	public NettyChannelTransformer(boolean isServer) {
+		this.isServer = isServer;
+	}
 
 	/** 
 	 * createChannel。
@@ -26,6 +41,8 @@ public class NettyChannelTransformer extends AbstractChannelTransformer<NettyCha
 	 */
 	@Override
 	protected NettyChannel createChannel(Channel ch) {
-		return new NettyChannel().setChannelGetter(NettyUtil.createChannelGetter(ch));
+		NettyChannel channel=new NettyChannel().setChannelGetter(NettyUtil.createChannelGetter(ch));
+		channel.setServerSide(isServer);
+		return channel;
 	}
 }

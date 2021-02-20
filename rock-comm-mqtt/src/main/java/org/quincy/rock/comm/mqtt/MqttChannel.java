@@ -190,7 +190,7 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#fromTopic(java.lang.String)
 	 */
 	@Override
-	public IMqttChannel fromTopic(String topic) {
+	public MqttChannel fromTopic(String topic) {
 		this.topic = topic;
 		return this;
 	}

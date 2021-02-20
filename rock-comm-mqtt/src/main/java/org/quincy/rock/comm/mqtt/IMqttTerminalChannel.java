@@ -31,4 +31,16 @@ public interface IMqttTerminalChannel<TYPE, CODE> extends IMqttChannel, Terminal
 	 * @see org.quincy.rock.comm.communicate.TerminalChannel#local()
 	 */
 	public MqttTerminal<TYPE, CODE> local();
+	
+	/** 
+	 * fromTopic。
+	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#fromTopic(java.lang.String)
+	 */
+	public IMqttTerminalChannel<TYPE, CODE> fromTopic(String topic);
+	
+	/** 
+	 * sendFlag。
+	 * @see org.quincy.rock.comm.communicate.TerminalChannel#sendFlag(java.lang.Object)
+	 */
+	public IMqttTerminalChannel<TYPE, CODE> sendFlag(Object sendFlag);
 }
