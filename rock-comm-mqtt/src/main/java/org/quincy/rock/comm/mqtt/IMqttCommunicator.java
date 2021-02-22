@@ -4,6 +4,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.quincy.rock.comm.communicate.Adviser;
 import org.quincy.rock.comm.communicate.CommunicateClient;
 import org.quincy.rock.comm.communicate.CommunicateServer;
 
@@ -35,14 +36,33 @@ public interface IMqttCommunicator<UChannel extends IMqttChannel>
 	public String getMqttClientId();
 
 	/**
-	 * <b>获得mqtt通道。</b>
+	 * <b>获得mqtt根通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return mqtt通道
+	 * @return mqtt根通道
 	 */
 	public UChannel getRootChannel();
 
+	/**
+	 * <b>创建新的发送通道。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 发送通道
+	 */
+	public UChannel newSendChannel();
+	
+	/**
+	 * <b>创建新的发送通道。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param adviser 建议
+	 * @return 发送通道
+	 */
+	public UChannel newSendChannel(Adviser adviser);
+	
 	/**
 	 * <b>连接指定主机。</b>
 	 * <p><b>详细说明：</b></p>

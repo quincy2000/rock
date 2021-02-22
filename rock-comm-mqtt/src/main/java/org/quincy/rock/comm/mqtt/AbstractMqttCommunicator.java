@@ -26,6 +26,7 @@ import org.eclipse.paho.client.mqttv3.ScheduledExecutorPingSender;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.quincy.rock.comm.CommunicateException;
 import org.quincy.rock.comm.communicate.AbstractCommunicator;
+import org.quincy.rock.comm.communicate.Adviser;
 import org.quincy.rock.comm.communicate.CommunicateServerListener;
 import org.quincy.rock.comm.util.CommunicateServerListenerSupport;
 import org.quincy.rock.comm.util.NioUtils;
@@ -221,12 +222,9 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 		this.mqttConnectOptions = mqttConnectOptions;
 	}
 
-	/**
-	 * <b>获得mqtt根通道。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return mqtt根通道
+	/** 
+	 * getRootChannel。
+	 * @see org.quincy.rock.comm.mqtt.IMqttCommunicator#getRootChannel()
 	 */
 	@Override
 	public final UChannel getRootChannel() {
@@ -324,6 +322,24 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	@Override
 	public final String getMqttClientId() {
 		return mqttClient.getClientId();
+	}
+
+	/** 
+	 * newSendChannel。
+	 * @see org.quincy.rock.comm.mqtt.IMqttCommunicator#newSendChannel()
+	 */
+	@Override
+	public final UChannel newSendChannel() {
+		return getRootChannel().newSendChannel();
+	}
+
+	/** 
+	 * newSendChannel。
+	 * @see org.quincy.rock.comm.mqtt.IMqttCommunicator#newSendChannel(org.quincy.rock.comm.communicate.Adviser)
+	 */
+	@Override
+	public UChannel newSendChannel(Adviser adviser) {
+		return getRootChannel().newSendChannel(adviser);
 	}
 
 	/** 
