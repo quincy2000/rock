@@ -88,7 +88,7 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 	 */
 	@Override
 	protected CasingResultMessage<ByteBuffer, ?> createCasingResultMessage() {
-		return new NioCasingResultMessage();
+		return new NioCasingResultMessage(true);
 	}
 
 	/** 
@@ -97,7 +97,7 @@ public class NioSimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser<K
 	 */
 	@Override
 	protected CasingListResultMessage<ByteBuffer, ?> createCasingListResultMessage() {
-		return new NioCasingListResultMessage();
+		return new NioCasingListResultMessage(true);
 	}
 
 	/** 

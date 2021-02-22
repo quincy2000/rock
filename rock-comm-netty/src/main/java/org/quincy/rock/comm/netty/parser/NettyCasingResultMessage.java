@@ -23,11 +23,28 @@ import io.netty.buffer.ByteBuf;
  * @author wks
  * @since 1.0
  */
-public class NettyCasingResultMessage extends CasingResultMessage<ByteBuf, Byte> {
+public class NettyCasingResultMessage extends CasingResultMessage<ByteBuf, Integer> {
+
 	/**
 	 * serialVersionUID。
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5882317707119690859L;
+
+	/**
+	 * 结果字段使用无符号字节。
+	 */
+	private boolean unsignedByte;
+
+	/**
+	 * <b>构造方法。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param unsignedByte 结果字段使用无符号字节
+	 */
+	public NettyCasingResultMessage(boolean unsignedByte) {
+		this.unsignedByte = unsignedByte;
+	}
 
 	/** 
 	 * toBinary。
@@ -47,7 +64,7 @@ public class NettyCasingResultMessage extends CasingResultMessage<ByteBuf, Byte>
 	@Override
 	public Message<ByteBuf> fromBinary(ByteBuf buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
-		this.setResult(buf.readByte());
+		this.setResult((int) (unsignedByte ? buf.readUnsignedByte() : buf.readByte()));
 		return this;
 	}
 }
