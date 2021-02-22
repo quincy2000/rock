@@ -41,7 +41,7 @@ public interface IMqttCommunicator<UChannel extends IMqttChannel>
 	 * 无。
 	 * @return mqtt通道
 	 */
-	public UChannel getMqttChannel();
+	public UChannel getRootChannel();
 
 	/**
 	 * <b>连接指定主机。</b>

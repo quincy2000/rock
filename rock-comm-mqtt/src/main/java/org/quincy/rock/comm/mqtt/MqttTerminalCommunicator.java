@@ -86,7 +86,7 @@ public class MqttTerminalCommunicator<CODE, TYPE, UChannel extends MqttTerminalC
 	 */
 	public IMqttToken sendData(MqttTerminal<?, ?> term, Object data, IMqttActionListener callback)
 			throws MqttException {
-		UChannel ch = this.getMqttChannel();
+		UChannel ch = this.getRootChannel();
 		ch.newSendChannel(term);
 		return this.sendData(ch, data, callback);
 	}

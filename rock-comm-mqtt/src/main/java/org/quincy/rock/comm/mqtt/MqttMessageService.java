@@ -30,7 +30,7 @@ public class MqttMessageService<K, UChannel extends IMqttChannel> extends Defaul
 	protected UChannel findSendChannel(Object terminalId) {
 		UChannel channel = getTerminalChannelMapping().findChannel(terminalId);
 		if (channel == null)
-			channel = getMqttCommunicator().getMqttChannel();
+			channel = getMqttCommunicator().getRootChannel();
 		return channel.newSendChannel(terminalId instanceof Adviser ? (Adviser) terminalId : null);
 	}
 
@@ -43,7 +43,7 @@ public class MqttMessageService<K, UChannel extends IMqttChannel> extends Defaul
 		Object terminalId = getTerminalChannelMapping().findTerminal(ch);
 		UChannel channel = terminalId == null ? null : getTerminalChannelMapping().findChannel(terminalId);
 		if (channel == null)
-			channel = getMqttCommunicator().getMqttChannel();
+			channel = getMqttCommunicator().getRootChannel();
 		return channel.newSendChannel(ch instanceof Adviser ? (Adviser) ch : null);
 	}
 

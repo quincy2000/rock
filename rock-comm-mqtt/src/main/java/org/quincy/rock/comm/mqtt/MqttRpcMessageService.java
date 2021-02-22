@@ -29,7 +29,7 @@ public class MqttRpcMessageService<K, UChannel extends IMqttChannel> extends Rpc
 	protected UChannel findSendChannel(Object terminalId) {
 		UChannel channel = getTerminalChannelMapping().findChannel(terminalId);
 		if (channel == null)
-			channel = getMqttCommunicator().getMqttChannel();
+			channel = getMqttCommunicator().getRootChannel();
 		return channel.newSendChannel(terminalId instanceof Adviser ? (Adviser) terminalId : null);
 	}
 
@@ -42,7 +42,7 @@ public class MqttRpcMessageService<K, UChannel extends IMqttChannel> extends Rpc
 		Object terminalId = getTerminalChannelMapping().findTerminal(ch);
 		UChannel channel = terminalId == null ? null : getTerminalChannelMapping().findChannel(terminalId);
 		if (channel == null)
-			channel = getMqttCommunicator().getMqttChannel();
+			channel = getMqttCommunicator().getRootChannel();
 		return channel.newSendChannel(ch instanceof Adviser ? (Adviser) ch : null);
 	}
 

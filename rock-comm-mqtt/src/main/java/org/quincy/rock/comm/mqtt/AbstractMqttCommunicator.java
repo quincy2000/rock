@@ -70,9 +70,9 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 */
 	private MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
 	/**
-	 * mqtt通道。
+	 * mqtt根通道。
 	 */
-	private UChannel mqttChannel;
+	private UChannel rootChannel;
 	/**
 	 * 初始订阅的Topic列表。
 	 */
@@ -222,30 +222,30 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	}
 
 	/**
-	 * <b>获得mqtt通道。</b>
+	 * <b>获得mqtt根通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return mqtt通道
+	 * @return mqtt根通道
 	 */
 	@Override
-	public final UChannel getMqttChannel() {
-		if (mqttChannel == null)
+	public final UChannel getRootChannel() {
+		if (rootChannel == null)
 			throw new CommunicateException("MqttChannel not set!");
-		if (mqttChannel.mqttClient() == null)
-			mqttChannel.mqttClient(mqttClient);
-		return mqttChannel;
+		if (rootChannel.mqttClient() == null)
+			rootChannel.mqttClient(mqttClient);
+		return rootChannel;
 	}
 
 	/**
-	 * <b>设置mqtt通道。</b>
+	 * <b>设置mqtt根通道。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param mqttChannel mqtt通道
+	 * @param rootChannel mqtt根通道
 	 */
-	public final void setMqttChannel(UChannel mqttChannel) {
-		this.mqttChannel = mqttChannel;
+	public final void setRootChannel(UChannel rootChannel) {
+		this.rootChannel = rootChannel;
 	}
 
 	/**
@@ -734,12 +734,12 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 
 	//使用的serverURI
 	private void useServerURI(String serverURI) {
-		getMqttChannel().serverURI(serverURI);
+		getRootChannel().serverURI(serverURI);
 	}
 
 	//克隆mqtt通道
 	private UChannel cloneMqttChannel() {
-		return this.getMqttChannel().cloneMe();
+		return this.getRootChannel().cloneMe();
 	}
 
 	//检查发送通道合法性
