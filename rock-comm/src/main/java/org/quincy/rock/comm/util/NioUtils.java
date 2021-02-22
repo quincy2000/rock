@@ -293,6 +293,30 @@ public abstract class NioUtils {
 	}
 
 	/**
+	 * <b>读取无符号字节数字。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @return 无符号字节数字
+	 */
+	public static short readUnsignedByte(ByteBuffer buf) {
+		return (short) (buf.get() & 0xFF);
+	}
+
+	/**
+	 * <b>读取无符号短整型数字。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param buf ByteBuffer
+	 * @return 无符号短整型数字
+	 */
+	public static int readUnsignedShort(ByteBuffer buf) {
+		return buf.getShort() & 0xFFFF;
+	}
+
+	/**
 	 * <b>读字节数组。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
