@@ -300,8 +300,8 @@ public abstract class NioUtils {
 	 * @param buf ByteBuffer
 	 * @return 无符号字节数字
 	 */
-	public static short readUnsignedByte(ByteBuffer buf) {
-		return (short) (buf.get() & 0xFF);
+	public static int readUnsignedByte(ByteBuffer buf) {
+		return buf.get() & 0xFF;
 	}
 
 	/**

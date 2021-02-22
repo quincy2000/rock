@@ -3,6 +3,8 @@ package org.quincy.rock.comm.parser;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import org.quincy.rock.comm.util.NioUtils;
+
 /**
  * <b>NioCasingResultMessage。</b>
  * <p><b>详细说明：</b></p>
@@ -19,11 +21,28 @@ import java.util.Map;
  * @author wks
  * @since 1.0
  */
-public class NioCasingResultMessage extends CasingResultMessage<ByteBuffer, Byte> {
+public class NioCasingResultMessage extends CasingResultMessage<ByteBuffer, Integer> {
+
 	/**
 	 * serialVersionUID。
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1876130418324847927L;
+
+	/**
+	 * 结果字段使用无符号字节。
+	 */
+	private boolean unsignedByte;
+
+	/**
+	 * <b>构造方法。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @param unsignedByte 结果字段使用无符号字节
+	 */
+	public NioCasingResultMessage(boolean unsignedByte) {
+		this.unsignedByte = unsignedByte;
+	}
 
 	/** 
 	 * toBinary。
@@ -32,7 +51,7 @@ public class NioCasingResultMessage extends CasingResultMessage<ByteBuffer, Byte
 	@Override
 	public ByteBuffer toBinary(ByteBuffer buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
-		buf.put(this.getResult());
+		NioUtils.writeByte(buf, this.getResult(), true);
 		return buf;
 	}
 
@@ -43,7 +62,7 @@ public class NioCasingResultMessage extends CasingResultMessage<ByteBuffer, Byte
 	@Override
 	public Message<ByteBuffer> fromBinary(ByteBuffer buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
-		this.setResult(buf.get());
+		this.setResult(unsignedByte ? NioUtils.readUnsignedByte(buf) : buf.get());
 		return this;
 	}
 }

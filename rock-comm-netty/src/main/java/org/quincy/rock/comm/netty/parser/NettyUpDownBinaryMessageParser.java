@@ -102,7 +102,7 @@ public class NettyUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser
 	 */
 	@Override
 	protected CasingResultMessage<ByteBuf, ?> createCasingResultMessage() {
-		return new NettyCasingResultMessage();
+		return new NettyCasingResultMessage(true);
 	}
 
 	/** 
@@ -111,7 +111,7 @@ public class NettyUpDownBinaryMessageParser<K> extends UpDownBinaryMessageParser
 	 */
 	@Override
 	protected CasingListResultMessage<ByteBuf, ?> createCasingListResultMessage() {
-		return new NettyCasingListResultMessage();
+		return new NettyCasingListResultMessage(true);
 	}
 
 	/** 

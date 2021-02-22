@@ -2,6 +2,7 @@ package org.quincy.rock.comm.mqtt;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -520,6 +521,9 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 			data = msg.getPayload();
 			channel.setMqttQos(msg.getQos());
 			channel.setRetained(msg.isRetained());
+		} else if (data instanceof ByteBuffer) {
+			ByteBuffer msg = (ByteBuffer) data;
+			data = NioUtils.readBytes(msg);
 		}
 		try {
 			return (byte[]) data;
@@ -538,7 +542,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 * @return 用户接收的数据类型
 	 */
 	protected Object payloadToData(UChannel channel, byte[] payload) {
-		return payload;
+		return ByteBuffer.wrap(payload);
 	}
 
 	/**

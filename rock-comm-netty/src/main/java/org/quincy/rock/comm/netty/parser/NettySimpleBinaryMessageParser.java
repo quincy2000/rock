@@ -96,7 +96,7 @@ public class NettySimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser
 	 */
 	@Override
 	protected CasingResultMessage<ByteBuf, ?> createCasingResultMessage() {
-		return new NettyCasingResultMessage();
+		return new NettyCasingResultMessage(true);
 	}
 
 	/** 
@@ -105,7 +105,7 @@ public class NettySimpleBinaryMessageParser<K> extends SimpleBinaryMessageParser
 	 */
 	@Override
 	protected CasingListResultMessage<ByteBuf, ?> createCasingListResultMessage() {
-		return new NettyCasingListResultMessage();
+		return new NettyCasingListResultMessage(true);
 	}
 
 	/** 
