@@ -2,7 +2,6 @@ package org.quincy.rock.comm.mqtt;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.quincy.rock.comm.communicate.Adviser;
 import org.quincy.rock.comm.communicate.CommunicateClient;
@@ -52,7 +51,7 @@ public interface IMqttCommunicator<UChannel extends IMqttChannel>
 	 * @return 发送通道
 	 */
 	public UChannel newSendChannel();
-	
+
 	/**
 	 * <b>创建新的发送通道。</b>
 	 * <p><b>详细说明：</b></p>
@@ -62,7 +61,7 @@ public interface IMqttCommunicator<UChannel extends IMqttChannel>
 	 * @return 发送通道
 	 */
 	public UChannel newSendChannel(Adviser adviser);
-	
+
 	/**
 	 * <b>连接指定主机。</b>
 	 * <p><b>详细说明：</b></p>
@@ -71,7 +70,7 @@ public interface IMqttCommunicator<UChannel extends IMqttChannel>
 	 * @param host 主机
 	 * @return 通道
 	 */
-	public UChannel connect(MqttConnectOptions options);
+	public UChannel connect(ConnectOptions options);
 
 	/**
 	 * <b>订阅主题。</b>

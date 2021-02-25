@@ -20,7 +20,6 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.ScheduledExecutorPingSender;
@@ -70,7 +69,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	/**
 	 * MQTT连接选项。
 	 */
-	private MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+	private ConnectOptions connectOptions = new ConnectOptions();
 	/**
 	 * mqtt根通道。
 	 */
@@ -100,7 +99,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param serverURI 要连接的服务器地址，用URI指定。可以覆盖通过使用MqttConnectOptions.setServerURIs(String[] serverURIs)。
+	 * @param serverURI 要连接的服务器地址，用URI指定。可以覆盖通过使用ConnectOptions.setServerURIs(String[] serverURIs)。
 	 * @param clientId 唯一的客户端标识符
 	 */
 	public AbstractMqttCommunicator(String serverURI, String clientId) {
@@ -112,7 +111,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param serverURI 要连接的服务器地址，用URI指定。可以覆盖通过使用MqttConnectOptions.setServerURIs(String[] serverURIs)。
+	 * @param serverURI 要连接的服务器地址，用URI指定。可以覆盖通过使用ConnectOptions.setServerURIs(String[] serverURIs)。
 	 * @param clientId 唯一的客户端标识符
 	 * @param corePoolSize 核心线程池大小
 	 */
@@ -125,7 +124,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param serverURI 要连接的服务器地址，用URI指定。可以覆盖通过使用MqttConnectOptions.setServerURIs(String[] serverURIs)。
+	 * @param serverURI 要连接的服务器地址，用URI指定。可以覆盖通过使用ConnectOptions.setServerURIs(String[] serverURIs)。
 	 * @param clientId 唯一的客户端标识符
 	 * @param corePoolSize 核心线程池大小
 	 * @param persistence 用于存储动态消息的持久化类
@@ -208,8 +207,8 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 * 无。
 	 * @return MQTT连接选项
 	 */
-	public final MqttConnectOptions getMqttConnectOptions() {
-		return mqttConnectOptions;
+	public final ConnectOptions getConnectOptions() {
+		return connectOptions;
 	}
 
 	/**
@@ -217,10 +216,10 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param mqttConnectOptions MQTT连接选项
+	 * @param connectOptions MQTT连接选项
 	 */
-	public final void setMqttConnectOptions(MqttConnectOptions mqttConnectOptions) {
-		this.mqttConnectOptions = mqttConnectOptions;
+	public final void setConnectOptions(ConnectOptions connectOptions) {
+		this.connectOptions = connectOptions;
 	}
 
 	/** 
@@ -349,7 +348,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 */
 	@Override
 	public UChannel connect() {
-		return this.connect(this.mqttConnectOptions);
+		return this.connect(this.connectOptions);
 	}
 
 	/** 
@@ -367,20 +366,20 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	 */
 	@Override
 	public UChannel connect(String host, int port) {
-		this.mqttConnectOptions.setServerURIs(new String[] { host + StringUtil.CHAR_COLON + port });
-		return this.connect(this.mqttConnectOptions);
+		this.connectOptions.setServerURIs(new String[] { host + StringUtil.CHAR_COLON + port });
+		return this.connect(this.connectOptions);
 	}
 
 	/** 
 	 * connect。
-	 * @see org.quincy.rock.comm.mqtt.IMqttCommunicator#connect(org.eclipse.paho.client.mqttv3.MqttConnectOptions)
+	 * @see org.quincy.rock.comm.mqtt.IMqttCommunicator#connect(org.quincy.rock.comm.mqtt.ConnectOptions)
 	 */
 	@Override
-	public UChannel connect(MqttConnectOptions options) {
+	public UChannel connect(ConnectOptions options) {
 		if (options == null)
-			options = this.mqttConnectOptions;
+			options = this.connectOptions;
 		else
-			this.mqttConnectOptions = options;
+			this.connectOptions = options;
 		//
 		try {
 			IMqttToken token = mqttClient.connect(options);
@@ -486,7 +485,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 			});
 			if (!async) {
 				//同步
-				token.waitForCompletion(mqttConnectOptions.getConnectionTimeout());
+				token.waitForCompletion(connectOptions.getTimeout());
 			}
 		} catch (Exception e) {
 			throw new CommunicateException("Failed to send data:" + e.getMessage(), e);
@@ -701,7 +700,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	public void close() {
 		try {
 			IMqttToken token = mqttClient.disconnect();
-			token.waitForCompletion(mqttConnectOptions.getConnectionTimeout());
+			token.waitForCompletion(connectOptions.getConnectionTimeout());
 			recorder.write("The connection has been broken.");
 		} catch (Exception e) {
 			recorder.write(e, e.getMessage());
@@ -731,10 +730,9 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	private void shutdownExecutorService() {
 		try {
 			executorService.shutdown();
-			if (!executorService.awaitTermination(mqttConnectOptions.getExecutorServiceTimeout(), TimeUnit.SECONDS)) {
+			if (!executorService.awaitTermination(connectOptions.getExecutorServiceTimeout(), TimeUnit.SECONDS)) {
 				executorService.shutdownNow();
-				if (!executorService.awaitTermination(mqttConnectOptions.getExecutorServiceTimeout(),
-						TimeUnit.SECONDS)) {
+				if (!executorService.awaitTermination(connectOptions.getExecutorServiceTimeout(), TimeUnit.SECONDS)) {
 					recorder.write("ExecutorService did not terminate!");
 				}
 			}
