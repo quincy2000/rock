@@ -383,10 +383,13 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 		//
 		try {
 			IMqttToken token = mqttClient.connect(options);
-			token.waitForCompletion(options.getConnectionTimeout());
+			token.waitForCompletion(options.getConnectionTimeout() * 1000);
 			return this.cloneMqttChannel();
 		} catch (MqttException e) {
-			throw new CommunicateException(e.getMessage(), e);
+			if (e.getReasonCode() == MqttException.REASON_CODE_CLIENT_EXCEPTION && e.getCause() != null)
+				throw new CommunicateException(e.getCause().getMessage(), e.getCause());
+			else
+				throw new CommunicateException(e.getMessage(), e);
 		}
 	}
 
@@ -485,7 +488,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 			});
 			if (!async) {
 				//同步
-				token.waitForCompletion(connectOptions.getTimeout());
+				token.waitForCompletion(connectOptions.getTimeout() * 1000);
 			}
 		} catch (Exception e) {
 			throw new CommunicateException("Failed to send data:" + e.getMessage(), e);
@@ -700,7 +703,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	public void close() {
 		try {
 			IMqttToken token = mqttClient.disconnect();
-			token.waitForCompletion(connectOptions.getConnectionTimeout());
+			token.waitForCompletion(connectOptions.getConnectionTimeout() * 1000);
 			recorder.write("The connection has been broken.");
 		} catch (Exception e) {
 			recorder.write(e, e.getMessage());

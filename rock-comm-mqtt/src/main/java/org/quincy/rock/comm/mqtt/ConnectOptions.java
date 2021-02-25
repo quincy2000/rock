@@ -21,7 +21,7 @@ import org.quincy.rock.core.util.StringUtil;
  */
 public class ConnectOptions extends MqttConnectOptions {
 	/**
-	 * 发送消息超时。
+	 * 发送消息超时秒数。
 	 */
 	private int timeout = CONNECTION_TIMEOUT_DEFAULT;
 
@@ -82,22 +82,22 @@ public class ConnectOptions extends MqttConnectOptions {
 	}
 
 	/**
-	 * <b>获得发送消息超时。</b>
+	 * <b>获得发送消息超时秒数。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return 发送消息超时
+	 * @return 发送消息超时秒数
 	 */
 	public int getTimeout() {
 		return timeout;
 	}
 
 	/**
-	 * <b>设置发送消息超时。</b>
+	 * <b>设置发送消息超时秒数。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @param timeout 发送消息超时
+	 * @param timeout 发送消息超时秒数
 	 */
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
