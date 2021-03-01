@@ -51,7 +51,7 @@ public class NioCasingListResultMessage extends CasingListResultMessage<ByteBuff
 	@Override
 	public ByteBuffer toBinary(ByteBuffer buf, Map<String, Object> ctx) {
 		this.initializeOnce(ctx);
-		NioUtils.writeByte(buf, this.getResult(), true);
+		buf = NioUtils.writeByte(buf, this.getResult(), true);
 		return buf;
 	}
 
