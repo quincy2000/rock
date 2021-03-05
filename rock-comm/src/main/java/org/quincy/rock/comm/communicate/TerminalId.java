@@ -22,7 +22,7 @@ import org.quincy.rock.core.vo.Vo;
  * @since 1.0
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPattern {
+public abstract class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPattern {
 
 	/**
 	 * serialVersionUID。
@@ -52,10 +52,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * tag。
 	 */
 	private Object tag;
-	/**
-	 * 是否是服务器。
-	 */
-	private boolean server;
+
 	/**
 	 * 是否是强制的建议。
 	 */
@@ -73,17 +70,6 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 */
 	public TerminalId() {
-	}
-
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @param server 是否是服务器
-	 */
-	public TerminalId(boolean server) {
-		this.server = server;
 	}
 
 	/**
@@ -227,9 +213,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	 * 无。
 	 * @return 是否是服务器
 	 */
-	public boolean isServer() {
-		return server;
-	}
+	public abstract boolean isServer();
 
 	/** 
 	 * isForced。
@@ -321,7 +305,7 @@ public class TerminalId<TYPE, CODE> extends Vo<String> implements Adviser, HasPa
 	@Override
 	public String id() {
 		if (id == null) {
-			StringBuilder sb = new StringBuilder(server ? "sid" : "cid");
+			StringBuilder sb = new StringBuilder(isServer() ? "sid" : "cid");
 			sb.append(StringUtil.CHAR_UNDERLINE);
 			if (type != null)
 				sb.append(type);
