@@ -54,39 +54,24 @@ public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TY
 	}
 
 	/** 
-	 * createLocal。
-	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#createLocal()
+	 * createTerm。
+	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#createTerm(boolean)
 	 */
 	@Override
-	protected TerminalId<TYPE, CODE> createLocal() {
+	protected TerminalId<TYPE, CODE> createTerm(final boolean local) {
 		return new TerminalId() {
 			/**
 			 * serialVersionUID。
 			 */
 			private static final long serialVersionUID = 1L;
-
-			@Override
-			public boolean isServer() {
-				return isServerSide();
-			}
-		};
-	}
-
-	/** 
-	 * createRemote。
-	 * @see org.quincy.rock.comm.communicate.AbstractTerminalChannel#createRemote()
-	 */
-	@Override
-	protected TerminalId<TYPE, CODE> createRemote() {
-		return new TerminalId() {
 			/**
-			 * serialVersionUID。
+			 * remote。
 			 */
-			private static final long serialVersionUID = 1L;
+			private final boolean remote = !local;
 
 			@Override
 			public boolean isServer() {
-				return !isServerSide();
+				return remote ? !isServerSide() : isServerSide();
 			}
 		};
 	}

@@ -155,7 +155,7 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 				@Override
 				public void deliveryComplete(IMqttDeliveryToken token) {
 					//发送完成
-					Object ctx = token.getUserContext(); //发送时传递过来的通道和发送数据		
+					Object ctx = token.getUserContext(); //发送时传递过来的通道和发送数据
 					Pair<UChannel, Object> pair = (ctx instanceof Pair) ? (Pair) ctx : null;
 					UChannel ch = pair == null ? (UChannel) cloneMqttChannel().fromTopic(token.getTopics()[0])
 							: pair.getLeft();
@@ -729,6 +729,17 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 		super.destroy();
 	}
 
+	/**
+	 * <b>克隆mqtt通道。</b>
+	 * <p><b>详细说明：</b></p>
+	 * <!-- 在此添加详细说明 -->
+	 * 无。
+	 * @return 克隆的MQTT通道
+	 */
+	protected UChannel cloneMqttChannel() {
+		return this.getRootChannel().cloneMe();
+	}
+
 	//关闭线程执行服务器
 	private void shutdownExecutorService() {
 		try {
@@ -756,11 +767,6 @@ public abstract class AbstractMqttCommunicator<UChannel extends IMqttChannel> ex
 	//使用的serverURI
 	private void useServerURI(String serverURI) {
 		getRootChannel().serverURI(serverURI);
-	}
-
-	//克隆mqtt通道
-	private UChannel cloneMqttChannel() {
-		return this.getRootChannel().cloneMe();
 	}
 
 	//检查发送通道合法性

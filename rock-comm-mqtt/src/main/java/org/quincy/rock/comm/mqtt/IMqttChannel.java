@@ -58,20 +58,20 @@ public interface IMqttChannel extends IChannel, MqttSendConfig {
 	public void serverURI(String serverURI);
 
 	/**
-	 * <b>解析topic字符串。</b>
+	 * <b>接收报文时使用的topic字符串。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * 框架接收到报文时调用该方法记录使用的topic字符串。
 	 * @param topic topic字符串
 	 * @return IMqttChannel
 	 */
 	public IMqttChannel fromTopic(String topic);
 
 	/**
-	 * <b>生成topic字符串。</b>
+	 * <b>发送报文时使用的topic字符串。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 无。
+	 * 框架发送报文时调用该方法获得发送topic。
 	 * @return topic字符串
 	 */
 	public String toTopic();

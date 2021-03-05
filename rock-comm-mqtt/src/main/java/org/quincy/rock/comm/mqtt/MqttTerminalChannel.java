@@ -37,25 +37,7 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	/**
 	 * 通道连接的服务器URI。
 	 */
-	private String serverURI;
-
-	/**
-	 * QTT消息服务质量。
-	 */
-	private int mqttQos = 1;
-	/**
-	 * 是否在服务器上保留消息。
-	 */
-	private boolean retained;
-
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 */
-	public MqttTerminalChannel() {
-	}
+	private String serverURI;	
 
 	/** 
 	 * local。
@@ -113,67 +95,38 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 
 	/** 
 	 * isRetained。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#isRetained()
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#isRetained()
 	 */
 	@Override
 	public final boolean isRetained() {
-		MqttTerminal remote = remote();
-		return (remote instanceof MqttSendConfig) ? ((MqttSendConfig) remote).isRetained() : this.retained;
+		return remote().isRetained();
 	}
 
 	/** 
 	 * setRetained。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#setRetained(boolean)
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#setRetained(boolean)
 	 */
 	@Override
 	public final void setRetained(boolean retained) {
-		MqttTerminal remote = remote();
-		if (remote instanceof MqttSendConfig)
-			((MqttSendConfig) remote).setRetained(retained);
-		else
-			this.retained = retained;
+		remote().setRetained(retained);
 	}
 
 	/** 
 	 * getMqttQos。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#getMqttQos()
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#getMqttQos()
 	 */
 	@Override
 	public final int getMqttQos() {
-		MqttTerminal remote = remote();
-		return (remote instanceof MqttSendConfig) ? ((MqttSendConfig) remote).getMqttQos() : this.mqttQos;
+		return remote().getMqttQos();
 	}
 
 	/** 
 	 * setMqttQos。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#setMqttQos(int)
+	 * @see org.quincy.rock.comm.mqtt.MqttSendConfig#setMqttQos(int)
 	 */
 	@Override
 	public final void setMqttQos(int qos) {
-		MqttTerminal remote = remote();
-		if (remote instanceof MqttSendConfig)
-			((MqttSendConfig) remote).setMqttQos(qos);
-		else
-			this.mqttQos = qos;
-	}
-
-	/** 
-	 * fromTopic。
-	 * @see org.quincy.rock.comm.mqtt.IMqttTerminalChannel#fromTopic(java.lang.String)
-	 */
-	@Override
-	public MqttTerminalChannel<TYPE, CODE> fromTopic(String topic) {
-		remote().fromTopic(topic);
-		return this;
-	}
-
-	/** 
-	 * toTopic。
-	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#toTopic()
-	 */
-	@Override
-	public String toTopic() {
-		return remote().toTopic();
+		remote().setMqttQos(qos);
 	}
 
 	/** 
@@ -196,8 +149,7 @@ public abstract class MqttTerminalChannel<TYPE, CODE> extends AbstractTerminalCh
 	 */
 	@Override
 	public MqttTerminalChannel<TYPE, CODE> sendFlag(Object sendFlag) {
-		super.sendFlag(sendFlag);
+		remote().setSendFlag(sendFlag);
 		return this;
 	}
-
 }

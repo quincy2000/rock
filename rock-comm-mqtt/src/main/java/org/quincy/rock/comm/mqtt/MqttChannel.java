@@ -51,15 +51,6 @@ public class MqttChannel extends AbstractChannel implements IMqttChannel {
 	 */
 	private String remoteId;
 
-	/**
-	 * <b>构造方法。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 */
-	public MqttChannel() {
-	}
-
 	/** 
 	 * mqttClient。
 	 * @see org.quincy.rock.comm.mqtt.IMqttChannel#mqttClient()

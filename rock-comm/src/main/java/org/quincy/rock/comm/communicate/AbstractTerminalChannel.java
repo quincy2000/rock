@@ -34,22 +34,14 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 	private TerminalId<TYPE, CODE> remoteTerm;
 
 	/**
-	 * <b>创建本地终端。</b>
+	 * <b>创建终端。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
 	 * 无。
-	 * @return 本地终端
+	 * @param local 指示创建本地终端还是远程终端
+	 * @return 终端
 	 */
-	protected abstract TerminalId<TYPE, CODE> createLocal();
-
-	/**
-	 * <b>创建远程终端。</b>
-	 * <p><b>详细说明：</b></p>
-	 * <!-- 在此添加详细说明 -->
-	 * 无。
-	 * @return 远程终端
-	 */
-	protected abstract TerminalId<TYPE, CODE> createRemote();
+	protected abstract TerminalId<TYPE, CODE> createTerm(boolean local);
 
 	/** 
 	 * local。
@@ -58,7 +50,7 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 	@Override
 	public TerminalId<TYPE, CODE> local() {
 		if (localTerm == null)
-			localTerm = createLocal();
+			localTerm = createTerm(true);
 		return localTerm;
 	}
 
@@ -69,7 +61,7 @@ public abstract class AbstractTerminalChannel<TYPE, CODE> extends AbstractChanne
 	@Override
 	public TerminalId<TYPE, CODE> remote() {
 		if (remoteTerm == null)
-			remoteTerm = createRemote();
+			remoteTerm = createTerm(false);
 		return remoteTerm;
 	}
 

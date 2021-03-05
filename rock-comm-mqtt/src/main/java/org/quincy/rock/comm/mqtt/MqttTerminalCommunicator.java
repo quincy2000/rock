@@ -41,7 +41,7 @@ public class MqttTerminalCommunicator<CODE, TYPE, UChannel extends MqttTerminalC
 	 * <b>订阅终端对应的Topic。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 该方法使用终端的toTopic方法获取终端Topic。
+	 * 该方法使用通道的toTopic方法获取终端Topic。
 	 * @param terms 要订阅的终端Topic
 	 * @return IMqttToken
 	 * @throws MqttException
@@ -49,8 +49,10 @@ public class MqttTerminalCommunicator<CODE, TYPE, UChannel extends MqttTerminalC
 	public IMqttToken subscribe(MqttTerminal<?, ?>... terms) throws MqttException {
 		int len = terms.length;
 		String[] topics = new String[len];
+		UChannel rootCh = this.getRootChannel();
 		for (int i = 0; i < len; i++) {
-			topics[i] = terms[i].toTopic();
+			UChannel sendCh = rootCh.newSendChannel(terms[i]);
+			topics[i] = sendCh.toTopic();
 		}
 		return this.subscribe(topics);
 	}
@@ -59,7 +61,7 @@ public class MqttTerminalCommunicator<CODE, TYPE, UChannel extends MqttTerminalC
 	 * <b>取消订阅终端对应的Topic。</b>
 	 * <p><b>详细说明：</b></p>
 	 * <!-- 在此添加详细说明 -->
-	 * 该方法使用终端的toTopic方法获取终端Topic。
+	 * 该方法使用通道的toTopic方法获取终端Topic。
 	 * @param terms 要取消订阅的终端Topic
 	 * @return IMqttToken
 	 * @throws MqttException
@@ -67,8 +69,10 @@ public class MqttTerminalCommunicator<CODE, TYPE, UChannel extends MqttTerminalC
 	public IMqttToken unsubscribe(MqttTerminal<?, ?>... terms) throws MqttException {
 		int len = terms.length;
 		String[] topics = new String[len];
+		UChannel rootCh = this.getRootChannel();
 		for (int i = 0; i < len; i++) {
-			topics[i] = terms[i].toTopic();
+			UChannel sendCh = rootCh.newSendChannel(terms[i]);
+			topics[i] = sendCh.toTopic();
 		}
 		return this.unsubscribe(topics);
 	}
