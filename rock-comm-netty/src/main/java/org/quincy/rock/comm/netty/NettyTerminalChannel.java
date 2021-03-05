@@ -22,7 +22,7 @@ import io.netty.channel.Channel;
  * @author wks
  * @since 1.0
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TYPE, CODE>
 		implements INettyTerminalChannel<TYPE, CODE> {
 	/**
@@ -59,7 +59,17 @@ public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TY
 	 */
 	@Override
 	protected TerminalId<TYPE, CODE> createLocal() {
-		return new TerminalId<>();
+		return new TerminalId() {
+			/**
+			 * serialVersionUID。
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isServer() {
+				return isServerSide();
+			}
+		};
 	}
 
 	/** 
@@ -68,7 +78,17 @@ public class NettyTerminalChannel<TYPE, CODE> extends AbstractTerminalChannel<TY
 	 */
 	@Override
 	protected TerminalId<TYPE, CODE> createRemote() {
-		return new TerminalId<>();
+		return new TerminalId() {
+			/**
+			 * serialVersionUID。
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isServer() {
+				return !isServerSide();
+			}
+		};
 	}
 
 	/** 
